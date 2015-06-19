@@ -25,10 +25,10 @@ class MainWP_WP_Stream_Connector_Users extends MainWP_WP_Stream_Connector {
 	public static $actions = array(
 		'user_register',
 		'profile_update',
-		'password_reset',
-		'retrieve_password',
-		'set_logged_in_cookie',
-		'clear_auth_cookie',
+//		'password_reset',
+//		'retrieve_password',
+//		'set_logged_in_cookie',
+//		'clear_auth_cookie',
 		'delete_user',
 		'deleted_user',
 		'set_user_role',
@@ -53,10 +53,10 @@ class MainWP_WP_Stream_Connector_Users extends MainWP_WP_Stream_Connector {
 			'updated'         => __( 'Updated', 'mainwp-child-reports' ),
 			'created'         => __( 'Created', 'mainwp-child-reports' ),
 			'deleted'         => __( 'Deleted', 'mainwp-child-reports' ),
-			'password-reset'  => __( 'Password Reset', 'default' ),
-			'forgot-password' => __( 'Lost Password', 'default' ),
-			'login'           => __( 'Log In', 'default' ),
-			'logout'          => __( 'Log Out', 'default' ),
+//			'password-reset'  => __( 'Password Reset', 'default' ),
+//			'forgot-password' => __( 'Lost Password', 'default' ),
+//			'login'           => __( 'Log In', 'default' ),
+//			'logout'          => __( 'Log Out', 'default' ),
 		);
 	}
 

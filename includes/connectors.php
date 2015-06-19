@@ -36,15 +36,15 @@ class MainWP_WP_Stream_Connectors {
 		require_once MAINWP_WP_STREAM_INC_DIR . 'connector.php';
 
 		$connectors = array(
-			'blogs',
+			//'blogs',
 			'comments',
 			'editor',
 			'installer',
 			'media',
 			'menus',
 			'posts',
-			'settings',
-			'taxonomies',
+			//'settings',
+			//'taxonomies',
 			'users',
 			'widgets',
 		);

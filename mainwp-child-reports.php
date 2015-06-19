@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: MainWP Child Reports
-Plugin URI: http://extensions.mainwp.com
-Description: The MainWP Child Report plugin tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
+Plugin URI: https://extensions.mainwp.com
+Description:  The MainWP Child Report plugin tracks Child sites for the MainWP Client Reports Extension. The plugin is only useful if you are using MainWP and the Client Reports Extension.
 Version: 0.0.1
 Author: MainWP
-Author URI: http://mainwp.com
+Author URI: https://mainwp.com
 Support Forum URI: 
 Documentation URI: 
 */

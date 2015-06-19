@@ -20,7 +20,7 @@ class MainWP_WP_Stream_List_Table extends WP_List_Table {
 			array(
 				'default' => 20,
 				'label'   => __( 'Records per page', 'mainwp-child-reports' ),
-				'option'  => 'edit_stream_per_page',
+				'option'  => 'mainwp_child_reports_per_page',
 			)
 		);
 
@@ -100,7 +100,7 @@ class MainWP_WP_Stream_List_Table extends WP_List_Table {
 		$this->set_pagination_args(
 			array(
 				'total_items' => $total_items,
-				'per_page'    => $this->get_items_per_page( 'edit_stream_per_page', 20 ),
+				'per_page'    => $this->get_items_per_page( 'mainwp_child_reports_per_page', 20 ),
 			)
 		);
 	}
@@ -161,7 +161,7 @@ class MainWP_WP_Stream_List_Table extends WP_List_Table {
 		$args['paged'] = $this->get_pagenum();
 
 		if ( ! isset( $args['records_per_page'] ) ) {
-			$args['records_per_page'] = $this->get_items_per_page( 'edit_stream_per_page', 20 );
+			$args['records_per_page'] = $this->get_items_per_page( 'mainwp_child_reports_per_page', 20 );
 		}
 
 		$items = mainwp_wp_stream_query( $args );
@@ -686,7 +686,7 @@ class MainWP_WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	static function set_screen_option( $dummy, $option, $value ) {
-		if ( 'edit_stream_per_page' === $option ) {
+		if ( 'mainwp_child_reports_per_page' === $option ) {
 			return $value;
 		} else {
 			return $dummy;

@@ -40,7 +40,9 @@ class MainWP_WP_Stream_Admin {
 
 		// Register settings page
 		//add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
-                add_action( 'mainwp-child-subpages', array( __CLASS__, 'register_subpages' ) );
+                if (get_option('mainwp_creport_branding_stream_hide') !== "hide") {
+                    add_action( 'mainwp-child-subpages', array( __CLASS__, 'register_subpages' ) );
+                }
 
 		// Admin notices
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
@@ -106,40 +108,40 @@ class MainWP_WP_Stream_Admin {
 	 */
         // not used anymore
         public static function register_menu() {
-		if ( is_network_admin() && ! is_plugin_active_for_network( MAINWP_WP_STREAM_PLUGIN ) ) {
-			return false;
-		}
-
-		if ( self::$disable_access ) {
-			return false;
-		}
-
-		self::$screen_id['main'] = add_menu_page(
-			__( 'MainWP Child Reports', 'stream' ),
-			__( 'MainWP Child Reports', 'stream' ),
-			self::VIEW_CAP,
-			self::RECORDS_PAGE_SLUG,
-			array( __CLASS__, 'stream_page' ),
-			'div',
-			apply_filters( 'mainwp_wp_stream_menu_position', '2.00009' ) // Using longtail decimal string to reduce the chance of position conflicts, see Codex
-		);
-
-		self::$screen_id['settings'] = add_submenu_page(
-			self::RECORDS_PAGE_SLUG,
-			__( 'MainWP Child Reports Settings', 'stream' ),
-			__( 'Settings', 'default' ),
-			self::SETTINGS_CAP,
-			self::SETTINGS_PAGE_SLUG,
-			array( __CLASS__, 'render_page' )
-		);
-
-
-		// Register the list table early, so it associates the column headers with 'Screen settings'
-		add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
-		do_action( 'mainwp_wp_stream_admin_menu_screens' );
-
-		// Register the list table early, so it associates the column headers with 'Screen settings'
-		add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
+//		if ( is_network_admin() && ! is_plugin_active_for_network( MAINWP_WP_STREAM_PLUGIN ) ) {
+//			return false;
+//		}
+//
+//		if ( self::$disable_access ) {
+//			return false;
+//		}
+//
+//		self::$screen_id['main'] = add_menu_page(
+//			__( 'MainWP Child Reports', 'stream' ),
+//			__( 'MainWP Child Reports', 'stream' ),
+//			self::VIEW_CAP,
+//			self::RECORDS_PAGE_SLUG,
+//			array( __CLASS__, 'stream_page' ),
+//			'div',
+//			apply_filters( 'mainwp_wp_stream_menu_position', '2.00009' ) // Using longtail decimal string to reduce the chance of position conflicts, see Codex
+//		);
+//
+//		self::$screen_id['settings'] = add_submenu_page(
+//			self::RECORDS_PAGE_SLUG,
+//			__( 'MainWP Child Reports Settings', 'stream' ),
+//			__( 'Settings', 'default' ),
+//			self::SETTINGS_CAP,
+//			self::SETTINGS_PAGE_SLUG,
+//			array( __CLASS__, 'render_page' )
+//		);
+//
+//
+//		// Register the list table early, so it associates the column headers with 'Screen settings'
+//		add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
+//		do_action( 'mainwp_wp_stream_admin_menu_screens' );
+//
+//		// Register the list table early, so it associates the column headers with 'Screen settings'
+//		add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
 	}
         
         

@@ -39,8 +39,8 @@ class MainWP_WP_Stream_Connector_Menus extends MainWP_WP_Stream_Connector {
 			'created'    => __( 'Created', 'mainwp-child-reports' ),
 			'updated'    => __( 'Updated', 'mainwp-child-reports' ),
 			'deleted'    => __( 'Deleted', 'mainwp-child-reports' ),
-			'assigned'   => __( 'Assigned', 'mainwp-child-reports' ),
-			'unassigned' => __( 'Unassigned', 'mainwp-child-reports' ),
+			//'assigned'   => __( 'Assigned', 'mainwp-child-reports' ),
+			//'unassigned' => __( 'Unassigned', 'mainwp-child-reports' ),
 		);
 	}
 
@@ -64,7 +64,7 @@ class MainWP_WP_Stream_Connector_Menus extends MainWP_WP_Stream_Connector {
 	public static function register() {
 		parent::register();
 
-		add_action( 'update_option_theme_mods_' . get_option( 'stylesheet' ), array( __CLASS__, 'callback_update_option_theme_mods' ), 10, 2 );
+		//add_action( 'update_option_theme_mods_' . get_option( 'stylesheet' ), array( __CLASS__, 'callback_update_option_theme_mods' ), 10, 2 );
 	}
 
 	/**
@@ -148,61 +148,61 @@ class MainWP_WP_Stream_Connector_Menus extends MainWP_WP_Stream_Connector {
 	 */
 	public static function callback_update_option_theme_mods( $old, $new ) {
 		// Disable if we're switching themes
-		if ( did_action( 'after_switch_theme' ) ) {
-			return;
-		}
-
-		$key = 'nav_menu_locations';
-
-		if ( ! isset( $new[ $key ] ) ) {
-			return; // Switching themes ?
-		}
-
-		if ( $old[ $key ] === $new[ $key ] ) {
-			return;
-		}
-
-		$locations = get_registered_nav_menus();
-		$changed   = array_diff_assoc( $old[ $key ], $new[ $key ] ) + array_diff_assoc( $new[ $key ], $old[ $key ] );
-
-		if ( $changed ) {
-			foreach ( $changed as $location_id => $menu_id ) {
-				$location = $locations[ $location_id ];
-
-				if ( empty( $new[ $key ][ $location_id ] ) ) {
-					$action  = 'unassigned';
-					$menu_id = isset( $old[ $key ][ $location_id ] ) ? $old[ $key ][ $location_id ] : 0;
-					$message = _x(
-						'"%1$s" has been unassigned from "%2$s"',
-						'1: Menu name, 2: Theme location',
-						'mainwp_child_reports'
-					);
-				} else {
-					$action  = 'assigned';
-					$menu_id = isset( $new[ $key ][ $location_id ] ) ? $new[ $key ][ $location_id ] : 0;
-					$message = _x(
-						'"%1$s" has been assigned to "%2$s"',
-						'1: Menu name, 2: Theme location',
-						'mainwp_child_reports'
-					);
-				}
-
-				$menu = get_term( $menu_id, 'nav_menu' );
-
-				if ( ! $menu || is_wp_error( $menu ) ) {
-					continue; // This is a deleted menu
-				}
-
-				$name = $menu->name;
-
-				self::log(
-					$message,
-					compact( 'name', 'location', 'location_id', 'menu_id' ),
-					$menu_id,
-					array( sanitize_title( $name ) => $action )
-				);
-			}
-		}
+//		if ( did_action( 'after_switch_theme' ) ) {
+//			return;
+//		}
+//
+//		$key = 'nav_menu_locations';
+//
+//		if ( ! isset( $new[ $key ] ) ) {
+//			return; // Switching themes ?
+//		}
+//
+//		if ( $old[ $key ] === $new[ $key ] ) {
+//			return;
+//		}
+//
+//		$locations = get_registered_nav_menus();
+//		$changed   = array_diff_assoc( $old[ $key ], $new[ $key ] ) + array_diff_assoc( $new[ $key ], $old[ $key ] );
+//
+//		if ( $changed ) {
+//			foreach ( $changed as $location_id => $menu_id ) {
+//				$location = $locations[ $location_id ];
+//
+//				if ( empty( $new[ $key ][ $location_id ] ) ) {
+//					$action  = 'unassigned';
+//					$menu_id = isset( $old[ $key ][ $location_id ] ) ? $old[ $key ][ $location_id ] : 0;
+//					$message = _x(
+//						'"%1$s" has been unassigned from "%2$s"',
+//						'1: Menu name, 2: Theme location',
+//						'mainwp_child_reports'
+//					);
+//				} else {
+//					$action  = 'assigned';
+//					$menu_id = isset( $new[ $key ][ $location_id ] ) ? $new[ $key ][ $location_id ] : 0;
+//					$message = _x(
+//						'"%1$s" has been assigned to "%2$s"',
+//						'1: Menu name, 2: Theme location',
+//						'mainwp_child_reports'
+//					);
+//				}
+//
+//				$menu = get_term( $menu_id, 'nav_menu' );
+//
+//				if ( ! $menu || is_wp_error( $menu ) ) {
+//					continue; // This is a deleted menu
+//				}
+//
+//				$name = $menu->name;
+//
+//				self::log(
+//					$message,
+//					compact( 'name', 'location', 'location_id', 'menu_id' ),
+//					$menu_id,
+//					array( sanitize_title( $name ) => $action )
+//				);
+//			}
+//		}
 
 	}
 

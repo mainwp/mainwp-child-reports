@@ -15,16 +15,16 @@ class MainWP_WP_Stream_Connector_Comments extends MainWP_WP_Stream_Connector {
 	 * @var array
 	 */
 	public static $actions = array(
-		'comment_flood_trigger',
+		//'comment_flood_trigger',
 		'wp_insert_comment',
 		'edit_comment',
 		'delete_comment',
 		'trash_comment',
 		'untrash_comment',
 		'spam_comment',
-		'unspam_comment',
-		'transition_comment_status',
-		'comment_duplicate_trigger',
+		//'unspam_comment',
+		//'transition_comment_status',
+		//'comment_duplicate_trigger',
 	);
 
 	/**
@@ -51,10 +51,10 @@ class MainWP_WP_Stream_Connector_Comments extends MainWP_WP_Stream_Connector {
 			'trashed'    => __( 'Trashed', 'mainwp-child-reports' ),
 			'untrashed'  => __( 'Restored', 'mainwp-child-reports' ),
 			'spammed'    => __( 'Marked as Spam', 'mainwp-child-reports' ),
-			'unspammed'  => __( 'Unmarked as Spam', 'mainwp-child-reports' ),
+//			'unspammed'  => __( 'Unmarked as Spam', 'mainwp-child-reports' ),
 			'deleted'    => __( 'Deleted', 'mainwp-child-reports' ),
-			'duplicate'  => __( 'Duplicate', 'mainwp-child-reports' ),
-			'flood'      => __( 'Throttled', 'mainwp-child-reports' ),
+//			'duplicate'  => __( 'Duplicate', 'mainwp-child-reports' ),
+//			'flood'      => __( 'Throttled', 'mainwp-child-reports' ),
 		);
 	}
 

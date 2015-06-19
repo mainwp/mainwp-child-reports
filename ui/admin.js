@@ -383,7 +383,7 @@ jQuery(function( $ ) {
 			}
 
 			// Get show on screen
-			var show_on_screen = $( '#edit_stream_per_page' ).val();
+			var show_on_screen = $( '#mainwp_child_reports_per_page' ).val();
 
 			// Get all current rows
 			var $current_items = $( list_sel + ' tr' );

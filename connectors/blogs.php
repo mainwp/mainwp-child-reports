@@ -14,20 +14,20 @@ class MainWP_WP_Stream_Connector_Blogs extends MainWP_WP_Stream_Connector {
 	 * @var array
 	 */
 	public static $actions = array(
-		'wpmu_new_blog',
-		'wpmu_activate_blog',
-		'wpmu_new_user',
-		'add_user_to_blog',
-		'remove_user_from_blog',
-		'make_spam_blog',
-		'make_ham_blog',
-		'mature_blog',
-		'unmature_blog',
-		'archive_blog',
-		'unarchive_blog',
-		'make_delete_blog',
-		'make_undelete_blog',
-		'update_blog_public',
+//		'wpmu_new_blog',
+//		'wpmu_activate_blog',
+//		'wpmu_new_user',
+//		'add_user_to_blog',
+//		'remove_user_from_blog',
+//		'make_spam_blog',
+//		'make_ham_blog',
+//		'mature_blog',
+//		'unmature_blog',
+//		'archive_blog',
+//		'unarchive_blog',
+//		'make_delete_blog',
+//		'make_undelete_blog',
+//		'update_blog_public',
 	);
 
 	/**

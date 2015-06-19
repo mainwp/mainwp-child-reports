@@ -15,7 +15,7 @@ class MainWP_WP_Stream_Connector_Media extends MainWP_WP_Stream_Connector {
 	 * @var array
 	 */
 	public static $actions = array(
-		'add_attachment',
+		//'add_attachment',
 		'edit_attachment',
 		'delete_attachment',
 		'wp_save_image_editor_file',
@@ -38,12 +38,12 @@ class MainWP_WP_Stream_Connector_Media extends MainWP_WP_Stream_Connector {
 	 */
 	public static function get_action_labels() {
 		return array(
-			'attached'   => __( 'Attached', 'mainwp-child-reports' ),
+			//'attached'   => __( 'Attached', 'mainwp-child-reports' ),
 			'uploaded'   => __( 'Uploaded', 'mainwp-child-reports' ),
 			'updated'    => __( 'Updated', 'mainwp-child-reports' ),
 			'deleted'    => __( 'Deleted', 'mainwp-child-reports' ),
-			'assigned'   => __( 'Assigned', 'mainwp-child-reports' ),
-			'unassigned' => __( 'Unassigned', 'mainwp-child-reports' ),
+			//'assigned'   => __( 'Assigned', 'mainwp-child-reports' ),
+			//'unassigned' => __( 'Unassigned', 'mainwp-child-reports' ),
 		);
 	}
 

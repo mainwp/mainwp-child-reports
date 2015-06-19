@@ -248,35 +248,35 @@ class MainWP_WP_Stream_Settings {
 							'choices'     => self::get_roles(),
 							'default'     => array( 'administrator' ),
 						),
-						array(
-							'name'        => 'private_feeds',
-							'title'       => esc_html__( 'Private Feeds', 'mainwp-child-reports' ),
-							'type'        => 'checkbox',
-							'desc'        => sprintf(
-								__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of MainWP Child Reports securely. Please %sflush rewrite rules%s on your site after changing this setting.', 'mainwp-child-reports' ),
-								sprintf(
-									'<a href="%s" title="%s">',
-									admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', MainWP_WP_Stream_Feeds::USER_FEED_KEY ) ),
-									esc_attr__( 'View Profile', 'mainwp-child-reports' )
-								),
-								'</a>',
-								sprintf(
-									'<a href="%s" title="%s" target="_blank">',
-									esc_url( 'http://codex.wordpress.org/Rewrite_API/flush_rules#What_it_does' ),
-									esc_attr__( 'View Codex', 'mainwp-child-reports' )
-								),
-								'</a>'
-							),
-							'after_field' => esc_html__( 'Enabled', 'mainwp-child-reports' ),
-							'default'     => 0,
-						),
+//						array(
+//							'name'        => 'private_feeds',
+//							'title'       => esc_html__( 'Private Feeds', 'mainwp-child-reports' ),
+//							'type'        => 'checkbox',
+//							'desc'        => sprintf(
+//								__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of MainWP Child Reports securely. Please %sflush rewrite rules%s on your site after changing this setting.', 'mainwp-child-reports' ),
+//								sprintf(
+//									'<a href="%s" title="%s">',
+//									admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', MainWP_WP_Stream_Feeds::USER_FEED_KEY ) ),
+//									esc_attr__( 'View Profile', 'mainwp-child-reports' )
+//								),
+//								'</a>',
+//								sprintf(
+//									'<a href="%s" title="%s" target="_blank">',
+//									esc_url( 'http://codex.wordpress.org/Rewrite_API/flush_rules#What_it_does' ),
+//									esc_attr__( 'View Codex', 'mainwp-child-reports' )
+//								),
+//								'</a>'
+//							),
+//							'after_field' => esc_html__( 'Enabled', 'mainwp-child-reports' ),
+//							'default'     => 0,
+//						),
 						array(
 							'name'        => 'records_ttl',
 							'title'       => esc_html__( 'Keep Records for', 'mainwp-child-reports' ),
 							'type'        => 'number',
 							'class'       => 'small-text',
 							'desc'        => esc_html__( 'Maximum number of days to keep activity records. Leave blank to keep records forever.', 'mainwp-child-reports' ),
-							'default'     => 90,
+							'default'     => 180,
 							'after_field' => esc_html__( 'days', 'mainwp-child-reports' ),
 						),
 						array(
@@ -295,65 +295,65 @@ class MainWP_WP_Stream_Settings {
 						),
 					),
 				),
-				'exclude' => array(
-					'title' => esc_html__( 'Exclude', 'mainwp-child-reports' ),
-					'fields' => array(
-						array(
-							'name'        => 'authors_and_roles',
-							'title'       => __( 'Authors &amp; Roles', 'mainwp-child-reports' ),
-							'type'        => 'select2_user_role',
-							'desc'        => esc_html__( 'No activity will be logged for these authors and/or roles.', 'mainwp-child-reports' ),
-							'choices'     => self::get_roles(),
-							'default'     => array(),
-						),
-						array(
-							'name'        => 'connectors',
-							'title'       => esc_html__( 'Connectors', 'mainwp-child-reports' ),
-							'type'        => 'select2',
-							'desc'        => esc_html__( 'No activity will be logged for these connectors.', 'mainwp-child-reports' ),
-							'choices'     => array( __CLASS__, 'get_terms_labels' ),
-							'param'       => 'connector',
-							'default'     => array(),
-						),
-						array(
-							'name'        => 'contexts',
-							'title'       => esc_html__( 'Contexts', 'mainwp-child-reports' ),
-							'type'        => 'select2',
-							'desc'        => esc_html__( 'No activity will be logged for these contexts.', 'mainwp-child-reports' ),
-							'choices'     => array( __CLASS__, 'get_terms_labels' ),
-							'param'       => 'context',
-							'default'     => array(),
-						),
-						array(
-							'name'        => 'actions',
-							'title'       => esc_html__( 'Actions', 'mainwp-child-reports' ),
-							'type'        => 'select2',
-							'desc'        => esc_html__( 'No activity will be logged for these actions.', 'mainwp-child-reports' ),
-							'choices'     => array( __CLASS__, 'get_terms_labels' ),
-							'param'       => 'action',
-							'default'     => array(),
-						),
-						array(
-							'name'        => 'ip_addresses',
-							'title'       => esc_html__( 'IP Addresses', 'mainwp-child-reports' ),
-							'type'        => 'select2',
-							'desc'        => esc_html__( 'No activity will be logged for these IP addresses.', 'mainwp-child-reports' ),
-							'class'       => 'ip-addresses',
-							'default'     => array(),
-							'nonce'       => 'stream_get_ips',
-						),
-						array(
-							'name'        => 'hide_previous_records',
-							'title'       => esc_html__( 'Visibility', 'mainwp-child-reports' ),
-							'type'        => 'checkbox',
-							'desc'        => sprintf(
-								esc_html__( 'When checked, all past records that match the excluded rules above will be hidden from view.', 'mainwp-child-reports' )
-							),
-							'after_field' => esc_html__( 'Hide Previous Records', 'mainwp-child-reports' ),
-							'default'     => 0,
-						),
-					),
-				),
+//				'exclude' => array(
+//					'title' => esc_html__( 'Exclude', 'mainwp-child-reports' ),
+//					'fields' => array(
+//						array(
+//							'name'        => 'authors_and_roles',
+//							'title'       => __( 'Authors &amp; Roles', 'mainwp-child-reports' ),
+//							'type'        => 'select2_user_role',
+//							'desc'        => esc_html__( 'No activity will be logged for these authors and/or roles.', 'mainwp-child-reports' ),
+//							'choices'     => self::get_roles(),
+//							'default'     => array(),
+//						),
+//						array(
+//							'name'        => 'connectors',
+//							'title'       => esc_html__( 'Connectors', 'mainwp-child-reports' ),
+//							'type'        => 'select2',
+//							'desc'        => esc_html__( 'No activity will be logged for these connectors.', 'mainwp-child-reports' ),
+//							'choices'     => array( __CLASS__, 'get_terms_labels' ),
+//							'param'       => 'connector',
+//							'default'     => array(),
+//						),
+//						array(
+//							'name'        => 'contexts',
+//							'title'       => esc_html__( 'Contexts', 'mainwp-child-reports' ),
+//							'type'        => 'select2',
+//							'desc'        => esc_html__( 'No activity will be logged for these contexts.', 'mainwp-child-reports' ),
+//							'choices'     => array( __CLASS__, 'get_terms_labels' ),
+//							'param'       => 'context',
+//							'default'     => array(),
+//						),
+//						array(
+//							'name'        => 'actions',
+//							'title'       => esc_html__( 'Actions', 'mainwp-child-reports' ),
+//							'type'        => 'select2',
+//							'desc'        => esc_html__( 'No activity will be logged for these actions.', 'mainwp-child-reports' ),
+//							'choices'     => array( __CLASS__, 'get_terms_labels' ),
+//							'param'       => 'action',
+//							'default'     => array(),
+//						),
+//						array(
+//							'name'        => 'ip_addresses',
+//							'title'       => esc_html__( 'IP Addresses', 'mainwp-child-reports' ),
+//							'type'        => 'select2',
+//							'desc'        => esc_html__( 'No activity will be logged for these IP addresses.', 'mainwp-child-reports' ),
+//							'class'       => 'ip-addresses',
+//							'default'     => array(),
+//							'nonce'       => 'stream_get_ips',
+//						),
+//						array(
+//							'name'        => 'hide_previous_records',
+//							'title'       => esc_html__( 'Visibility', 'mainwp-child-reports' ),
+//							'type'        => 'checkbox',
+//							'desc'        => sprintf(
+//								esc_html__( 'When checked, all past records that match the excluded rules above will be hidden from view.', 'mainwp-child-reports' )
+//							),
+//							'after_field' => esc_html__( 'Hide Previous Records', 'mainwp-child-reports' ),
+//							'default'     => 0,
+//						),
+//					),
+//				),
 			);
 		}
 
