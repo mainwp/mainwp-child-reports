@@ -42,8 +42,7 @@ Visit the Stream Extensions screen inside the plugin to learn more about making 
  * Themes
  * Plugins
  * Tags
- * Categories
- * Custom Taxonomies
+ * Categories 
  * Settings
  * Custom Backgrounds
  * Custom Headers

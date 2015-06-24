@@ -1,31 +1,5 @@
 <?php
-/**
- * Context Query Helper for MainWP_WP_Stream_Query
- * Based off WP_Meta_Query class from WordPress core
- *
- * Allowed args:
- * Flat style: {context|action|connector}{|__in|__not_in} => array|string
- *  ie: context__in => array('posts') / action__not_in => 'trashed'
- *
- * Complex style:
- * context_query => array(
- *  array(
- *   'context' => array('posts', 'forms'),
- *   'action' => 'updated'
- *  )
- * )
- * OR
- * context_query = array(
- *  array(
- *   'context' => array( 'value' => 'something', 'compare' => 'like' ),
- *   'action' => array( 'value' => 'pub_', 'compare' => 'rlike' ),
- *  )
- * )
- *
- * This supports the 'relation' var just like WP_Meta_Query
- *
- * @author  Shady Sharaf <shady@x-team.com>
- */
+
 class MainWP_WP_Stream_Context_Query {
 
 	public $relation = null;
@@ -85,9 +59,6 @@ class MainWP_WP_Stream_Context_Query {
 		$queries = $this->queries;
 
 		$meta_query = new WP_Meta_Query;
-
-		// Context table is always joined
-		// $join[] = " INNER JOIN $context_table ON $main_table.ID = $context_table.record_id";
 
 		foreach ( $queries as $i => $query ) {
 			foreach ( $query as $key => $args ) {
@@ -155,12 +126,6 @@ class MainWP_WP_Stream_Context_Query {
 
 		$join = implode( "\n", $join );
 
-		/**
-		 * Filter allows modification of context sql statement
-		 *
-		 * @param  array   Array of context sql statement components
-		 * @return string  Updated context sql statement
-		 */
 		return apply_filters_ref_array( 'get_context_sql', array( compact( 'join', 'where' ), $this->queries ) );
 	}
 

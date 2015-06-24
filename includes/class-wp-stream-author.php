@@ -2,25 +2,11 @@
 
 class MainWP_WP_Stream_Author {
 
-	/**
-	 * @var int
-	 */
+	
 	public $id;
-
-	/**
-	 * @var array
-	 */
 	public $meta = array();
-
-	/**
-	 * @var WP_User
-	 */
 	protected $user;
 
-	/**
-	 * @param int $user_id
-	 * @param array $author_meta
-	 */
 	function __construct( $user_id, $author_meta = array() ) {
 		$this->id   = $user_id;
 		$this->meta = $author_meta;
@@ -30,11 +16,6 @@ class MainWP_WP_Stream_Author {
 		}
 	}
 
-	/**
-	 * @param string $name
-	 * @throws Exception
-	 * @return string|mixed
-	 */
 	function __get( $name ) {
 		if ( 'display_name' === $name ) {
 			return $this->get_display_name();
@@ -53,9 +34,6 @@ class MainWP_WP_Stream_Author {
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	function get_display_name() {
 		if ( 0 === $this->id ) {
 			if ( isset( $this->meta['system_user_name'] ) ) {
@@ -79,9 +57,6 @@ class MainWP_WP_Stream_Author {
 		}
 	}
 
-	/**
-	 * @return string|null
-	 */
 	function get_agent() {
 		$agent = null;
 
@@ -94,21 +69,13 @@ class MainWP_WP_Stream_Author {
 		return $agent;
 	}
 
-	/**
-	 * Return a Gravatar image as an HTML element.
-	 *
-	 * This function will not return an avatar if "Show Avatars" is unchecked in Settings > Discussion.
-	 *
-	 * @param int $size (optional) Size of Gravatar to return (in pixels), max is 512, default is 80
-	 * @return string An img HTML element
-	 */
 	function get_avatar_img( $size = 80 ) {
 		if ( ! get_option( 'show_avatars' ) ) {
 			return false;
 		}
 
 		if ( 0 === $this->id ) {
-			$url    = MAINWP_WP_STREAM_URL . 'ui/stream-icons/wp-cli.png';
+			$url    = MAINWP_WP_STREAM_URL . 'ui/mainwp-reports-icons/wp-cli.png';
 			$avatar = sprintf( '<img alt="%1$s" src="%2$s" class="avatar avatar-%3$s photo" height="%3$s" width="%3$s">', esc_attr( $this->get_display_name() ), esc_url( $url ), esc_attr( $size ) );
 		} else {
 			if ( $this->is_deleted() ) {
@@ -122,12 +89,6 @@ class MainWP_WP_Stream_Author {
 		return $avatar;
 	}
 
-	/**
-	 * Return the URL of a Gravatar image.
-	 *
-	 * @param int $size (optional) Size of Gravatar to return (in pixels), max is 512, default is 80
-	 * @return string Gravatar image URL
-	 */
 	function get_avatar_src( $size = 80 ) {
 		$img = $this->get_avatar_img( $size );
 
@@ -144,19 +105,6 @@ class MainWP_WP_Stream_Author {
 		return $src;
 	}
 
-	/**
-	 * Tries to find a label for the record's author_role.
-	 *
-	 * If the author_role exists, use the label associated with it.
-	 *
-	 * Otherwise, if there is a user role label stored as Stream meta then use that.
-	 *
-	 * Otherwise, if the user exists, use the label associated with their current role.
-	 *
-	 * Otherwise, use the role slug as the label.
-	 *
-	 * @return string|null
-	 */
 	function get_role() {
 		global $wp_roles;
 
@@ -173,9 +121,6 @@ class MainWP_WP_Stream_Author {
 		return $author_role;
 	}
 
-	/**
-	 * @return string
-	 */
 	function get_records_page_url() {
 		$url = add_query_arg(
 			array(
@@ -188,32 +133,18 @@ class MainWP_WP_Stream_Author {
 		return $url;
 	}
 
-	/**
-	 * @return bool
-	 */
 	function is_deleted() {
 		return ( 0 !== $this->id && 0 === $this->user->ID );
 	}
 
-	/**
-	 * @return bool
-	 */
 	function is_wp_cli() {
 		return ( 'wp_cli' === $this->get_agent() );
 	}
 
-	/**
-	 * @return string
-	 */
 	function __toString() {
 		return $this->get_display_name();
 	}
 
-	/**
-	 * Look at the environment to detect if an agent is being used
-	 *
-	 * @return null|string
-	 */
 	static function get_current_agent() {
 		$agent = null;
 
@@ -228,10 +159,6 @@ class MainWP_WP_Stream_Author {
 		return $agent;
 	}
 
-	/**
-	 * @param string $agent
-	 * @return string
-	 */
 	static function get_agent_label( $agent ) {
 		if ( 'wp_cli' === $agent ) {
 			$label = esc_html__( 'via WP-CLI', 'mainwp-child-reports' );

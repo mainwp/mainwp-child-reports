@@ -2,58 +2,27 @@
 
 class MainWP_WP_Stream_Connector_Media extends MainWP_WP_Stream_Connector {
 
-	/**
-	 * Connector slug
-	 *
-	 * @var string
-	 */
 	public static $name = 'media';
 
-	/**
-	 * Actions registered for this connector
-	 *
-	 * @var array
-	 */
-	public static $actions = array(
-		//'add_attachment',
+	public static $actions = array(		
 		'edit_attachment',
 		'delete_attachment',
 		'wp_save_image_editor_file',
 		'wp_save_image_file',
 	);
 
-	/**
-	 * Return translated connector label
-	 *
-	 * @return string Translated connector label
-	 */
 	public static function get_label() {
 		return __( 'Media', 'default' );
 	}
 
-	/**
-	 * Return translated action labels
-	 *
-	 * @return array Action label translations
-	 */
 	public static function get_action_labels() {
-		return array(
-			//'attached'   => __( 'Attached', 'mainwp-child-reports' ),
+		return array(			
 			'uploaded'   => __( 'Uploaded', 'mainwp-child-reports' ),
 			'updated'    => __( 'Updated', 'mainwp-child-reports' ),
-			'deleted'    => __( 'Deleted', 'mainwp-child-reports' ),
-			//'assigned'   => __( 'Assigned', 'mainwp-child-reports' ),
-			//'unassigned' => __( 'Unassigned', 'mainwp-child-reports' ),
+			'deleted'    => __( 'Deleted', 'mainwp-child-reports' )			
 		);
 	}
 
-	/**
-	 * Return translated context labels
-	 *
-	 * Based on extension types used by wp_ext2type() in wp-includes/functions.php.
-	 *
-	 * @return array Context label translations
-	 */
 	public static function get_context_labels() {
 		return array(
 			'image'       => __( 'Image', 'default' ),
@@ -68,12 +37,6 @@ class MainWP_WP_Stream_Connector_Media extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * Return the file type for an attachment which corresponds with a context label
-	 *
-	 * @param  object $file_uri  URI of the attachment
-	 * @return string            A file type which corresponds with a context label
-	 */
 	public static function get_attachment_type( $file_uri ) {
 		$extension      = pathinfo( $file_uri, PATHINFO_EXTENSION );
 		$extension_type = wp_ext2type( $extension );
@@ -91,14 +54,6 @@ class MainWP_WP_Stream_Connector_Media extends MainWP_WP_Stream_Connector {
 		return $extension_type;
 	}
 
-	/**
-	 * Add action links to Stream drop row in admin list screen
-	 *
-	 * @filter mainwp_wp_stream_action_links_{connector}
-	 * @param  array $links      Previous links registered
-	 * @param  int   $record     Stream record
-	 * @return array             Action links
-	 */
 	public static function action_links( $links, $record ) {
 		if ( $record->object_id ) {
 			if ( $link = get_edit_post_link( $record->object_id ) ) {
@@ -112,43 +67,6 @@ class MainWP_WP_Stream_Connector_Media extends MainWP_WP_Stream_Connector {
 		return $links;
 	}
 
-	/**
-	 * Tracks creation of attachments
-	 *
-	 * @action add_attachment
-	 */
-	public static function callback_add_attachment( $post_id ) {
-		$post = get_post( $post_id );
-		if ( $post->post_parent ) {
-			$message = _x(
-				'Attached "%1$s" to "%2$s"',
-				'1: Attachment title, 2: Parent post title',
-				'mainwp_child_reports'
-			);
-		} else {
-			$message = __( 'Added "%s" to Media library', 'mainwp-child-reports' );
-		}
-
-		$name            = $post->post_title;
-		$url             = $post->guid;
-		$parent_id       = $post->post_parent;
-		$parent          = get_post( $parent_id );
-		$parent_title    = $parent_id ? $parent->post_title : null;
-		$attachment_type = self::get_attachment_type( $post->guid );
-
-		self::log(
-			$message,
-			compact( 'name', 'parent_title', 'parent_id', 'url' ),
-			$post_id,
-			array( $attachment_type => $post->post_parent ? 'attached' : 'uploaded' )
-		);
-	}
-
-	/**
-	 * Tracks editing attachments
-	 *
-	 * @action edit_attachment
-	 */
 	public static function callback_edit_attachment( $post_id ) {
 		$post            = get_post( $post_id );
 		$message         = __( 'Updated "%s"', 'mainwp-child-reports' );
@@ -163,11 +81,6 @@ class MainWP_WP_Stream_Connector_Media extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * Tracks deletion of attachments
-	 *
-	 * @action delete_attachment
-	 */
 	public static function callback_delete_attachment( $post_id ) {
 		$post            = get_post( $post_id );
 		$parent          = $post->post_parent ? get_post( $post->post_parent ) : null;
@@ -185,11 +98,6 @@ class MainWP_WP_Stream_Connector_Media extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * Tracks changes made in the image editor
-	 *
-	 * @action delete_attachment
-	 */
 	public static function callback_wp_save_image_editor_file( $dummy, $filename, $image, $mime_type, $post_id ) {
 		$name            = basename( $filename );
 		$attachment_type = self::get_attachment_type( $post->guid );

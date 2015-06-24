@@ -13,12 +13,6 @@ class MainWP_WP_Stream_DB {
 	public function __construct() {
 		global $wpdb;
 
-		/**
-		 * Allows devs to alter the tables prefix, default to base_prefix
-		 *
-		 * @param  string  database prefix
-		 * @return string  udpated database prefix
-		 */
 		$prefix = apply_filters( 'mainwp_wp_stream_db_tables_prefix', $wpdb->base_prefix );
 
 		self::$table         = $prefix . 'mainwp_stream';
@@ -42,11 +36,6 @@ class MainWP_WP_Stream_DB {
 		return self::$instance;
 	}
 
-	/**
-	 * Public getter to return table names;
-	 *
-	 * @return array
-	 */
 	public function get_table_names() {
 		return array(
 			self::$table,
@@ -58,12 +47,6 @@ class MainWP_WP_Stream_DB {
 	public function insert( $recordarr ) {
 		global $wpdb;
 
-		/**
-		 * Filter allows modification of record information
-		 *
-		 * @param  array  array of record information
-		 * @return array  updated array of record information
-		 */
 		$recordarr = apply_filters( 'mainwp_wp_stream_record_array', $recordarr );
 
 		// Allow extensions to handle the saving process
@@ -85,11 +68,6 @@ class MainWP_WP_Stream_DB {
 		if ( 1 === $result ) {
 			$record_id = $wpdb->insert_id;
 		} else {
-			/**
-			 * Action Hook that fires on an error during post insertion
-			 *
-			 * @param  array  $recordarr  Record being inserted
-			 */
 			do_action( 'mainwp_wp_stream_post_insert_error', $recordarr );
 			return $result;
 		}
@@ -113,12 +91,6 @@ class MainWP_WP_Stream_DB {
 			}
 		}
 
-		/**
-		 * Fires when A Post is inserted
-		 *
-		 * @param  int    $record_id  Inserted record ID
-		 * @param  array  $recordarr  Array of information on this record
-		 */
 		do_action( 'mainwp_wp_stream_post_inserted', $record_id, $recordarr );
 
 		return $record_id;

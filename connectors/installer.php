@@ -2,18 +2,8 @@
 
 class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 
-	/**
-	 * Context slug
-	 *
-	 * @var string
-	 */
 	public static $name = 'installer';
 
-	/**
-	 * Actions registered for this connector
-	 *
-	 * @var array
-	 */
 	public static $actions = array(
 		'upgrader_process_complete', // plugins::installed | themes::installed
 		'activate_plugin', // plugins::activated
@@ -26,20 +16,10 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 		'_core_updated_successfully',
 	);
 
-	/**
-	 * Return translated connector label
-	 *
-	 * @return string Translated connector label
-	 */
 	public static function get_label() {
 		return __( 'Installer', 'mainwp-child-reports' );
 	}
 
-	/**
-	 * Return translated action labels
-	 *
-	 * @return array Action label translations
-	 */
 	public static function get_action_labels() {
 		return array(
 			'installed'   => __( 'Installed', 'mainwp-child-reports' ),
@@ -51,11 +31,6 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * Return translated context labels
-	 *
-	 * @return array Context label translations
-	 */
 	public static function get_context_labels() {
 		return array(
 			'plugins'   => __( 'Plugins', 'default' ),
@@ -64,14 +39,6 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * Add action links to Stream drop row in admin list screen
-	 *
-	 * @filter mainwp_wp_stream_action_links_{connector}
-	 * @param  array $links      Previous links registered
-	 * @param  int   $record     Stream record
-	 * @return array             Action links
-	 */
 	public static function action_links( $links, $record ) {
 		if ( 'wordpress' === $record->context && 'updated' === $record->action ) {
 			global $wp_version;
@@ -84,11 +51,6 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 		return $links;
 	}
 
-	/**
-	 * Log plugin installations
-	 *
-	 * @action transition_post_status
-	 */
 	public static function callback_upgrader_process_complete( $upgrader, $extra ) {
 		$logs    = array();
 		$success = ! is_wp_error( $upgrader->skin->result );
@@ -244,9 +206,6 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * @todo Core needs a delete_theme hook
-	 */
 	public static function callback_delete_site_transient_update_themes() {
 
 		$backtrace = debug_backtrace();
@@ -263,7 +222,6 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 		}
 
 		$name = $delete_theme_call['args'][0];
-		// @todo Can we get the name of the theme? Or has it already been eliminated
 
 		self::log(
 			__( '"%s" theme deleted', 'mainwp-child-reports' ),
@@ -273,10 +231,6 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * @todo Core needs an uninstall_plugin hook
-	 * @todo This does not work in WP-CLI
-	 */
 	public static function callback_pre_option_uninstall_plugins() {
 		global $plugins;
 
@@ -295,10 +249,6 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 		return false;
 	}
 
-	/**
-	 * @todo Core needs a delete_plugin hook
-	 * @todo This does not work in WP-CLI
-	 */
 	public static function callback_pre_set_site_transient_update_plugins( $value ) {
 		if ( ! mainwp_wp_stream_filter_input( INPUT_POST, 'verify-delete' ) || ! ( $plugins_to_delete = get_option( 'mainwp_wp_stream_plugins_to_delete' ) ) ) {
 			return $value;

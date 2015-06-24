@@ -2,53 +2,26 @@
 
 class MainWP_WP_Stream_Connector_Menus extends MainWP_WP_Stream_Connector {
 
-	/**
-	 * Connector slug
-	 *
-	 * @var string
-	 */
 	public static $name = 'menus';
 
-	/**
-	 * Actions registered for this connector
-	 *
-	 * @var array
-	 */
 	public static $actions = array(
 		'wp_create_nav_menu',
 		'wp_update_nav_menu',
 		'delete_nav_menu',
 	);
 
-	/**
-	 * Return translated connector label
-	 *
-	 * @return string Translated connector label
-	 */
 	public static function get_label() {
 		return __( 'Menus', 'default' );
 	}
 
-	/**
-	 * Return translated action labels
-	 *
-	 * @return array Action label translations
-	 */
 	public static function get_action_labels() {
 		return array(
 			'created'    => __( 'Created', 'mainwp-child-reports' ),
 			'updated'    => __( 'Updated', 'mainwp-child-reports' ),
-			'deleted'    => __( 'Deleted', 'mainwp-child-reports' ),
-			//'assigned'   => __( 'Assigned', 'mainwp-child-reports' ),
-			//'unassigned' => __( 'Unassigned', 'mainwp-child-reports' ),
+			'deleted'    => __( 'Deleted', 'mainwp-child-reports' ),			
 		);
 	}
 
-	/**
-	 * Return translated context labels
-	 *
-	 * @return array Context label translations
-	 */
 	public static function get_context_labels() {
 		$labels = array();
 		$menus  = get_terms( 'nav_menu', array( 'hide_empty' => false ) );
@@ -67,14 +40,6 @@ class MainWP_WP_Stream_Connector_Menus extends MainWP_WP_Stream_Connector {
 		//add_action( 'update_option_theme_mods_' . get_option( 'stylesheet' ), array( __CLASS__, 'callback_update_option_theme_mods' ), 10, 2 );
 	}
 
-	/**
-	 * Add action links to Stream drop row in admin list screen
-	 *
-	 * @filter mainwp_wp_stream_action_links_{connector}
-	 * @param  array $links      Previous links registered
-	 * @param  int   $record     Stream record
-	 * @return array             Action links
-	 */
 	public static function action_links( $links, $record ) {
 		if ( $record->object_id ) {
 			$menus    = wp_get_nav_menus();
@@ -88,11 +53,6 @@ class MainWP_WP_Stream_Connector_Menus extends MainWP_WP_Stream_Connector {
 		return $links;
 	}
 
-	/**
-	 * Tracks creation of menus
-	 *
-	 * @action wp_create_nav_menu
-	 */
 	public static function callback_wp_create_nav_menu( $menu_id, $menu_data ) {
 		$name = $menu_data['menu-name'];
 
@@ -104,11 +64,6 @@ class MainWP_WP_Stream_Connector_Menus extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * Tracks menu updates
-	 *
-	 * @action wp_update_nav_menu
-	 */
 	public static function callback_wp_update_nav_menu( $menu_id, $menu_data = array() ) {
 		if ( empty( $menu_data ) ) {
 			return;
@@ -124,11 +79,6 @@ class MainWP_WP_Stream_Connector_Menus extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * Tracks menu deletion
-	 *
-	 * @action delete_nav_menu
-	 */
 	public static function callback_delete_nav_menu( $term, $tt_id, $deleted_term ) {
 		$name    = $deleted_term->name;
 		$menu_id = $term;
@@ -141,69 +91,6 @@ class MainWP_WP_Stream_Connector_Menus extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * Track assignment to menu locations
-	 *
-	 * @action update_option_theme_mods_{$stylesheet}
-	 */
-	public static function callback_update_option_theme_mods( $old, $new ) {
-		// Disable if we're switching themes
-//		if ( did_action( 'after_switch_theme' ) ) {
-//			return;
-//		}
-//
-//		$key = 'nav_menu_locations';
-//
-//		if ( ! isset( $new[ $key ] ) ) {
-//			return; // Switching themes ?
-//		}
-//
-//		if ( $old[ $key ] === $new[ $key ] ) {
-//			return;
-//		}
-//
-//		$locations = get_registered_nav_menus();
-//		$changed   = array_diff_assoc( $old[ $key ], $new[ $key ] ) + array_diff_assoc( $new[ $key ], $old[ $key ] );
-//
-//		if ( $changed ) {
-//			foreach ( $changed as $location_id => $menu_id ) {
-//				$location = $locations[ $location_id ];
-//
-//				if ( empty( $new[ $key ][ $location_id ] ) ) {
-//					$action  = 'unassigned';
-//					$menu_id = isset( $old[ $key ][ $location_id ] ) ? $old[ $key ][ $location_id ] : 0;
-//					$message = _x(
-//						'"%1$s" has been unassigned from "%2$s"',
-//						'1: Menu name, 2: Theme location',
-//						'mainwp_child_reports'
-//					);
-//				} else {
-//					$action  = 'assigned';
-//					$menu_id = isset( $new[ $key ][ $location_id ] ) ? $new[ $key ][ $location_id ] : 0;
-//					$message = _x(
-//						'"%1$s" has been assigned to "%2$s"',
-//						'1: Menu name, 2: Theme location',
-//						'mainwp_child_reports'
-//					);
-//				}
-//
-//				$menu = get_term( $menu_id, 'nav_menu' );
-//
-//				if ( ! $menu || is_wp_error( $menu ) ) {
-//					continue; // This is a deleted menu
-//				}
-//
-//				$name = $menu->name;
-//
-//				self::log(
-//					$message,
-//					compact( 'name', 'location', 'location_id', 'menu_id' ),
-//					$menu_id,
-//					array( sanitize_title( $name ) => $action )
-//				);
-//			}
-//		}
-
-	}
+	
 
 }

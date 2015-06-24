@@ -68,9 +68,6 @@ class MainWP_WP_Stream_Filter_Input {
 			$filter_callback = self::$filter_callbacks[ $filter ];
 			$result          = call_user_func( $filter_callback, $var );
 
-			// filter_var / filter_input treats validation/sanitization filters the same
-			// they both return output and change the var value, this shouldn't be the case here.
-			// We'll do a boolean check on validation function, and let sanitizers change the value
 			$filter_type = ( $filter < 500 ) ? 'validator' : 'sanitizer';
 			if ( 'validator' === $filter_type ) { // Validation functions
 				if ( ! $result ) {

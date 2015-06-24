@@ -1,9 +1,5 @@
 <?php
-/**
- * Stream pointers. Based on WP core internal pointers.
- *
- * @since 1.4.4
- */
+
 class MainWP_WP_Stream_Pointers {
 
 	public static $pointers = array();
@@ -30,22 +26,8 @@ class MainWP_WP_Stream_Pointers {
 		);
 	}
 
-	/**
-	 * Initializes the pointers.
-	 *
-	 * @since 1.4.4
-	 *
-	 * All pointers can be disabled using the following:
-	 *     remove_action( 'admin_enqueue_scripts', array( 'MainWP_WP_Stream_Pointers', 'enqueue_scripts' ) );
-	 *
-	 * Individual pointers (e.g. mainwpchildreport001_extensions) can be disabled using the following:
-	 *     remove_action( 'admin_print_footer_scripts', array( 'MainWP_WP_Stream_Pointers', 'pointer_mainwpchildreport001_extensions' ) );
-	 */
 	public static function enqueue_scripts( $hook_suffix ) {
-		/*
-		 * Register feature pointers
-		 * Format: array( hook_suffix => pointer_id )
-		 */
+
 		self::init_core_pointers();
 
 		$get_pointers = array_merge( self::$pointers, apply_filters( 'mainwp_wp_stream_pointers', array() ) );
@@ -91,15 +73,6 @@ class MainWP_WP_Stream_Pointers {
 		wp_enqueue_script( 'wp-pointer' );
 	}
 
-	/**
-	 * Print the pointer javascript data.
-	 *
-	 * @since 1.4.4
-	 *
-	 * @param string $pointer_id The pointer ID.
-	 * @param string $selector The HTML elements, on which the pointer should be attached.
-	 * @param array  $args Arguments to be passed to the pointer JS (see wp-pointer.js).
-	 */
 	public static function print_js( $pointer_id, $selector, $args ) {
 		if ( empty( $pointer_id ) || empty( $selector ) || empty( $args ) || empty( $args['content'] ) ) {
 			return;
@@ -139,11 +112,7 @@ class MainWP_WP_Stream_Pointers {
 		</script>
 		<?php
 	}
-	/**
-	 * Prevents new users from seeing existing 'new feature' pointers.
-	 *
-	 * @since 1.4.4
-	 */
+	
 	public static function dismiss_pointers_for_new_users( $user_id ) {
 		add_user_meta( $user_id, 'dismissed_wp_pointers', '' );
 	}

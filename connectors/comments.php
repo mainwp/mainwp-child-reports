@@ -2,45 +2,21 @@
 
 class MainWP_WP_Stream_Connector_Comments extends MainWP_WP_Stream_Connector {
 
-	/**
-	 * Connector slug
-	 *
-	 * @var string
-	 */
 	public static $name = 'comments';
 
-	/**
-	 * Actions registered for this connector
-	 *
-	 * @var array
-	 */
-	public static $actions = array(
-		//'comment_flood_trigger',
+	public static $actions = array(		
 		'wp_insert_comment',
 		'edit_comment',
 		'delete_comment',
 		'trash_comment',
 		'untrash_comment',
-		'spam_comment',
-		//'unspam_comment',
-		//'transition_comment_status',
-		//'comment_duplicate_trigger',
+		'spam_comment'
 	);
 
-	/**
-	 * Return translated connector label
-	 *
-	 * @return string Translated connector label
-	 */
 	public static function get_label() {
 		return __( 'Comments', 'default' );
 	}
 
-	/**
-	 * Return translated action labels
-	 *
-	 * @return array Action label translations
-	 */
 	public static function get_action_labels() {
 		return array(
 			'created'    => __( 'Created', 'mainwp-child-reports' ),
@@ -58,22 +34,12 @@ class MainWP_WP_Stream_Connector_Comments extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * Return translated context labels
-	 *
-	 * @return array Context label translations
-	 */
 	public static function get_context_labels() {
 		return array(
 			'comments' => __( 'Comments', 'default' ),
 		);
 	}
 
-	/**
-	 * Return translated comment type labels
-	 *
-	 * @return array Comment type label translations
-	 */
 	public static function get_comment_type_labels() {
 		return apply_filters(
 			'mainwp_wp_stream_comment_type_labels',
@@ -85,12 +51,6 @@ class MainWP_WP_Stream_Connector_Comments extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * Return the comment type label for a given comment ID
-	 *
-	 * @param  int    $comment_id  ID of the comment
-	 * @return string              The comment type label
-	 */
 	public static function get_comment_type_label( $comment_id ) {
 		$comment_type = get_comment_type( $comment_id );
 
@@ -105,14 +65,6 @@ class MainWP_WP_Stream_Connector_Comments extends MainWP_WP_Stream_Connector {
 		return $label;
 	}
 
-	/**
-	 * Add action links to Stream drop row in admin list screen
-	 *
-	 * @filter mainwp_wp_stream_action_links_{connector}
-	 * @param  array $links      Previous links registered
-	 * @param  int   $record     Stream record
-	 * @return array             Action links
-	 */
 	public static function action_links( $links, $record ) {
 		if ( $record->object_id ) {
 			if ( $comment = get_comment( $record->object_id ) ) {
@@ -144,17 +96,6 @@ class MainWP_WP_Stream_Connector_Comments extends MainWP_WP_Stream_Connector {
 		return $links;
 	}
 
-	/**
-	 * Fetches the comment author and returns the specified field.
-	 *
-	 * This also takes into consideration whether or not the blog requires only
-	 * name and e-mail or that users be logged in to comment. In either case it
-	 * will try to see if the e-mail provided does belong to a registered user.
-	 *
-	 * @param  object|int  $comment  A comment object or comment ID
-	 * @param  string      $field    What field you want to return
-	 * @return int|string  $output   User ID or user display name
-	 */
 	public static function get_comment_author( $comment, $field = 'id' ) {
 		$comment = is_object( $comment ) ? $comment : get_comment( absint( $comment ) );
 
@@ -185,35 +126,6 @@ class MainWP_WP_Stream_Connector_Comments extends MainWP_WP_Stream_Connector {
 		return $output;
 	}
 
-	/**
-	 * Tracks comment flood blocks
-	 *
-	 * @action comment_flood_trigger
-	 */
-	public static function callback_comment_flood_trigger( $time_lastcomment, $time_newcomment ) {
-		$req_user_login = get_option( 'comment_registration' );
-
-		if ( $req_user_login ) {
-			$user      = wp_get_current_user();
-			$user_id   = $user->ID;
-			$user_name = $user->display_name;
-		} else {
-			$user_name = __( 'a logged out user', 'mainwp-child-reports' );
-		}
-
-		self::log(
-			__( 'Comment flooding by %s detected and prevented', 'mainwp-child-reports' ),
-			compact( 'user_name', 'user_id', 'time_lastcomment', 'time_newcomment' ),
-			null,
-			array( 'comments' => 'flood' )
-		);
-	}
-
-	/**
-	 * Tracks comment creation
-	 *
-	 * @action wp_insert_comment
-	 */
 	public static function callback_wp_insert_comment( $comment_id, $comment ) {
 		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
 			return;
@@ -266,11 +178,6 @@ class MainWP_WP_Stream_Connector_Comments extends MainWP_WP_Stream_Connector {
 		}
 	}
 
-	/**
-	 * Tracks comment updates
-	 *
-	 * @action edit_comment
-	 */
 	public static function callback_edit_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
 
@@ -297,11 +204,6 @@ class MainWP_WP_Stream_Connector_Comments extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * Tracks comment delete
-	 *
-	 * @action delete_comment
-	 */
 	public static function callback_delete_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
 
@@ -328,11 +230,6 @@ class MainWP_WP_Stream_Connector_Comments extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * Tracks comment trashing
-	 *
-	 * @action trash_comment
-	 */
 	public static function callback_trash_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
 
@@ -359,11 +256,6 @@ class MainWP_WP_Stream_Connector_Comments extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * Tracks comment trashing
-	 *
-	 * @action untrash_comment
-	 */
 	public static function callback_untrash_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
 
@@ -390,11 +282,6 @@ class MainWP_WP_Stream_Connector_Comments extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * Tracks comment marking as spam
-	 *
-	 * @action spam_comment
-	 */
 	public static function callback_spam_comment( $comment_id ) {
 		$comment = get_comment( $comment_id );
 
@@ -421,109 +308,6 @@ class MainWP_WP_Stream_Connector_Comments extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * Tracks comment unmarking as spam
-	 *
-	 * @action unspam_comment
-	 */
-	public static function callback_unspam_comment( $comment_id ) {
-		$comment = get_comment( $comment_id );
-
-		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
-			return;
-		}
-
-		$user_id      = self::get_comment_author( $comment, 'id' );
-		$user_name    = self::get_comment_author( $comment, 'name' );
-		$post_id      = $comment->comment_post_ID;
-		$post_type    = get_post_type( $post_id );
-		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'mainwp-child-reports' );
-		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
-
-		self::log(
-			_x(
-				'%1$s\'s %3$s on %2$s unmarked as spam',
-				'1: Comment author, 2: Post title, 3: Comment type',
-				'mainwp_child_reports'
-			),
-			compact( 'user_name', 'post_title', 'comment_type', 'post_id', 'user_id' ),
-			$comment_id,
-			array( $post_type => 'unspammed' )
-		);
-	}
-
-	/**
-	* Track comment status transition
-	*
-	* @action transition_comment_status
-	*/
-	public static function callback_transition_comment_status( $new_status, $old_status, $comment ) {
-		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
-			return;
-		}
-
-		if ( 'approved' !== $new_status && 'unapproved' !== $new_status || 'trash' === $old_status || 'spam' === $old_status ) {
-			return;
-		}
-
-		$user_id      = self::get_comment_author( $comment, 'id' );
-		$user_name    = self::get_comment_author( $comment, 'name' );
-		$post_id      = $comment->comment_post_ID;
-		$post_type    = get_post_type( $post_id );
-		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'mainwp-child-reports' );
-		$comment_type = get_comment_type( $comment->comment_ID );
-
-		self::log(
-			_x(
-				'%1$s\'s %3$s %2$s',
-				'Comment status transition. 1: Comment author, 2: Post title, 3: Comment type',
-				'mainwp_child_reports'
-			),
-			compact( 'user_name', 'new_status', 'comment_type', 'old_status', 'post_title', 'post_id', 'user_id' ),
-			$comment->comment_ID,
-			array( $post_type => $new_status )
-		);
-	}
-
-	/**
-	 * Track attempts to add duplicate comments
-	 *
-	 * @action comment_duplicate_trigger
-	 */
-	public static function callback_comment_duplicate_trigger( $comment_data ) {
-		global $wpdb;
-
-		$comment_id = $wpdb->last_result[0]->comment_ID;
-		$comment    = get_comment( $comment_id );
-
-		if ( in_array( $comment->comment_type, self::get_ignored_comment_types() ) ) {
-			return;
-		}
-
-		$user_id      = self::get_comment_author( $comment, 'id' );
-		$user_name    = self::get_comment_author( $comment, 'name' );
-		$post_id      = $comment->comment_post_ID;
-		$post_type    = get_post_type( $post_id );
-		$post_title   = ( $post = get_post( $post_id ) ) ? "\"$post->post_title\"" : __( 'a post', 'mainwp-child-reports' );
-		$comment_type = mb_strtolower( self::get_comment_type_label( $comment_id ) );
-
-		self::log(
-			_x(
-				'Duplicate %3$s by %1$s prevented on %2$s',
-				'1: Comment author, 2: Post title, 3: Comment type',
-				'mainwp_child_reports'
-			),
-			compact( 'user_name', 'post_title', 'comment_type', 'post_id', 'user_id' ),
-			$comment_id,
-			array( $post_type => 'duplicate' )
-		);
-	}
-
-	/**
-	 * Constructs list of ignored comment types for the comments connector
-	 *
-	 * @return  array  List of ignored comment types
-	 */
 	public static function get_ignored_comment_types() {
 		return apply_filters(
 			'mainwp_wp_stream_comment_exclude_comment_types',

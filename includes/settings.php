@@ -7,47 +7,12 @@
  */
 class MainWP_WP_Stream_Settings {
 
-	/**
-	 * Settings key/identifier
-	 */
 	const KEY = 'mainwp_wp_stream';
-
-	/**
-	 * Settings key/identifier
-	 */
 	const NETWORK_KEY = 'mainwp_wp_stream_network';
-
-	/**
-	 * Default Settings key/identifier
-	 */
 	const DEFAULTS_KEY = 'mainwp_wp_stream_defaults';
-
-	/**
-	 * Plugin settings
-	 *
-	 * @var array
-	 */
 	public static $options = array();
-
-	/**
-	 * Option key for current screen
-	 *
-	 * @var array
-	 */
 	public static $option_key = '';
-
-	/**
-	 * Settings fields
-	 *
-	 * @var array
-	 */
 	public static $fields = array();
-
-	/**
-	 * Public constructor
-	 *
-	 * @return \MainWP_WP_Stream_Settings
-	 */
 	public static function load() {
 		self::$option_key = self::get_option_key();
 		self::$options    = self::get_options();
@@ -70,12 +35,6 @@ class MainWP_WP_Stream_Settings {
 		add_action( 'wp_ajax_mainwp_stream_get_ips', array( __CLASS__, 'get_ips' ) );
 	}
 
-	/**
-	 * Ajax callback function to search users that is used on exclude setting page
-	 *
-	 * @uses WP_User_Query WordPress User Query class.
-	 * @return void
-	 */
 	public static function get_users(){
 		if ( ! defined( 'DOING_AJAX' ) || ! current_user_can( MainWP_WP_Stream_Admin::SETTINGS_CAP ) ) {
 			return;
@@ -157,12 +116,6 @@ class MainWP_WP_Stream_Settings {
 		wp_send_json_success( $response );
 	}
 
-	/**
-	 * Ajax callback function to search IP addresses that is used on exclude setting page
-	 *
-	 * @uses WP_User_Query WordPress User Query class.
-	 * @return void
-	 */
 	public static function get_ips(){
 		if ( ! defined( 'DOING_AJAX' ) || ! current_user_can( MainWP_WP_Stream_Admin::SETTINGS_CAP ) ) {
 			return;
@@ -189,26 +142,12 @@ class MainWP_WP_Stream_Settings {
 		wp_send_json_success( $results );
 	}
 
-	/**
-	 * Filter the columns to search in a WP_User_Query search.
-	 *
-	 * @param array  $search_columns Array of column names to be searched.
-	 * @param string $search         Text being searched.
-	 * @param WP_User_Query $query	 current WP_User_Query instance.
-	 *
-	 * @return array
-	 */
 	public static function add_display_name_search_columns( $search_columns, $search, $query ){
 		$search_columns[] = 'display_name';
 
 		return $search_columns;
 	}
 
-	/**
-	 * Returns the option key depending on which settings page is being viewed
-	 *
-	 * @return string Option key for this page
-	 */
 	public static function get_option_key() {
 		$option_key = self::KEY;
 
@@ -229,47 +168,12 @@ class MainWP_WP_Stream_Settings {
 		return apply_filters( 'mainwp_wp_stream_settings_option_key', $option_key );
 	}
 
-	/**
-	 * Return settings fields
-	 *
-	 * @return array Multidimensional array of fields
-	 */
 	public static function get_fields() {
 		if ( empty( self::$fields ) ) {
 			$fields = array(
 				'general' => array(
 					'title'  => esc_html__( 'General', 'default' ),
-					'fields' => array(
-						array(
-							'name'        => 'role_access',
-							'title'       => esc_html__( 'Role Access', 'mainwp-child-reports' ),
-							'type'        => 'multi_checkbox',
-							'desc'        => esc_html__( 'Users from the selected roles above will have permission to view MainWP Child Reports. However, only site Administrators can access MainWP Child Reports Settings.', 'mainwp-child-reports' ),
-							'choices'     => self::get_roles(),
-							'default'     => array( 'administrator' ),
-						),
-//						array(
-//							'name'        => 'private_feeds',
-//							'title'       => esc_html__( 'Private Feeds', 'mainwp-child-reports' ),
-//							'type'        => 'checkbox',
-//							'desc'        => sprintf(
-//								__( 'Users from the selected roles above will be given a private key found in their %suser profile%s to access feeds of MainWP Child Reports securely. Please %sflush rewrite rules%s on your site after changing this setting.', 'mainwp-child-reports' ),
-//								sprintf(
-//									'<a href="%s" title="%s">',
-//									admin_url( sprintf( 'profile.php#wp-stream-highlight:%s', MainWP_WP_Stream_Feeds::USER_FEED_KEY ) ),
-//									esc_attr__( 'View Profile', 'mainwp-child-reports' )
-//								),
-//								'</a>',
-//								sprintf(
-//									'<a href="%s" title="%s" target="_blank">',
-//									esc_url( 'http://codex.wordpress.org/Rewrite_API/flush_rules#What_it_does' ),
-//									esc_attr__( 'View Codex', 'mainwp-child-reports' )
-//								),
-//								'</a>'
-//							),
-//							'after_field' => esc_html__( 'Enabled', 'mainwp-child-reports' ),
-//							'default'     => 0,
-//						),
+					'fields' => array(						
 						array(
 							'name'        => 'records_ttl',
 							'title'       => esc_html__( 'Keep Records for', 'mainwp-child-reports' ),
@@ -295,82 +199,12 @@ class MainWP_WP_Stream_Settings {
 						),
 					),
 				),
-//				'exclude' => array(
-//					'title' => esc_html__( 'Exclude', 'mainwp-child-reports' ),
-//					'fields' => array(
-//						array(
-//							'name'        => 'authors_and_roles',
-//							'title'       => __( 'Authors &amp; Roles', 'mainwp-child-reports' ),
-//							'type'        => 'select2_user_role',
-//							'desc'        => esc_html__( 'No activity will be logged for these authors and/or roles.', 'mainwp-child-reports' ),
-//							'choices'     => self::get_roles(),
-//							'default'     => array(),
-//						),
-//						array(
-//							'name'        => 'connectors',
-//							'title'       => esc_html__( 'Connectors', 'mainwp-child-reports' ),
-//							'type'        => 'select2',
-//							'desc'        => esc_html__( 'No activity will be logged for these connectors.', 'mainwp-child-reports' ),
-//							'choices'     => array( __CLASS__, 'get_terms_labels' ),
-//							'param'       => 'connector',
-//							'default'     => array(),
-//						),
-//						array(
-//							'name'        => 'contexts',
-//							'title'       => esc_html__( 'Contexts', 'mainwp-child-reports' ),
-//							'type'        => 'select2',
-//							'desc'        => esc_html__( 'No activity will be logged for these contexts.', 'mainwp-child-reports' ),
-//							'choices'     => array( __CLASS__, 'get_terms_labels' ),
-//							'param'       => 'context',
-//							'default'     => array(),
-//						),
-//						array(
-//							'name'        => 'actions',
-//							'title'       => esc_html__( 'Actions', 'mainwp-child-reports' ),
-//							'type'        => 'select2',
-//							'desc'        => esc_html__( 'No activity will be logged for these actions.', 'mainwp-child-reports' ),
-//							'choices'     => array( __CLASS__, 'get_terms_labels' ),
-//							'param'       => 'action',
-//							'default'     => array(),
-//						),
-//						array(
-//							'name'        => 'ip_addresses',
-//							'title'       => esc_html__( 'IP Addresses', 'mainwp-child-reports' ),
-//							'type'        => 'select2',
-//							'desc'        => esc_html__( 'No activity will be logged for these IP addresses.', 'mainwp-child-reports' ),
-//							'class'       => 'ip-addresses',
-//							'default'     => array(),
-//							'nonce'       => 'stream_get_ips',
-//						),
-//						array(
-//							'name'        => 'hide_previous_records',
-//							'title'       => esc_html__( 'Visibility', 'mainwp-child-reports' ),
-//							'type'        => 'checkbox',
-//							'desc'        => sprintf(
-//								esc_html__( 'When checked, all past records that match the excluded rules above will be hidden from view.', 'mainwp-child-reports' )
-//							),
-//							'after_field' => esc_html__( 'Hide Previous Records', 'mainwp-child-reports' ),
-//							'default'     => 0,
-//						),
-//					),
-//				),
 			);
 		}
 
-		/**
-		 * Filter allows for modification of options fields
-		 *
-		 * @param  array  array of fields
-		 * @return array  updated array of fields
-		 */
 		return apply_filters( 'mainwp_wp_stream_options_fields', $fields );
 	}
 
-	/**
-	 * Returns a list of options based on the current screen.
-	 *
-	 * @return array Options
-	 */
 	public static function get_options() {
 		$option_key = self::$option_key;
 
@@ -380,12 +214,6 @@ class MainWP_WP_Stream_Settings {
 			return $defaults;
 		}
 
-		/**
-		 * Filter allows for modification of options
-		 *
-		 * @param  array  array of options
-		 * @return array  updated array of options
-		 */
 		return apply_filters(
 			'mainwp_wp_stream_options',
 			wp_parse_args(
@@ -396,11 +224,6 @@ class MainWP_WP_Stream_Settings {
 		);
 	}
 
-	/**
-	 * Iterate through registered fields and extract default values
-	 *
-	 * @return array Default option values
-	 */
 	public static function get_defaults() {
 		$fields   = self::get_fields();
 		$defaults = array();
@@ -413,12 +236,6 @@ class MainWP_WP_Stream_Settings {
 			}
 		}
 
-		/**
-		 * Filter allows for modification of options defaults
-		 *
-		 * @param  array  array of options
-		 * @return array  updated array of option defaults
-		*/
 		return apply_filters(
 			'mainwp_wp_stream_option_defaults',
 			wp_parse_args(
@@ -428,11 +245,6 @@ class MainWP_WP_Stream_Settings {
 		);
 	}
 
-	/**
-	 * Registers settings fields and sections
-	 *
-	 * @return void
-	 */
 	public static function register_settings() {
 		$sections = self::get_fields();
 
@@ -465,17 +277,6 @@ class MainWP_WP_Stream_Settings {
 		}
 	}
 
-	/**
-	 * Check if we have updated a settings that requires rewrite rules to be flushed
-	 *
-	 * @param array $old_value
-	 * @param array $new_value
-	 *
-	 * @internal param $option
-	 * @internal param string $option
-	 * @action   updated_option
-	 * @return void
-	 */
 	public static function updated_option_trigger_flush_rules( $old_value, $new_value ) {
 		if ( is_array( $new_value ) && is_array( $old_value ) ) {
 			$new_value = ( array_key_exists( 'general_private_feeds', $new_value ) ) ? $new_value['general_private_feeds'] : 0;
@@ -487,12 +288,6 @@ class MainWP_WP_Stream_Settings {
 		}
 	}
 
-	/**
-	 * Compile HTML needed for displaying the field
-	 *
-	 * @param  array  $field  Field settings
-	 * @return string         HTML to be displayed
-	 */
 	public static function render_field( $field ) {
 		$output        = null;
 		$type          = isset( $field['type'] ) ? $field['type'] : null;
@@ -764,14 +559,6 @@ class MainWP_WP_Stream_Settings {
 		return $output;
 	}
 
-	/**
-	 * Render Callback for post_types field
-	 *
-	 * @param array $field
-	 *
-	 * @internal param $args
-	 * @return void
-	 */
 	public static function output_field( $field ) {
 		$method = 'output_' . $field['name'];
 
@@ -784,11 +571,6 @@ class MainWP_WP_Stream_Settings {
 		echo $output; // xss okay
 	}
 
-	/**
-	 * Get an array of user roles
-	 *
-	 * @return array
-	 */
 	public static function get_roles() {
 		$wp_roles = new WP_Roles();
 		$roles    = array();
@@ -800,30 +582,14 @@ class MainWP_WP_Stream_Settings {
 		return $roles;
 	}
 
-	/**
-	 * Get an array of registered Connectors
-	 *
-	 * @return array
-	 */
 	public static function get_connectors() {
 		return MainWP_WP_Stream_Connectors::$term_labels['stream_connector'];
 	}
 
-	/**
-	 * Get an array of registered Connectors
-	 *
-	 * @return array
-	 */
 	public static function get_default_connectors() {
 		return array_keys( MainWP_WP_Stream_Connectors::$term_labels['stream_connector'] );
 	}
 
-	/**
-	 * Function will return all terms labels of given column
-	 *
-	 * @param $column string  Name of the column
-	 * @return array
-	 */
 	public static function get_terms_labels( $column ) {
 		$return_labels = array();
 
@@ -834,11 +600,7 @@ class MainWP_WP_Stream_Settings {
 
 		return $return_labels;
 	}
-	/**
-	 * Get an array of active Connectors
-	 *
-	 * @return array
-	 */
+	
 	public static function get_active_connectors() {
 		$excluded_connectors = self::get_excluded_by_key( 'connectors' );
 		$active_connectors   = array_diff( array_keys( self::get_terms_labels( 'connector' ) ), $excluded_connectors );
@@ -847,11 +609,6 @@ class MainWP_WP_Stream_Settings {
 		return $active_connectors;
 	}
 
-	/**
-	 * @param $column string name of the setting key (authors|roles|actions|ip_addresses|contexts|connectors)
-	 *
-	 * @return array
-	 */
 	public static function get_excluded_by_key( $column ) {
 		$option_name = ( 'authors' === $column || 'roles' === $column ) ? 'exclude_authors_and_roles' : 'exclude_' . $column;
 
@@ -881,12 +638,6 @@ class MainWP_WP_Stream_Settings {
 		return $excluded_values;
 	}
 
-	/**
-	 * Get translations of serialized Stream settings
-	 *
-	 * @filter mainwp_wp_stream_serialized_labels
-	 * @return array Multidimensional array of fields
-	 */
 	public static function get_settings_translations( $labels ) {
 		if ( ! isset( $labels[ self::KEY ] ) ) {
 			$labels[ self::KEY ] = array();
@@ -901,15 +652,6 @@ class MainWP_WP_Stream_Settings {
 		return $labels;
 	}
 
-	/**
-	 * Remove records when records TTL is shortened
-	 *
-	 * @param array $old_value
-	 * @param array $new_value
-	 *
-	 * @action update_option_mainwp_wp_stream
-	 * @return void
-	 */
 	public static function updated_option_ttl_remove_records( $old_value, $new_value ) {
 		$ttl_before = isset( $old_value['general_records_ttl'] ) ? (int) $old_value['general_records_ttl'] : -1;
 		$ttl_after  = isset( $new_value['general_records_ttl'] ) ? (int) $new_value['general_records_ttl'] : -1;

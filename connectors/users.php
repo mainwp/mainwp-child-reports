@@ -2,52 +2,22 @@
 
 class MainWP_WP_Stream_Connector_Users extends MainWP_WP_Stream_Connector {
 
-	/**
-	 * Connector slug
-	 *
-	 * @var string
-	 */
 	public static $name = 'users';
 
-	/**
-	 * Stores users object before the user being deleted.
-	 *
-	 * @var array
-	 * @access protected
-	 */
 	protected static $_users_object_pre_deleted = array();
 
-	/**
-	 * Actions registered for this connector
-	 *
-	 * @var array
-	 */
 	public static $actions = array(
 		'user_register',
 		'profile_update',
-//		'password_reset',
-//		'retrieve_password',
-//		'set_logged_in_cookie',
-//		'clear_auth_cookie',
 		'delete_user',
 		'deleted_user',
 		'set_user_role',
 	);
 
-	/**
-	 * Return translated connector label
-	 *
-	 * @return string Translated connector label
-	 */
 	public static function get_label() {
 		return __( 'Users', 'default' );
 	}
 
-	/**
-	 * Return translated action term labels
-	 *
-	 * @return array Action terms label translation
-	 */
 	public static function get_action_labels() {
 		return array(
 			'updated'         => __( 'Updated', 'mainwp-child-reports' ),
@@ -60,11 +30,6 @@ class MainWP_WP_Stream_Connector_Users extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * Return translated context labels
-	 *
-	 * @return array Context label translations
-	 */
 	public static function get_context_labels() {
 		return array(
 			'users'    => __( 'Users', 'default' ),
@@ -73,14 +38,6 @@ class MainWP_WP_Stream_Connector_Users extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * Add action links to Stream drop row in admin list screen
-	 *
-	 * @filter mainwp_wp_stream_action_links_{connector}
-	 * @param  array $links      Previous links registered
-	 * @param  int   $record     Stream record
-	 * @return array             Action links
-	 */
 	public static function action_links( $links, $record ) {
 		if ( $record->object_id ) {
 			if ( $link = get_edit_user_link( $record->object_id ) ) {
@@ -91,12 +48,6 @@ class MainWP_WP_Stream_Connector_Users extends MainWP_WP_Stream_Connector {
 		return $links;
 	}
 
-	/**
-	 * Get an array of role lables assigned to a specific user.
-	 *
-	 * @param  object|int $user    User object or user ID to get roles for
-	 * @return array      $labels  An array of role labels
-	 */
 	public static function get_role_labels( $user ) {
 		if ( is_int( $user ) ) {
 			$user = get_user_by( 'id', $user );
@@ -120,12 +71,6 @@ class MainWP_WP_Stream_Connector_Users extends MainWP_WP_Stream_Connector {
 		return $labels;
 	}
 
-	/**
-	 * Log user registrations
-	 *
-	 * @action user_register
-	 * @param int $user_id Newly registered user ID
-	 */
 	public static function callback_user_register( $user_id ) {
 		$current_user    = wp_get_current_user();
 		$registered_user = get_user_by( 'id', $user_id );
@@ -154,11 +99,6 @@ class MainWP_WP_Stream_Connector_Users extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * Log profile update
-	 *
-	 * @action profile_update
-	 */
 	public static function callback_profile_update( $user_id, $user ) {
 		self::log(
 			__( '%s\'s profile was updated', 'mainwp-child-reports' ),
@@ -170,11 +110,6 @@ class MainWP_WP_Stream_Connector_Users extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * Log role transition
-	 *
-	 * @action set_user_role
-	 */
 	public static function callback_set_user_role( $user_id, $new_role, $old_roles ) {
 		if ( empty( $old_roles ) ) {
 			return;
@@ -198,107 +133,12 @@ class MainWP_WP_Stream_Connector_Users extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * Log password reset
-	 *
-	 * @action password_reset
-	 */
-	public static function callback_password_reset( $user ) {
-		self::log(
-			__( '%s\'s password was reset', 'mainwp-child-reports' ),
-			array(
-				'email' => $user->display_name,
-			),
-			$user->ID,
-			array( 'profiles' => 'password-reset' ),
-			$user->ID
-		);
-	}
-
-	/**
-	 * Log user requests to retrieve passwords
-	 *
-	 * @action retrieve_password
-	 */
-	public static function callback_retrieve_password( $user_login ) {
-		if ( mainwp_wp_stream_filter_var( $user_login, FILTER_VALIDATE_EMAIL ) ) {
-			$user = get_user_by( 'email', $user_login );
-		} else {
-			$user = get_user_by( 'login', $user_login );
-		}
-
-		self::log(
-			__( '%s\'s password was requested to be reset', 'mainwp-child-reports' ),
-			array( 'display_name' => $user->display_name ),
-			$user->ID,
-			array( 'sessions' => 'forgot-password' ),
-			$user->ID
-		);
-	}
-
-	/**
-	 * Log user login
-	 *
-	 * @action set_logged_in_cookie
-	 */
-	public static function callback_set_logged_in_cookie( $logged_in_cookie, $expire, $expiration, $user_id ) {
-		$user = get_user_by( 'id', $user_id );
-
-		if ( MainWP_WP_Stream_Connectors::is_logging_enabled_for_user( $user ) ) {
-			self::log(
-				__( '%s logged in', 'mainwp-child-reports' ),
-				array( 'display_name' => $user->display_name ),
-				$user->ID,
-				array( 'sessions' => 'login' ),
-				$user->ID
-			);
-		}
-	}
-
-	/**
-	 * Log user logout
-	 *
-	 * @action clear_auth_cookie
-	 */
-	public static function callback_clear_auth_cookie() {
-		$user = wp_get_current_user();
-
-		// For some reason, incognito mode calls clear_auth_cookie on failed login attempts
-		if ( empty( $user ) || ! $user->exists() ) {
-			return;
-		}
-
-		self::log(
-			__( '%s logged out', 'mainwp-child-reports' ),
-			array( 'display_name' => $user->display_name ),
-			$user->ID,
-			array( 'sessions' => 'logout' ),
-			$user->ID
-		);
-	}
-
-	/**
-	 * There's no logging in this callback's action, the reason
-	 * behind this hook is so that we can store user objects before
-	 * being deleted. During `deleted_user` hook, our callback
-	 * receives $user_id param but it's useless as the user record
-	 * was already removed from DB.
-	 *
-	 * @action delete_user
-	 * @param int $user_id User ID that maybe deleted
-	 */
 	public static function callback_delete_user( $user_id ) {
 		if ( ! isset( self::$_users_object_pre_deleted[ $user_id ] ) ) {
 			self::$_users_object_pre_deleted[ $user_id ] = get_user_by( 'id', $user_id );
 		}
 	}
 
-	/**
-	 * Log deleted user.
-	 *
-	 * @action deleted_user
-	 * @param int $user_id Deleted user ID
-	 */
 	public static function callback_deleted_user( $user_id ) {
 		$user = wp_get_current_user();
 

@@ -2,25 +2,10 @@
 
 class MainWP_WP_Stream_Admin {
 
-	/**
-	 * Menu page screen id
-	 *
-	 * @var string
-	 */
 	public static $screen_id = array();
 
-	/**
-	 * List table object
-	 *
-	 * @var MainWP_WP_Stream_List_Table
-	 */
 	public static $list_table = null;
 
-	/**
-	 * Option to disable access to Stream
-	 *
-	 * @var bool
-	 */
 	public static $disable_access = false;
 
 	const ADMIN_BODY_CLASS     = 'mainwp_wp_stream_screen';
@@ -39,7 +24,6 @@ class MainWP_WP_Stream_Admin {
 		self::$disable_access = apply_filters( 'mainwp_wp_stream_disable_admin_access', false );
 
 		// Register settings page
-		//add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
                 if (get_option('mainwp_creport_branding_stream_hide') !== "hide") {
                     add_action( 'mainwp-child-subpages', array( __CLASS__, 'register_subpages' ) );
                 }
@@ -58,13 +42,13 @@ class MainWP_WP_Stream_Admin {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_menu_css' ) );
 
-		// Reset Streams database
+		// Reset MainWP Reports database
 		add_action( 'wp_ajax_mainwp_wp_stream_reset', array( __CLASS__, 'wp_ajax_reset' ) );
 
-		// Reset Streams settings
+		// Reset MainWP Reports settings
 		add_action( 'wp_ajax_mainwp_wp_stream_defaults', array( __CLASS__, 'wp_ajax_defaults' ) );
 
-		// Uninstall Streams and Deactivate plugin
+		// Uninstall MainWP Reports and Deactivate plugin
 		add_action( 'wp_ajax_mainwp_wp_stream_uninstall', array( __CLASS__, 'uninstall_plugin' ) );
 
 		// Auto purge setup
@@ -81,12 +65,6 @@ class MainWP_WP_Stream_Admin {
 		add_action( 'wp_ajax_mainwp_wp_stream_get_filter_value_by_id', array( __CLASS__, 'get_filter_value_by_id' ) );
 	}
 
-	/**
-	 * Output specific update
-	 *
-	 * @action admin_notices
-	 * @return string
-	 */
 	public static function admin_notices() {
 		$message = mainwp_wp_stream_filter_input( INPUT_GET, 'message' );
 
@@ -98,50 +76,6 @@ class MainWP_WP_Stream_Admin {
 				printf( '<div class="updated"><p>%s</p></div>', __( 'All site settings have been successfully reset.', 'mainwp-child-reports' ) );
 				break;
 		}
-	}
-        
-	/**
-	 * Register menu page
-	 *
-	 * @action admin_menu
-	 * @return bool|void
-	 */
-        // not used anymore
-        public static function register_menu() {
-//		if ( is_network_admin() && ! is_plugin_active_for_network( MAINWP_WP_STREAM_PLUGIN ) ) {
-//			return false;
-//		}
-//
-//		if ( self::$disable_access ) {
-//			return false;
-//		}
-//
-//		self::$screen_id['main'] = add_menu_page(
-//			__( 'MainWP Child Reports', 'stream' ),
-//			__( 'MainWP Child Reports', 'stream' ),
-//			self::VIEW_CAP,
-//			self::RECORDS_PAGE_SLUG,
-//			array( __CLASS__, 'stream_page' ),
-//			'div',
-//			apply_filters( 'mainwp_wp_stream_menu_position', '2.00009' ) // Using longtail decimal string to reduce the chance of position conflicts, see Codex
-//		);
-//
-//		self::$screen_id['settings'] = add_submenu_page(
-//			self::RECORDS_PAGE_SLUG,
-//			__( 'MainWP Child Reports Settings', 'stream' ),
-//			__( 'Settings', 'default' ),
-//			self::SETTINGS_CAP,
-//			self::SETTINGS_PAGE_SLUG,
-//			array( __CLASS__, 'render_page' )
-//		);
-//
-//
-//		// Register the list table early, so it associates the column headers with 'Screen settings'
-//		add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
-//		do_action( 'mainwp_wp_stream_admin_menu_screens' );
-//
-//		// Register the list table early, so it associates the column headers with 'Screen settings'
-//		add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
 	}
         
         
@@ -189,15 +123,6 @@ class MainWP_WP_Stream_Admin {
 		add_action( 'load-' . self::$screen_id['main'], array( __CLASS__, 'register_list_table' ) );
 	}
 
-	/**
-	 * Enqueue scripts/styles for admin screen
-	 *
-	 * @action admin_enqueue_scripts
-	 *
-	 * @param $hook
-	 *
-	 * @return void
-	 */
 	public static function admin_enqueue_scripts( $hook ) {
 		wp_register_script( 'select2', MAINWP_WP_STREAM_URL . 'ui/select2/select2.min.js', array( 'jquery' ), '3.4.5', true );
 		wp_register_style( 'select2', MAINWP_WP_STREAM_URL . 'ui/select2/select2.css', array(), '3.4.5' );
@@ -246,15 +171,7 @@ class MainWP_WP_Stream_Admin {
 		}
 	}
 
-	/**
-	 * Add a specific body class to all Stream admin screens
-	 *
-	 * @filter admin_body_class
-	 *
-	 * @param  string $classes
-	 *
-	 * @return string $classes
-	 */
+	
 	public static function admin_body_class( $classes ) {
 		if ( isset( $_GET['page'] ) && false !== strpos( $_GET['page'], self::RECORDS_PAGE_SLUG ) ) {
 			$classes .= sprintf( ' %s ', self::ADMIN_BODY_CLASS );
@@ -263,78 +180,18 @@ class MainWP_WP_Stream_Admin {
 		return $classes;
 	}
 
-	/**
-	 * Add menu styles for various WP Admin skins
-	 *
-	 * @uses wp_add_inline_style()
-	 * @action admin_enqueue_scripts
-	 * @return bool true on success false on failure
-	 */
 	public static function admin_menu_css() {
 		wp_register_style( 'jquery-ui', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/themes/base/jquery-ui.css', array(), '1.10.1' );
 		wp_register_style( 'mainwp-wp-stream-datepicker', MAINWP_WP_STREAM_URL . 'ui/datepicker.css', array( 'jquery-ui' ), MainWP_WP_Stream::VERSION );
-		wp_register_style( 'mainwp-wp-stream-icons', MAINWP_WP_STREAM_URL . 'ui/stream-icons/style.css', array(), MainWP_WP_Stream::VERSION );
 
 		// Make sure we're working off a clean version
 		include( ABSPATH . WPINC . '/version.php' );
-
-		$body_class      = self::ADMIN_BODY_CLASS;
-		$records_page    = self::RECORDS_PAGE_SLUG;
-		
-		$stream_url      = MAINWP_WP_STREAM_URL;
-
-		if ( version_compare( $wp_version, '3.8-alpha', '>=' ) ) {
-			wp_enqueue_style( 'mainwp-wp-stream-icons' );
-			$css = "
-				#mainwp-child_page_{$records_page} .wp-menu-image:before,
-				#mainwp-child_page_{$records_page} .wp-menu-image,				
-				#menu-posts-feedback .wp-menu-image:before {
-					font-family: dashicons !important;
-					content: '\\f175';
-				}
-				#adminmenu #menu-posts-feedback div.wp-menu-image {
-					background: none !important;
-					background-repeat: no-repeat;
-				}
-				body.{$body_class} #wpbody-content .wrap h2:nth-child(1):before {
-					font-family: 'WP Stream' !important;
-					content: '\\73';
-					padding: 0 8px 0 0;
-				}
-			";
-		} else {
-			$css = "
-				#mainwp-child_page_{$records_page} .wp-menu-image {
-					background: url( {$stream_url}ui/stream-icons/menuicon-sprite.png ) 0 90% no-repeat;
-				}
-				/* Retina Stream Menu Icon */
-				@media  only screen and (-moz-min-device-pixel-ratio: 1.5),
-						only screen and (-o-min-device-pixel-ratio: 3/2),
-						only screen and (-webkit-min-device-pixel-ratio: 1.5),
-						only screen and (min-device-pixel-ratio: 1.5) {
-					#mainwp-child_page_{$records_page} .wp-menu-image {
-						background: url( {$stream_url}ui/stream-icons/menuicon-sprite-2x.png ) 0 90% no-repeat;
-						background-size:30px 64px;
-					}
-				}
-				#mainwp-child_page_{$records_page}.current .wp-menu-image,
-				#mainwp-child_page_{$records_page}.wp-has-current-submenu .wp-menu-image,
-				#mainwp-child_page_{$records_page}:hover .wp-menu-image {
-					background-position: top left;
-				}
-			";
-		}
-
-		wp_add_inline_style( 'wp-admin', $css );
 	}
 
-	/**
-	 * @filter plugin_action_links
-	 */
 	public static function plugin_action_links( $links, $file ) {
 		if ( plugin_basename( MAINWP_WP_STREAM_DIR . 'stream.php' ) === $file ) {
 
-			// Don't show links in Network Admin if Stream isn't network enabled
+			// Don't show links in Network Admin if MainWP Reports isn't network enabled
 			if ( is_network_admin() && is_multisite() && ! is_plugin_active_for_network( MAINWP_WP_STREAM_PLUGIN ) ) {
 				return $links;
 			}
@@ -359,15 +216,6 @@ class MainWP_WP_Stream_Admin {
 		return $links;
 	}
 
-	/**
-	 * Register a routine to be called when stream or a stream connector has been updated
-	 * It works by comparing the current version with the version previously stored in the database.
-	 *
-	 * @param string $file A reference to the main plugin file
-	 * @param string $callback The function to run when the hook is called.
-	 * @param string $version The version to which the plugin is updating.
-	 * @return void
-	 */
 	public static function register_update_hook( $file, $callback, $version ) {
 		if ( ! is_admin() ) {
 			return;
@@ -399,11 +247,6 @@ class MainWP_WP_Stream_Admin {
 		return;
 	}
 
-	/**
-	 * Render settings page
-	 *
-	 * @return void
-	 */
 	public static function render_page() {
 
 		$option_key  = MainWP_WP_Stream_Settings::$option_key;
@@ -440,6 +283,9 @@ class MainWP_WP_Stream_Admin {
 			<?php endif; ?>
 
 			<div class="nav-tab-content" id="tab-content-settings">
+				<br/><br/>
+				<div class="postbox">
+					<div class="inside">
 
 				<form method="post" action="<?php echo esc_attr( $form_action ) ?>" enctype="multipart/form-data">
 		<?php
@@ -457,7 +303,8 @@ class MainWP_WP_Stream_Admin {
 				</form>
 
 			</div>
-
+		</div>
+			</div>
 		</div>
 	<?php
 	}
@@ -566,10 +413,6 @@ class MainWP_WP_Stream_Admin {
 		}
 	}
 
-	/**
-	 * This function is used to uninstall all custom tables and uninstall the plugin
-	 * It will also uninstall custom actions
-	 */
 	public static function uninstall_plugin() {
 		global $wpdb;
 
@@ -608,8 +451,6 @@ class MainWP_WP_Stream_Admin {
 
 				// Delete database option
 				delete_site_option( plugin_basename( MAINWP_WP_STREAM_DIR ) . '_db' );
-				delete_site_option( MainWP_WP_Stream_Updater::LICENSE_KEY );
-				delete_site_option( MainWP_WP_Stream_Updater::LICENSEE_KEY );
 				delete_site_option( MainWP_WP_Stream_Install::KEY );
 				delete_site_option( MainWP_WP_Stream_Settings::KEY );
 				delete_site_option( MainWP_WP_Stream_Settings::DEFAULTS_KEY );
@@ -680,25 +521,13 @@ class MainWP_WP_Stream_Admin {
 	}
 
 	private static function _role_can_view_stream( $role ) {
-		if ( in_array( $role, MainWP_WP_Stream_Settings::$options['general_role_access'] ) ) {
+		if ( in_array( $role, array('administrator')) ) {
 			return true;
 		}
 
 		return false;
 	}
 
-	/**
-	 * Filter user caps to dynamically grant our view cap based on allowed roles
-	 *
-	 * @filter user_has_cap
-	 *
-	 * @param $allcaps
-	 * @param $caps
-	 * @param $args
-	 * @param $user
-	 *
-	 * @return array
-	 */
 	public static function _filter_user_caps( $allcaps, $caps, $args, $user = null ) {
 		global $wp_roles;
 
@@ -708,8 +537,6 @@ class MainWP_WP_Stream_Admin {
 
 		$user = is_a( $user, 'WP_User' ) ? $user : wp_get_current_user();
 
-		// @see
-		// https://github.com/WordPress/WordPress/blob/c67c9565f1495255807069fdb39dac914046b1a0/wp-includes/capabilities.php#L758
 		$roles = array_unique(
 			array_merge(
 				$user->roles,
@@ -734,17 +561,6 @@ class MainWP_WP_Stream_Admin {
 		return $allcaps;
 	}
 
-	/**
-	 * Filter role caps to dynamically grant our view cap based on allowed roles
-	 *
-	 * @filter role_has_cap
-	 *
-	 * @param $allcaps
-	 * @param $cap
-	 * @param $role
-	 *
-	 * @return array
-	 */
 	public static function _filter_role_caps( $allcaps, $cap, $role ) {
 		if ( self::VIEW_CAP === $cap && self::_role_can_view_stream( $role ) ) {
 			$allcaps[ $cap ] = true;
@@ -753,9 +569,6 @@ class MainWP_WP_Stream_Admin {
 		return $allcaps;
 	}
 
-	/**
-	 * @action wp_ajax_mainwp_wp_stream_filters
-	 */
 	public static function ajax_filters() {
 		switch ( mainwp_wp_stream_filter_input( INPUT_GET, 'filter' ) ) {
 			case 'author':
@@ -793,9 +606,6 @@ class MainWP_WP_Stream_Admin {
 		die();
 	}
 
-	/**
-	 * @action wp_ajax_mainwp_wp_stream_get_filter_value_by_id
-	 */
 	public static function get_filter_value_by_id() {
 		$filter = mainwp_wp_stream_filter_input( INPUT_POST, 'filter' );
 		switch ( $filter ) {

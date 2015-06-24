@@ -2,54 +2,21 @@
 
 class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 
-	/**
-	 * Whether or not 'created' and 'deleted' actions should be logged. Normally
-	 * the sidebar 'added' and 'removed' actions will correspond with these.
-	 * See note below with usage.
-	 *
-	 * @var bool
-	 */
 	public static $verbose_widget_created_deleted_actions = false;
 
-	/**
-	 * Connector slug
-	 *
-	 * @var string
-	 */
 	public static $name = 'widgets';
 
-	/**
-	 * Actions registered for this connector
-	 *
-	 * @var array
-	 */
 	public static $actions = array(
 		'update_option_sidebars_widgets',
 		'updated_option',
 	);
 
-	/**
-	 * Store the initial sidebars_widgets option when the customizer does its
-	 * multiple rounds of saving to the sidebars_widgets option.
-	 *
-	 * @var array
-	 */
 	protected static $customizer_initial_sidebars_widgets = null;
 
-	/**
-	 * Return translated connector label
-	 *
-	 * @return string Translated connector label
-	 */
 	public static function get_label() {
 		return __( 'Widgets', 'default' );
 	}
 
-	/**
-	 * Return translated action labels
-	 *
-	 * @return array Action label translations
-	 */
 	public static function get_action_labels() {
 		return array(
 			'added'       => __( 'Added', 'mainwp-child-reports' ),
@@ -64,11 +31,6 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * Return translated context labels
-	 *
-	 * @return array Context label translations
-	 */
 	public static function get_context_labels() {
 		global $wp_registered_sidebars;
 
@@ -85,14 +47,6 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 		return $labels;
 	}
 
-	/**
-	 * Add action links to Stream drop row in admin list screen
-	 *
-	 * @filter mainwp_wp_stream_action_links_{connector}
-	 * @param  array $links      Previous links registered
-	 * @param  int   $record     Stream record
-	 * @return array             Action links
-	 */
 	public static function action_links( $links, $record ) {
 		if ( $sidebar = mainwp_wp_stream_get_meta( $record->ID, 'sidebar_id', true ) ) {
 			global $wp_registered_sidebars;
@@ -100,21 +54,11 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 			if ( array_key_exists( $sidebar, $wp_registered_sidebars ) ) {
 				$links[ __( 'Edit Widget Area', 'mainwp-child-reports' ) ] = admin_url( 'widgets.php#' . $sidebar ); // xss ok (@todo fix WPCS rule)
 			}
-			// @todo Also old_sidebar_id and new_sidebar_id
-			// @todo Add Edit Widget link
 		}
 
 		return $links;
 	}
 
-	/**
-	 * Tracks addition/deletion/reordering/deactivation of widgets from sidebars
-	 *
-	 * @action update_option_sidebars_widgets
-	 * @param  array $old  Old sidebars widgets
-	 * @param  array $new  New sidebars widgets
-	 * @return void
-	 */
 	public static function callback_update_option_sidebars_widgets( $old, $new ) {
 		// Disable listener if we're switching themes
 		if ( did_action( 'after_switch_theme' ) ) {
@@ -131,13 +75,6 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 		}
 	}
 
-	/**
-	 * Since the sidebars_widgets may get updated multiple times when saving
-	 * changes to Widgets in the Customizer, defer handling the changes until
-	 * customize_save_after.
-	 *
-	 * @see self::callback_update_option_sidebars_widgets()
-	 */
 	public static function _callback_customize_save_after() {
 		$old_sidebars_widgets = self::$customizer_initial_sidebars_widgets;
 		$new_sidebars_widgets = get_option( 'sidebars_widgets' );
@@ -145,10 +82,6 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 		self::handle_sidebars_widgets_changes( $old_sidebars_widgets, $new_sidebars_widgets );
 	}
 
-	/**
-	 * @param array $old
-	 * @param array $new
-	 */
 	protected static function handle_sidebars_widgets_changes( $old, $new ) {
 		unset( $old['array_version'] );
 		unset( $new['array_version'] );
@@ -165,13 +98,6 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 		self::handle_widget_moved( $old, $new );
 	}
 
-	/**
-	 * Track deactivation of widgets from sidebars
-	 *
-	 * @param  array $old  Old sidebars widgets
-	 * @param  array $new  New sidebars widgets
-	 * @return void
-	 */
 	static protected function handle_deactivated_widgets( $old, $new ) {
 		$new_deactivated_widget_ids = array_diff( $new['wp_inactive_widgets'], $old['wp_inactive_widgets'] );
 
@@ -215,13 +141,6 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 		}
 	}
 
-	/**
-	 * Track reactivation of widgets from sidebars
-	 *
-	 * @param  array $old  Old sidebars widgets
-	 * @param  array $new  New sidebars widgets
-	 * @return void
-	 */
 	static protected function handle_reactivated_widgets( $old, $new ) {
 		$new_reactivated_widget_ids = array_diff( $old['wp_inactive_widgets'], $new['wp_inactive_widgets'] );
 
@@ -263,18 +182,9 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 		}
 	}
 
-	/**
-	 * Track deletion of widgets from sidebars
-	 *
-	 * @param  array $old  Old sidebars widgets
-	 * @param  array $new  New sidebars widgets
-	 * @return void
-	 */
 	static protected function handle_widget_removal( $old, $new ) {
 		$all_old_widget_ids = array_unique( call_user_func_array( 'array_merge', $old ) );
 		$all_new_widget_ids = array_unique( call_user_func_array( 'array_merge', $new ) );
-		// @todo In the customizer, moving widgets to other sidebars is problematic because each sidebar is registered as a separate setting; so we need to make sure that all $_POST['customized'] are applied?
-		// @todo The widget option is getting updated before the sidebars_widgets are updated, so we need to hook into the option update to try to cache any deletions for future lookup
 
 		$deleted_widget_ids = array_diff( $all_old_widget_ids, $all_new_widget_ids );
 
@@ -318,13 +228,6 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 		}
 	}
 
-	/**
-	 * Track reactivation of widgets from sidebars
-	 *
-	 * @param  array $old  Old sidebars widgets
-	 * @param  array $new  New sidebars widgets
-	 * @return void
-	 */
 	static protected function handle_widget_addition( $old, $new ) {
 		$all_old_widget_ids = array_unique( call_user_func_array( 'array_merge', $old ) );
 		$all_new_widget_ids = array_unique( call_user_func_array( 'array_merge', $new ) );
@@ -370,13 +273,6 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 		}
 	}
 
-	/**
-	 * Track reordering of widgets
-	 *
-	 * @param  array $old  Old sidebars widgets
-	 * @param  array $new  New sidebars widgets
-	 * @return void
-	 */
 	static protected function handle_widget_reordering( $old, $new ) {
 		$all_sidebar_ids = array_intersect( array_keys( $old ), array_keys( $new ) );
 
@@ -411,13 +307,6 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 
 	}
 
-	/**
-	 * Track movement of widgets to other sidebars
-	 *
-	 * @param  array $old  Old sidebars widgets
-	 * @param  array $new  New sidebars widgets
-	 * @return void
-	 */
 	static protected function handle_widget_moved( $old, $new ) {
 		$all_sidebar_ids = array_intersect( array_keys( $old ), array_keys( $new ) );
 
@@ -477,14 +366,6 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 
 	}
 
-	/**
-	 * Track changes to widgets
-	 *
-	 * @faction updated_option
-	 * @param string $option_name
-	 * @param array $old_value
-	 * @param array $new_value
-	 */
 	public static function callback_updated_option( $option_name, $old_value, $new_value ) {
 		if ( ! preg_match( '/^widget_(.+)$/', $option_name, $matches ) || ! is_array( $new_value ) ) {
 			return;
@@ -503,9 +384,7 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 			unset( $new_value['_multiwidget'] );
 			unset( $old_value['_multiwidget'] );
 
-			/**
-			 * Created widgets
-			 */
+			
 			$created_widget_numbers = array_diff( array_keys( $new_value ), array_keys( $old_value ) );
 
 			foreach ( $created_widget_numbers as $widget_number ) {
@@ -518,9 +397,6 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 				$creates[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'instance' );
 			}
 
-			/**
-			 * Updated widgets
-			 */
 			$updated_widget_numbers = array_intersect( array_keys( $old_value ), array_keys( $new_value ) );
 
 			foreach ( $updated_widget_numbers as $widget_number ) {
@@ -539,9 +415,6 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 				}
 			}
 
-			/**
-			 * Deleted widgets
-			 */
 			$deleted_widget_numbers = array_diff( array_keys( $old_value ), array_keys( $new_value ) );
 
 			foreach ( $deleted_widget_numbers as $widget_number ) {
@@ -554,7 +427,6 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 				$deletes[] = compact( 'name', 'title', 'widget_id', 'sidebar_id', 'instance' );
 			}
 		} else {
-			// Doing our best guess for tracking changes to old single widgets, assuming their options start with 'widget_'
 			$widget_id    = $widget_id_base;
 			$name         = $widget_id; // There aren't names available for single widgets
 			$title        = ! empty( $new_value['title'] ) ? $new_value['title'] : null;
@@ -566,9 +438,6 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 			$updates[] = compact( 'widget_id', 'title', 'name', 'sidebar_id', 'old_instance', 'sidebar_name' );
 		}
 
-		/**
-		 * Log updated actions
-		 */
 		foreach ( $updates as $update ) {
 			if ( $update['name'] && $update['title'] ) {
 				$message = _x( '%1$s widget named "%2$s" in "%3$s" updated', '1: Name, 2: Title, 3: Sidebar Name', 'mainwp-child-reports' );
@@ -591,19 +460,7 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 			self::log( $message, $update, null, $contexts );
 		}
 
-		/**
-		 * In the normal case, widgets are never created or deleted in a vacuum.
-		 * Created widgets are immediately assigned to a sidebar, and deleted
-		 * widgets are immediately removed from their assigned sidebar. If,
-		 * however, widget instances get manipulated programmatically, it is
-		 * possible that they could be orphaned, in which case the following
-		 * actions would be useful to log.
-		 */
 		if ( self::$verbose_widget_created_deleted_actions ) {
-			// We should only do these if not captured by an update to the sidebars_widgets option
-			/**
-			 * Log created actions
-			 */
 			foreach ( $creates as $create ) {
 				if ( $create['name'] && $create['title'] ) {
 					$message = _x( '%1$s widget named "%2$s" created', '1: Name, 2: Title', 'mainwp-child-reports' );
@@ -626,9 +483,6 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 				self::log( $message, $create, null, $contexts );
 			}
 
-			/**
-			 * Log deleted actions
-			 */
 			foreach ( $deletes as $delete ) {
 				if ( $delete['name'] && $delete['title'] ) {
 					$message = _x( '%1$s widget named "%2$s" deleted', '1: Name, 2: Title', 'mainwp-child-reports' );
@@ -653,28 +507,16 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 		}
 	}
 
-	/**
-	 * @param string $widget_id
-	 * @return string
-	 */
 	public static function get_widget_title( $widget_id ) {
 		$instance = self::get_widget_instance( $widget_id );
 		return ! empty( $instance['title'] ) ? $instance['title'] : null;
 	}
 
-	/**
-	 * @param string $widget_id
-	 * @return string|null
-	 */
 	public static function get_widget_name( $widget_id ) {
 		$widget_obj = self::get_widget_object( $widget_id );
 		return $widget_obj ? $widget_obj->name : null;
 	}
 
-	/**
-	 * @param $widget_id
-	 * @return array|null
-	 */
 	public static function parse_widget_id( $widget_id ) {
 		if ( preg_match( '/^(.+)-(\d+)$/', $widget_id, $matches ) ) {
 			return array(
@@ -686,10 +528,6 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 		}
 	}
 
-	/**
-	 * @param string $widget_id
-	 * @return WP_Widget|null
-	 */
 	public static function get_widget_object( $widget_id ) {
 		global $wp_widget_factory;
 
@@ -713,12 +551,6 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 		return $wp_widget_factory->widgets[ $id_base_to_widget_class_map[ $id_base ] ];
 	}
 
-	/**
-	 * Returns widget instance settings
-	 *
-	 * @param  string $widget_id  Widget ID, ex: pages-1
-	 * @return array|null         Widget instance
-	 */
 	public static function get_widget_instance( $widget_id ) {
 		$instance         = null;
 		$parsed_widget_id = self::parse_widget_id( $widget_id );
@@ -743,29 +575,10 @@ class MainWP_WP_Stream_Connector_Widgets extends MainWP_WP_Stream_Connector {
 		return $instance;
 	}
 
-	/**
-	 * Get global sidebars widgets
-	 *
-	 * @return array
-	 */
 	public static function get_sidebars_widgets() {
-		/**
-		 * Filter allows for insertion of sidebar widgets
-		 * @todo Do we need this filter?
-		 *
-		 * @param  array  Sidebar Widgets in Options table
-		 * @param  array  Inserted Sidebar Widgets
-		 * @return array  Array of updated Sidebar Widgets
-		 */
 		return apply_filters( 'sidebars_widgets', get_option( 'sidebars_widgets', array() ) );
 	}
 
-	/**
-	 * Return the sidebar of a certain widget, based on widget_id
-	 *
-	 * @param  string $widget_id  Widget id, ex: pages-1
-	 * @return string             Sidebar id
-	 */
 	public static function get_widget_sidebar_id( $widget_id ) {
 		$sidebars_widgets = self::get_sidebars_widgets();
 

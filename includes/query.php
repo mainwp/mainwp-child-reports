@@ -13,12 +13,6 @@ class MainWP_WP_Stream_Query {
 		return self::$instance;
 	}
 
-	/**
-	 * Query Stream records
-	 *
-	 * @param  array|string $args Query args
-	 * @return array              Stream Records
-	 */
 	public function query( $args ) {
 		global $wpdb;
 
@@ -70,12 +64,7 @@ class MainWP_WP_Stream_Query {
 		);
 
 		$args = wp_parse_args( $args, $defaults );
-		/**
-		 * Filter allows additional arguments to query $args
-		 *
-		 * @param  array  Array of query arguments
-		 * @return array  Updated array of query arguments
-		 */
+		
 		$args = apply_filters( 'mainwp_wp_stream_query_args', $args );
 
 		if ( true === $args['hide_excluded'] ) {
@@ -315,13 +304,6 @@ class MainWP_WP_Stream_Query {
 		$orderby
 		$limits";
                 
-		/**
-		 * Allows developers to change final SQL of Stream Query
-		 *
-		 * @param  string $sql   SQL statement
-		 * @param  array  $args  Arguments passed to query
-		 * @return string
-		 */
 		$sql = apply_filters( 'mainwp_wp_stream_query', $sql, $args );
                 
 		$results = $wpdb->get_results( $sql );
@@ -344,13 +326,6 @@ class MainWP_WP_Stream_Query {
 		return $results;
 	}
 
-	/**
-	 * Function will add excluded settings args into stream query
-	 *
-	 * @param $args array query args passed to stream_query
-	 *
-	 * @return array
-	 */
 	public static function add_excluded_record_args( $args ) {
 		// Remove record of excluded connector
 		$args['connector__not_in'] = MainWP_WP_Stream_Settings::get_excluded_by_key( 'connectors' );
@@ -387,21 +362,6 @@ function mainwp_wp_stream_update_meta( $record_id, $meta_key, $meta_value, $prev
 	return update_metadata( 'record', $record_id, $meta_key, $meta_value, $prev_value );
 }
 
-/**
- * Returns array of existing values for requested column.
- * Used to fill search filters with only used items, instead of all items.
- *
- * GROUP BY allows query to find just the first occurance of each value in the column,
- * increasing the efficiency of the query.
- *
- * @todo   increase security against injections
- *
- * @see    assemble_records
- * @since  1.0.4
- * @param  string  Requested Column (i.e., 'context')
- * @param  string  Requested Table
- * @return array   Array of items to be output to select dropdowns
- */
 function mainwp_wp_stream_existing_records( $column, $table = '' ) {
 	global $wpdb;
 

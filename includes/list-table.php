@@ -40,13 +40,6 @@ class MainWP_WP_Stream_List_Table extends WP_List_Table {
 	}
 
 	function get_columns(){
-		/**
-		 * Allows devs to add new columns to table
-		 *
-		 * @param  array  default columns
-		 *
-		 * @return array  updated list of columns
-		 */
 		return apply_filters(
 			'mainwp_wp_stream_list_table_columns',
 			array(
@@ -105,13 +98,6 @@ class MainWP_WP_Stream_List_Table extends WP_List_Table {
 		);
 	}
 
-	/**
-	 * Render the checkbox column
-	 *
-	 * @param  array $item Contains all the data for the checkbox column
-	 *
-	 * @return string Displays a checkbox
-	 */
 	function column_cb( $item ) {
 		return sprintf(
 			'<input type="checkbox" name="%1$s[]" value="%2$s" />',
@@ -245,31 +231,11 @@ class MainWP_WP_Stream_List_Table extends WP_List_Table {
 				break;
 
 			default :
-				/**
-				 * Registers new Columns to be inserted into the table.  The cell contents of this column is set
-				 * below with 'mainwp_wp_stream_inster_column_default-'
-				 *
-				 * @param array $new_columns Array of new column titles to add
-				 */
 				$inserted_columns = apply_filters( 'mainwp_wp_stream_register_column_defaults', $new_columns = array() );
 
 				if ( ! empty( $inserted_columns ) && is_array( $inserted_columns ) ) {
 					foreach ( $inserted_columns as $column_title ) {
-						/**
-						 * If column title inserted via mainwp_wp_stream_register_column_defaults ($column_title) exists
-						 * among columns registered with get_columns ($column_name) and there is an action associated
-						 * with this column, do the action
-						 *
-						 * Also, note that the action name must include the $column_title registered
-						 * with mainwp_wp_stream_register_column_defaults
-						 */
 						if ( $column_title == $column_name && has_action( 'mainwp_wp_stream_insert_column_default-' . $column_title ) ) {
-							/**
-							 * This action allows for the addition of content under the specified column ($column_title)
-							 *
-							 * @param  string $column_title Title of the column (set in mainwp_wp_stream_register_column_defaults)
-							 * @param  obj    $item         Contents of the row
-							 */
 							$out = do_action( 'mainwp_wp_stream_insert_column_default-' . $column_title, $item );
 						} else {
 							$out = $column_name;
@@ -285,27 +251,7 @@ class MainWP_WP_Stream_List_Table extends WP_List_Table {
 
 	public static function get_action_links( $record ) {
 		$out = '';
-
-		/**
-		 * Filter allows modification of action links for a specific connector
-		 *
-		 * @param  string  connector
-		 * @param  array   array of action links for this connector
-		 * @param  obj     record
-		 *
-		 * @return arrray  action links for this connector
-		 */
 		$action_links = apply_filters( 'mainwp_wp_stream_action_links_' . $record->connector, array(), $record );
-
-		/**
-		 * Filter allows addition of custom links for a specific connector
-		 *
-		 * @param  string  connector
-		 * @param  array   array of custom links for this connector
-		 * @param  obj     record
-		 *
-		 * @return arrray  custom links for this connector
-		 */
 		$custom_links = apply_filters( 'mainwp_wp_stream_custom_action_links_' . $record->connector, array(), $record );
 
 		if ( $action_links || $custom_links ) {
@@ -369,31 +315,10 @@ class MainWP_WP_Stream_List_Table extends WP_List_Table {
 		}
 	}
 
-	/**
-	 * Assembles records for display in search filters
-	 *
-	 * Gathers list of all authors/connectors, then compares it to
-	 * results of existing records.  All items that do not exist in records
-	 * get assigned a disabled value of "true".
-	 *
-	 * @uses   mainwp_wp_stream_existing_records (see query.php)
-	 * @since  1.0.4
-	 *
-	 * @param  string  Column requested
-	 * @param  string  Table to be queried
-	 *
-	 * @return array   options to be displayed in search filters
-	 */
 	function assemble_records( $column, $table = '' ) {
 		$setting_key = self::get_column_excluded_setting_key( $column );
 
 		$exclude_hide_previous_records = isset( MainWP_WP_Stream_Settings::$options['exclude_hide_previous_records'] ) ? MainWP_WP_Stream_Settings::$options['exclude_hide_previous_records'] : 0;
-
-		/**
-		 * Toggle visibility of disabled connectors/actions/contexts on list table filter dropdown
-		 *
-		 * @param bool $hidden Visibility status, default is Hide Previous Record value set in Exclude setting.
-		 */
 		$hide_disabled_column_filter = apply_filters( 'mainwp_wp_stream_list_table_hide_disabled_ ' . $setting_key, ( 0 === $exclude_hide_previous_records ) ? false : true );
 
 		// @todo eliminate special condition for authors, especially using a WP_User object as the value; should use string or stringifiable object
@@ -510,16 +435,6 @@ class MainWP_WP_Stream_List_Table extends WP_List_Table {
 			'title' => __( 'actions', 'mainwp-child-reports' ),
 			'items' => $this->assemble_records( 'action' ),
 		);
-
-		/**
-		 * Filter allows additional filters in the list table dropdowns
-		 * Note the format of the filters above, with they key and array
-		 * containing a title and array of items.
-		 *
-		 * @param  array  Array of filters
-		 *
-		 * @return array  Updated array of filters
-		 */
 
 		return apply_filters( 'mainwp_wp_stream_list_table_filters', $filters );
 	}
@@ -671,9 +586,6 @@ class MainWP_WP_Stream_List_Table extends WP_List_Table {
 		<?php else : ?>
 			<div class="tablenav <?php echo esc_attr( $which ); ?>">
 				<?php
-				/**
-				 * Action allows for mods after the list table display
-				 */
 				do_action( 'mainwp_wp_stream_after_list_table' );
 				$this->pagination( $which );
 				$this->extra_tablenav( $which );
@@ -730,13 +642,6 @@ class MainWP_WP_Stream_List_Table extends WP_List_Table {
 		return ob_get_clean();
 	}
 
-	/**
-	 * This function is use to map List table column name with excluded setting keys
-	 *
-	 * @param $column string list table column name
-	 *
-	 * @return string setting name for that column
-	 */
 	function get_column_excluded_setting_key( $column ) {
 		switch ( $column ) {
 			case 'connector':

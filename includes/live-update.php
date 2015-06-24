@@ -13,10 +13,6 @@ class MainWP_WP_Stream_Live_Update {
 
 	}
 
-	/**
-	 * Ajax function to enable/disable live update
-	 * @return void/json
-	 */
 	public static function enable_live_update() {
 		check_ajax_referer( 'stream_live_update_records_nonce', 'nonce' );
 
@@ -44,19 +40,6 @@ class MainWP_WP_Stream_Live_Update {
 		}
 	}
 
-	/**
-	 * Sends Updated Actions to the List Table View
-	 *
-	 * @todo fix reliability issues with sidebar widgets
-	 *
-	 * @uses gather_updated_items
-	 * @uses generate_row
-	 *
-	 * @param  array  Response to heartbeat
-	 * @param  array  Response from heartbeat
-	 *
-	 * @return array  Data sent to heartbeat
-	 */
 	public static function live_update( $response, $data ) {
 		if ( ! isset( $data['wp-mainwp-stream-heartbeat-last-id'] ) ) {
 			return;
@@ -87,15 +70,6 @@ class MainWP_WP_Stream_Live_Update {
 		return $send;
 	}
 
-
-	/**
-	 * Handles live updates for both dashboard widget and Stream Post List
-	 *
-	 * @action heartbeat_recieved
-	 * @param  array  Response to be sent to heartbeat tick
-	 * @param  array  Data from heartbeat send
-	 * @return array  Data sent to heartbeat tick
-	 */
 	public static function heartbeat_received( $response, $data ) {
 		$option                  = get_option( 'dashboard_mainwp_stream_activity_options' );
 		$enable_stream_update    = ( 'off' !== get_user_meta( get_current_user_id(), 'stream_live_update_records', true ) );

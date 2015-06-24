@@ -2,63 +2,28 @@
 
 class MainWP_WP_Stream_Connector_Editor extends MainWP_WP_Stream_Connector {
 
-	/**
-	 * Connector slug
-	 *
-	 * @var string
-	 */
 	public static $name = 'editor';
 
-	/**
-	 * Actions registered for this connector
-	 *
-	 * @var array
-	 */
 	public static $actions = array();
 
-	/**
-	 * Actions registered for this connector
-	 *
-	 * @var array
-	 */
 	private static $edited_file = array();
 
-	/**
-	 * Register all context hooks
-	 *
-	 * @return void
-	 */
 	public static function register() {
 		parent::register();
 		add_action( 'load-theme-editor.php', array( __CLASS__, 'get_edition_data' ) );
 		add_filter( 'wp_redirect', array( __CLASS__, 'log_changes' ) );
 	}
 
-	/**
-	 * Return translated connector label
-	 *
-	 * @return string Translated connector label
-	 */
 	public static function get_label() {
 		return __( 'Theme Editor', 'mainwp-child-reports' );
 	}
 
-	/**
-	 * Return translated action labels
-	 *
-	 * @return array Action label translations
-	 */
 	public static function get_action_labels() {
 		return array(
 			'updated' => __( 'Updated', 'mainwp-child-reports' ),
 		);
 	}
 
-	/**
-	 * Return translated context labels
-	 *
-	 * @return array Context label translations
-	 */
 	public static function get_context_labels() {
 		$themes = wp_get_themes();
 
@@ -83,14 +48,6 @@ class MainWP_WP_Stream_Connector_Editor extends MainWP_WP_Stream_Connector {
 		return __( '"%1$s" in "%2$s" updated', 'mainwp-child-reports' );
 	}
 
-	/**
-	 * Add action links to Stream drop row in admin list screen
-	 *
-	 * @filter mainwp_wp_stream_action_links_{connector}
-	 * @param  array $links      Previous links registered
-	 * @param  int   $record     Stream record
-	 * @return array             Action links
-	 */
 	public static function action_links( $links, $record ) {
 		if ( current_user_can( 'edit_theme_options' ) ) {
 			$file_name  = mainwp_wp_stream_get_meta( $record->ID, 'file', true );
@@ -117,9 +74,6 @@ class MainWP_WP_Stream_Connector_Editor extends MainWP_WP_Stream_Connector {
 		return $links;
 	}
 
-	/**
-	 * @action load-theme-editor.php
-	 */
 	public static function get_edition_data() {
 		if ( 'POST' !== $_SERVER['REQUEST_METHOD'] ) {
 			return;
@@ -159,9 +113,6 @@ class MainWP_WP_Stream_Connector_Editor extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	/**
-	 * @filter wp_redirect
-	 */
 	public static function log_changes( $location ) {
 		if ( ! empty( self::$edited_file ) ) {
 			$file_contents_after = file_get_contents( self::$edited_file['file_path'] );

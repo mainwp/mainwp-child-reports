@@ -9,16 +9,8 @@ use Carbon\Carbon;
 
 class MainWP_WP_Stream_Date_Interval {
 
-	/**
-	 * Contains an array of all available intervals
-	 *
-	 * @var array $intervals
-	 */
 	public $intervals;
 
-	/**
-	 * Class constructor
-	 */
 	public function __construct() {
 		// Filter the Predefined list of intervals to make it work
 		add_filter( 'mainwp_wp_stream_predefined_date_intervals', array( $this, 'filter_predefined_intervals' ), 20 );
@@ -27,9 +19,6 @@ class MainWP_WP_Stream_Date_Interval {
 		$this->intervals = $this->get_predefined_intervals();
 	}
 
-	/**
-	 * @return mixed|void
-	 */
 	public function get_predefined_intervals() {
 		$timezone = get_option( 'timezone_string' );
 
@@ -110,12 +99,6 @@ class MainWP_WP_Stream_Date_Interval {
 		);
 	}
 
-	/**
-	 * Filter the predefined intervals to reflect db oldest value
-	 * @param $intervals
-	 *
-	 * @return array
-	 */
 	public function filter_predefined_intervals( $intervals ) {
 		$query = mainwp_wp_stream_query(
 			array(
