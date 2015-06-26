@@ -53,9 +53,9 @@ class MainWP_WP_Stream_Live_Update {
 
 		// Decode the query
 		$query = json_decode( wp_kses_stripslashes( $query ) );
-
-		$updated_items = MainWP_WP_Stream_Dashboard_Widget::gather_updated_items( $last_id, $query );
-
+                
+                $updated_items = MainWP_WP_Stream_Dashboard_Widget::gather_updated_items( $last_id, $query );
+                
 		if ( ! empty( $updated_items ) ) {
 			ob_start();
 			foreach ( $updated_items as $item ) {

@@ -26,6 +26,8 @@ class MainWP_WP_Stream_Connectors {
 			'posts',
 			'users',
 			'widgets',
+                        'updraftplus',
+                        'backupwordpress'
 		);
 		$classes = array();
 		foreach ( $connectors as $connector ) {

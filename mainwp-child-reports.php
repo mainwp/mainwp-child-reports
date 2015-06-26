@@ -94,6 +94,9 @@ class MainWP_WP_Stream {
 
 			// Registers a hook that connectors and other plugins can use whenever a stream update happens
 			add_action( 'admin_init', array( __CLASS__, 'update_activation_hook' ) );
+                        
+                        require_once MAINWP_WP_STREAM_INC_DIR . 'dashboard.php';
+			add_action( 'plugins_loaded', array( 'MainWP_WP_Stream_Dashboard_Widget', 'load' ) );
 
 			require_once MAINWP_WP_STREAM_INC_DIR . 'live-update.php';
 			add_action( 'plugins_loaded', array( 'MainWP_WP_Stream_Live_Update', 'load' ) );
@@ -101,7 +104,7 @@ class MainWP_WP_Stream {
 			require_once MAINWP_WP_STREAM_INC_DIR . 'pointers.php';
 			add_action( 'plugins_loaded', array( 'MainWP_WP_Stream_Pointers', 'load' ) );
 		}
-
+                
 	}
 
 	static function fail_php_version() {

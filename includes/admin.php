@@ -63,6 +63,9 @@ class MainWP_WP_Stream_Admin {
 
 		// Ajax author's name by ID
 		add_action( 'wp_ajax_mainwp_wp_stream_get_filter_value_by_id', array( __CLASS__, 'get_filter_value_by_id' ) );
+                
+                add_filter('updraftplus_backup_complete', array( __CLASS__, 'hookUpdraftplusBackupComplete' ));                
+                add_action('hmbkp_backup_complete', array( __CLASS__, 'hookBackupWordpressComplete' ));                
 	}
 
 	public static function admin_notices() {
@@ -78,8 +81,107 @@ class MainWP_WP_Stream_Admin {
 		}
 	}
         
+        public static function hookUpdraftplusBackupComplete($delete_jobdata) {                    
+            if ($delete_jobdata) {
+                $backup_history = get_option('updraft_backup_history', array());                 
+                if (is_array($backup_history) && count($backup_history) > 0) {
+                    $args = array();
+                    $args['connector'] =  'updraftplus_backups';      
+                    $args['fields'] = 'with-meta';              
+                    $args['records_per_page'] = 9999;   
+                    $args['orderby'] = 'created';
+                    $args['order'] = 'desc';                        
+                    $items = mainwp_wp_stream_query( $args );
+                    
+                    $updraftplus_last_backupdate = 0;
+                    if (is_array($items) && count($items) > 0) {
+                        $record = current($items);
+                        $updraftplus_last_backupdate = self::get_record_meta_data($record, 'backup_date');
+                    }
+                        
+                    foreach($backup_history as $date => $backup) {    
+                        if ($date > $updraftplus_last_backupdate) { 
+                            $message = "";
+                            $backup_type = "";
+                            if (isset($backup['db'])) {
+                                $message .= "database, ";
+                                $backup_type .= "database, ";
+                            }
+                            if (isset($backup['plugins'])) {
+                                $message .= "plugins, ";
+                                $backup_type .= "plugins, ";
+                            }
+                            
+                            if (isset($backup['themes'])) {
+                                $message .= "themes, ";
+                                $backup_type .= "themes, ";
+                            }
+
+                            $message = rtrim($message, ', ');                                
+                            $message = "Updraftplus backup " . $message ." finished"; 
+
+                            $backup_type = rtrim($backup_type, ', ');
+
+                            $size = "N/A";
+                            if (isset($backup['db-size'])) {
+                                $size = $backup['db-size'];
+                            } else if (isset($backup['themes-size'])) {
+                                $size = $backup['themes-size'];
+                            }
+                            $destination = "";
+//                                if (isset($backup['service']) && is_array($backup['service'])) {
+//                                    foreach($backup['service'] as $ser) {
+//                                        $destination .= $ser . ", ";
+//                                    }
+//                                }
+//                                 $destination = rtrim($destination, ', ');                                
+                            do_action("updraftplus_backup", $destination , $message, __('Finished', 'mainwp-child-reports'), $backup_type, $date);
+                        }
+                    }
+                    
+                }
+                
+            }
+        }
         
-	public static function register_subpages($args = array()) {
+        public static function hookBackupWordpressComplete($backup) {           
+            if (!empty($backup)) {                              
+                $message = "BackupWordpres backup " .  $backup->get_type() . ' finished';
+                $backup_type =  $backup->get_type();
+                $destination = "N/A";
+                $file = $backup->get_archive_filepath(); 
+                if ( file_exists($file) ) {                    
+                    $date = @filemtime( $file );
+                    $size = @filesize( $file );
+                } else {                   
+                    $date = $size = 0;
+                }                
+                do_action("backupwordpress_backup", $destination , $message, 'finished', $backup_type, $date);
+            }           
+        }
+        
+
+        static function get_record_meta_data($record, $meta_key) { 
+        
+            if (empty($record))
+                return "";
+            $value = "";
+            if (isset($record->meta)) {
+                $meta = $record->meta;
+                if (isset($meta[$meta_key])) {
+                    $value = $meta[$meta_key];
+                    $value = current($value); 
+                    if ($meta_key == "author_meta") {
+                        $value = unserialize($value); 
+                        $value = $value['display_name'];                    
+                    }
+
+                }             
+            }
+            return $value;            
+        }
+
+        public static function register_subpages($args = array()) {
 		if ( is_network_admin() && ! is_plugin_active_for_network( MAINWP_WP_STREAM_PLUGIN ) ) {
 			return false;
 		}
