@@ -1,10 +1,10 @@
 <?php
 /*
   Plugin Name: MainWP Child Reports
-  Plugin URI: http://mainwp.com/
+  Plugin URI: https://mainwp.com/
   Description: The MainWP Child Report plugin tracks Child sites for the MainWP Client Reports Extension. The plugin is only useful if you are using MainWP and the Client Reports Extension.
   Author: MainWP
-  Author URI: http://mainwp.com
+  Author URI: https://mainwp.com
   Version: 0.0.1
  */
 
