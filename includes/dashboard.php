@@ -6,15 +6,45 @@ class MainWP_WP_Stream_Dashboard_Widget {
 		
 	}
 
-	/**
-	 * Handles Live Updates for Stream Activity Dashboard Widget.
-	 *
-	 * @uses gather_updated_items
-	 *
-	 * @param  array  Response to heartbeat
-	 * @param  array  Response from heartbeat
-	 * @return array  Data sent to heartbeat
-	 */
+        public static function widget_row( $item, $i = null ) {
+		require_once MainWP_WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
+
+		$author_meta = mainwp_wp_stream_get_meta( $item->ID, 'author_meta', true );
+		$author      = new MainWP_WP_Stream_Author( (int) $item->author, $author_meta );
+
+		$time_author = sprintf(
+			_x(
+				'%1$s ago by <a href="%2$s">%3$s</a>',
+				'1: Time, 2: User profile URL, 3: User display name',
+				'stream'
+			),
+			human_time_diff( strtotime( $item->created ) ),
+			esc_url( $author->get_records_page_url() ),
+			esc_html( $author->get_display_name() )
+		);
+
+		if ( $author->get_agent() ) {
+			$time_author .= sprintf( ' %s', MainWP_WP_Stream_Author::get_agent_label( $author->get_agent() ) );
+		}
+
+		$class = ( isset( $i ) && $i % 2 ) ? 'alternate' : '';
+
+		ob_start()
+		?><li class="<?php echo esc_html( $class ) ?>" data-id="<?php echo esc_html( $item->ID ) ?>">
+			<div class="record-avatar">
+				<a href="<?php echo esc_url( $author->get_records_page_url() ) ?>">
+					<?php echo $author->get_avatar_img( 72 ); // xss ok ?>
+				</a>
+			</div>
+			<span class="record-meta"><?php echo $time_author; // xss ok ?></span>
+			<br />
+			<?php echo esc_html( $item->summary ) ?>
+		</li><?php
+
+		return ob_get_clean();
+	}
+
+       
 	public static function live_update( $response, $data ) {
 		if ( ! isset( $data['wp-mainwp-stream-heartbeat-last-id'] ) ) {
 			return;
@@ -38,14 +68,6 @@ class MainWP_WP_Stream_Dashboard_Widget {
 		return $send;
 	}
 
-        /**
-	 * Sends Updated Actions to the List Table View
-	 *
-	 * @param       int    Timestamp of last update
-	 * @param array $query
-	 *
-	 * @return array  Array of recently updated items
-	 */
 	public static function gather_updated_items( $last_id, $query = array() ) {
 		if ( false === $last_id ) {
 			return '';

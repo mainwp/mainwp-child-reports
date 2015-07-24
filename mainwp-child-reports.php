@@ -1,14 +1,12 @@
 <?php
 /*
-Plugin Name: MainWP Child Reports
-Plugin URI: https://extensions.mainwp.com
-Description:  The MainWP Child Report plugin tracks Child sites for the MainWP Client Reports Extension. The plugin is only useful if you are using MainWP and the Client Reports Extension.
-Version: 0.0.1
-Author: MainWP
-Author URI: https://mainwp.com
-Support Forum URI: 
-Documentation URI: 
-*/
+  Plugin Name: MainWP Child Reports
+  Plugin URI: http://mainwp.com/
+  Description: The MainWP Child Report plugin tracks Child sites for the MainWP Client Reports Extension. The plugin is only useful if you are using MainWP and the Client Reports Extension.
+  Author: MainWP
+  Author URI: http://mainwp.com
+  Version: 0.0.1
+ */
 
 /**
  * Copyright (c) 2014 WP Stream Pty Ltd (https://wp-stream.com/)
@@ -101,8 +99,6 @@ class MainWP_WP_Stream {
 			require_once MAINWP_WP_STREAM_INC_DIR . 'live-update.php';
 			add_action( 'plugins_loaded', array( 'MainWP_WP_Stream_Live_Update', 'load' ) );
 
-			require_once MAINWP_WP_STREAM_INC_DIR . 'pointers.php';
-			add_action( 'plugins_loaded', array( 'MainWP_WP_Stream_Pointers', 'load' ) );
 		}
                 
 	}
