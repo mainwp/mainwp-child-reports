@@ -13,11 +13,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 The MainWP Child Report plugin tracks changes to Child sites for the Client Reports Extension. 
 
-**The plugin is only useful if you are using [MainWP](https://wordpress.org/plugins/mainwp/) and the [MainWP Client Reports Extension](https://extensions.mainwp.com/product/mainwp-client-reports-extension/).**
 
 == Description ==
 
-**Note: This plugin requires PHP 5.3 or higher to be activated.**
+**Note: This plugin requires PHP 5.3 or higher to be activated and is only useful if you are using [MainWP](https://wordpress.org/plugins/mainwp/) and the [MainWP Client Reports Extension](https://extensions.mainwp.com/product/mainwp-client-reports-extension/).**
 
 Install the [MainWP Child Plugin](https://wordpress.org/plugins/mainwp-child/) plugin first.
 
