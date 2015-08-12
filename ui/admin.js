@@ -1,7 +1,7 @@
 /* globals confirm, mainwp_wp_stream, ajaxurl */
 jQuery(function( $ ) {
 
-	$( '.mainwp-child_page_mainwp_wp_stream :input.chosen-select' ).each(function( i, el ) {
+	$( '.mainwp_wp_stream_screen :input.chosen-select' ).each(function( i, el ) {
 		var args = {},
 			formatResult = function( record, container ) {
 				var result = '',
@@ -289,7 +289,7 @@ jQuery(function( $ ) {
 	}).trigger( 'change' );
 
 	$( window ).load(function() {
-		$( '.mainwp-child_page_mainwp_wp_stream [type=search]' ).off( 'mousedown' );
+		$( '.mainwp_wp_stream_screen [type=search]' ).off( 'mousedown' );
 	});
 
 	// Confirmation on some important actions
@@ -351,14 +351,14 @@ jQuery(function( $ ) {
 
 		// Only run on page 1 when the order is desc and on page mainwp_wp_stream
 		if (
-			'mainwp-child_page_mainwp_wp_stream' !== mainwp_wp_stream.current_screen ||
+			'mainwp_wp_stream_screen' !== mainwp_wp_stream.current_screen ||
 			'1' !== mainwp_wp_stream.current_page ||
 			'asc' === mainwp_wp_stream.current_order
 		) {
 			return;
 		}
 
-		var list_sel = '.mainwp-child_page_mainwp_wp_stream #the-list';
+		var list_sel = '.mainwp_wp_stream_screen #the-list';
 
 		// Set initial beat to fast. WP is designed to slow this to 15 seconds after 2.5 minutes.
 		wp.heartbeat.interval( 'fast' );
