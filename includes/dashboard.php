@@ -7,7 +7,7 @@ class MainWP_WP_Stream_Dashboard_Widget {
 	}
 
         public static function widget_row( $item, $i = null ) {
-		require_once MainWP_WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
+		require_once MAINWP_WP_STREAM_INC_DIR . 'class-wp-stream-author.php';
 
 		$author_meta = mainwp_wp_stream_get_meta( $item->ID, 'author_meta', true );
 		$author      = new MainWP_WP_Stream_Author( (int) $item->author, $author_meta );
