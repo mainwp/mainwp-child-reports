@@ -305,12 +305,6 @@ jQuery(function( $ ) {
 		}
 	});
 
-	$( '#mainwp_wp_stream_uninstall' ).click(function( e ) {
-		if ( ! confirm( mainwp_wp_stream.i18n.confirm_uninstall ) ) {
-			e.preventDefault();
-		}
-	});
-
 	// Admin page tabs
 	var $tabs          = $( '.nav-tab-wrapper' ),
 		$panels        = $( '.nav-tab-content table.form-table' ),
@@ -348,10 +342,9 @@ jQuery(function( $ ) {
 	// Heartbeat for Live Updates
 	// runs only on stream page (not settings)
 	$( document ).ready(function() {
-
 		// Only run on page 1 when the order is desc and on page mainwp_wp_stream
 		if (
-			'mainwp_wp_stream_screen' !== mainwp_wp_stream.current_screen ||
+			mainwp_wp_stream.current_screen.indexOf('_page_mainwp_wp_stream') == -1 ||
 			'1' !== mainwp_wp_stream.current_page ||
 			'asc' === mainwp_wp_stream.current_order
 		) {
@@ -363,10 +356,10 @@ jQuery(function( $ ) {
 		// Set initial beat to fast. WP is designed to slow this to 15 seconds after 2.5 minutes.
 		wp.heartbeat.interval( 'fast' );
 
-		$( document ).on( 'heartbeat-send.stream', function( e, data ) {
+		$( document ).on( 'heartbeat-send.child_reports', function( e, data ) {                       
 			data['wp-mainwp-stream-heartbeat'] = 'live-update';
 			var last_item = $( list_sel + ' tr:first .column-id' );
-			var last_id = 1;
+			var last_id = 1;                        
 			if ( last_item.length !== 0 ) {
 				last_id = ( '' === last_item.text() ) ? 1 : last_item.text();
 			}
@@ -375,7 +368,7 @@ jQuery(function( $ ) {
 		});
 
 		// Listen for "heartbeat-tick" on $(document).
-		$( document ).on( 'heartbeat-tick.stream', function( e, data ) {
+		$( document ).on( 'heartbeat-tick.child_reports', function( e, data ) {
 
 			// If this no rows return then we kill the script
 			if ( ! data['wp-mainwp-stream-heartbeat'] || 0 === data['wp-mainwp-stream-heartbeat'].length ) {

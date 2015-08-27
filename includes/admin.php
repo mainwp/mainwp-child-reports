@@ -34,10 +34,6 @@ class MainWP_WP_Stream_Admin {
 		// Add admin body class
 		add_filter( 'admin_body_class', array( __CLASS__, 'admin_body_class' ) );
 
-		// Plugin action links
-		add_filter( 'plugin_action_links', array( __CLASS__, 'plugin_action_links' ), 10, 2 );
-		add_filter( 'network_admin_plugin_action_links', array( __CLASS__, 'plugin_action_links' ), 10, 2 );
-
 		// Load admin scripts and styles
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_menu_css' ) );
@@ -48,8 +44,6 @@ class MainWP_WP_Stream_Admin {
 		// Reset MainWP Reports settings
 		add_action( 'wp_ajax_mainwp_wp_stream_defaults', array( __CLASS__, 'wp_ajax_defaults' ) );
 
-		// Uninstall MainWP Reports and Deactivate plugin
-		add_action( 'wp_ajax_mainwp_wp_stream_uninstall', array( __CLASS__, 'uninstall_plugin' ) );
 
 		// Auto purge setup
 		add_action( 'wp_loaded', array( __CLASS__, 'purge_schedule_setup' ) );
@@ -244,7 +238,7 @@ class MainWP_WP_Stream_Admin {
 		$script_screens = array( 'plugins.php', 'user-edit.php', 'user-new.php', 'profile.php' );
 
 		if ( 'index.php' === $hook ) {
-			wp_enqueue_script( 'mainwp-wp-stream-admin-dashboard', MAINWP_WP_STREAM_URL . 'ui/dashboard.js', array( 'jquery', 'heartbeat' ), MainWP_WP_Stream::VERSION );
+			
 		} elseif ( in_array( $hook, self::$screen_id ) || in_array( $hook, $script_screens ) ) {
 			wp_enqueue_script( 'select2' );
 			wp_enqueue_style( 'select2' );
@@ -288,34 +282,6 @@ class MainWP_WP_Stream_Admin {
 
 		// Make sure we're working off a clean version
 		include( ABSPATH . WPINC . '/version.php' );
-	}
-
-	public static function plugin_action_links( $links, $file ) {
-		if ( plugin_basename( MAINWP_WP_STREAM_DIR . 'stream.php' ) === $file ) {
-
-			// Don't show links in Network Admin if MainWP Reports isn't network enabled
-			if ( is_network_admin() && is_multisite() && ! is_plugin_active_for_network( MAINWP_WP_STREAM_PLUGIN ) ) {
-				return $links;
-			}
-
-			if ( is_network_admin() ) {
-				$admin_page_url = add_query_arg( array( 'page' => MainWP_WP_Stream_Network::NETWORK_SETTINGS_PAGE_SLUG ), network_admin_url( self::ADMIN_PARENT_PAGE ) );
-			} else {
-				$admin_page_url = add_query_arg( array( 'page' => self::SETTINGS_PAGE_SLUG ), admin_url( self::ADMIN_PARENT_PAGE ) );
-			}
-			$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'default' ) );
-
-			$url = add_query_arg(
-				array(
-					'action'          => 'mainwp_wp_stream_uninstall',
-					'mainwp_wp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
-				),
-				admin_url( 'admin-ajax.php' )
-			);
-			$links[] = sprintf( '<span id="mainwp_wp_stream_uninstall" class="delete"><a href="%s">%s</a></span>', esc_url( $url ), esc_html__( 'Uninstall', 'mainwp-child-reports' ) );
-		}
-
-		return $links;
 	}
 
 	public static function register_update_hook( $file, $callback, $version ) {
@@ -512,66 +478,6 @@ class MainWP_WP_Stream_Admin {
 				delete_option( MainWP_WP_Stream_Settings::KEY );
 			}
 			restore_current_blog();
-		}
-	}
-
-	public static function uninstall_plugin() {
-		global $wpdb;
-
-		check_ajax_referer( 'stream_nonce', 'mainwp_wp_stream_nonce' );
-
-		if ( current_user_can( self::SETTINGS_CAP ) ) {
-			// Prevent stream action from being fired on plugin
-			remove_action( 'deactivate_plugin', array( 'MainWP_WP_Stream_Connector_Installer', 'callback' ), null );
-
-			// Plugin is being uninstalled from only one of the multisite blogs
-			if ( is_multisite() && ! is_plugin_active_for_network( MAINWP_WP_STREAM_PLUGIN ) ) {
-				$blog_id = get_current_blog_id();
-
-				$wpdb->query( "DELETE FROM {$wpdb->base_prefix}stream WHERE blog_id = $blog_id" );
-
-				delete_option( plugin_basename( MAINWP_WP_STREAM_DIR ) . '_db' );
-				delete_option( MainWP_WP_Stream_Install::KEY );
-				delete_option( MainWP_WP_Stream_Settings::KEY );
-			} else {
-				// Delete all tables
-				foreach ( MainWP_WP_Stream_DB::get_instance()->get_table_names() as $table ) {
-					$wpdb->query( "DROP TABLE $table" );
-				}
-
-				// Delete database options
-				if ( is_multisite() ) {
-					$blogs = wp_get_sites();
-					foreach ( $blogs as $blog ) {
-						switch_to_blog( $blog['blog_id'] );
-						delete_option( plugin_basename( MAINWP_WP_STREAM_DIR ) . '_db' );
-						delete_option( MainWP_WP_Stream_Install::KEY );
-						delete_option( MainWP_WP_Stream_Settings::KEY );
-					}
-					restore_current_blog();
-				}
-
-				// Delete database option
-				delete_site_option( plugin_basename( MAINWP_WP_STREAM_DIR ) . '_db' );
-				delete_site_option( MainWP_WP_Stream_Install::KEY );
-				delete_site_option( MainWP_WP_Stream_Settings::KEY );
-				delete_site_option( MainWP_WP_Stream_Settings::DEFAULTS_KEY );
-				delete_site_option( MainWP_WP_Stream_Settings::NETWORK_KEY );
-				delete_site_option( 'dashboard_mainwp_stream_activity_options' );
-			}
-
-			// Delete scheduled cron event hooks
-			wp_clear_scheduled_hook( 'stream_auto_purge' ); // Deprecated hook
-			wp_clear_scheduled_hook( 'mainwp_wp_stream_auto_purge' );
-
-			// Deactivate the plugin
-			deactivate_plugins( plugin_basename( MAINWP_WP_STREAM_DIR ) . '/stream.php' );
-
-			// Redirect to plugin page
-			wp_redirect( add_query_arg( array( 'deactivate' => true ), self_admin_url( 'plugins.php' ) ) );
-			exit;
-		} else {
-			wp_die( "You don't have sufficient privileges to do this action." );
 		}
 	}
 

@@ -14,6 +14,9 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 		'pre_set_site_transient_update_plugins',
 		'wp_redirect',
 		'_core_updated_successfully',
+                'mainwp_child_installPluginTheme',
+                'mainwp_child_plugin_action',
+                'mainwp_child_theme_action'
 	);
 
 	public static function get_label() {
@@ -49,8 +52,107 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 			$links[ __( 'View Release Notes', 'mainwp-child-reports' ) ] = esc_url( sprintf( 'http://codex.wordpress.org/Version_%s', $version ) );
 		}
 		return $links;
-	}
+	}        
+ 
+        public static function callback_mainwp_child_installPluginTheme($args ) {                
+                $logs    = array();
+		$success = isset($args['success']) ? $args['success'] : 0;
+		$error   = null;
 
+		if ( ! $success ) {
+			$errors = $args['errors'];;
+		}
+
+		// This would have failed down the road anyway
+		if ( ! isset( $args['type'] ) ) {
+			return false;
+		}
+
+		$type   = $args['type'];
+		$action = $args['action'];
+
+		if ( ! in_array( $type, array( 'plugin', 'theme' ) ) ) {
+			return;
+		}
+
+		if ( 'install' === $action ) {
+			if ( 'plugin' === $type) {				
+                                if ( !isset($args['Name']) || empty($args['Name']))
+                                    return;
+				$slug    = $args['slug'];
+				$name    = $args['Name'];
+				$version = $args['Version'];
+			} else { // theme
+				$slug    = $args['slug'];
+				if ( ! $slug ) {
+					return;
+				}
+				wp_clean_themes_cache();
+				$theme   = wp_get_theme( $slug );
+				$name    = $theme->name;
+				$version = $theme->version;
+			}
+			$action  = 'installed';
+			$message = _x(
+				'Installed %1$s: %2$s %3$s',
+				'Plugin/theme installation. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
+				'mainwp_child_reports'
+			);
+			$logs[]  = compact( 'slug', 'name', 'version', 'message', 'action' );
+		} else {
+			return false;
+		}
+
+		$context = $type . 's';
+
+		foreach ( $logs as $log ) {
+			$name        = isset( $log['name'] ) ? $log['name'] : null;
+			$version     = isset( $log['version'] ) ? $log['version'] : null;
+			$slug        = isset( $log['slug'] ) ? $log['slug'] : null;
+			$old_version = isset( $log['old_version'] ) ? $log['old_version'] : null;
+			$message     = isset( $log['message'] ) ? $log['message'] : null;
+			$action      = isset( $log['action'] ) ? $log['action'] : null;
+			self::log(
+				$message,
+				compact( 'type', 'name', 'version', 'slug', 'success', 'error', 'old_version' ),
+				null,
+				array( $context => $action )
+			);
+		}
+        }       
+        
+        
+        public static function callback_mainwp_child_plugin_action( $args ) {	
+            if (!is_array($args) || !isset($args['action']))
+                return;            
+            $action = $args['action'];
+            if ($action == 'delete') {
+                $name         = $args['Name'];
+                $network_wide =  '';
+                self::log(
+                        __( '"%s" plugin deleted', 'mainwp-child-reports' ),
+                        compact( 'name', 'plugin', 'network_wide' ),
+                        null,
+                        array( 'plugins' => 'deleted' )
+                );
+            }
+	}
+        
+        public static function callback_mainwp_child_theme_action($args) {
+            if (!is_array($args) || !isset($args['action']))
+                return;
+            $action = $args['action'];
+            $name = $args['Name'];
+            if ($action == 'delete') {
+                self::log(
+                        __( '"%s" theme deleted', 'mainwp-child-reports' ),
+                        compact( 'name' ),
+                        null,
+                        array( 'themes' => 'deleted' )
+                );
+            }
+	}
+        
 	public static function callback_upgrader_process_complete( $upgrader, $extra ) {
 		$logs    = array();
 		$success = ! is_wp_error( $upgrader->skin->result );
@@ -162,7 +264,7 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 	}
 
 	public static function callback_activate_plugin( $slug, $network_wide ) {
-		$plugins      = get_plugins();
+		$plugins      = get_plugins();                
 		$name         = $plugins[ $slug ]['Name'];
 		$network_wide = $network_wide ? __( 'network wide', 'mainwp-child-reports' ) : null;
 

@@ -128,7 +128,7 @@ class MainWP_WP_Stream_Live_Update {
 		} else {
 			$response['log'] = 'fail';
 		}
-
+               
 		return $response;
 	}
 
