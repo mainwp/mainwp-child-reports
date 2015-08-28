@@ -16,6 +16,7 @@ class MainWP_WP_Stream_Connector_Posts extends MainWP_WP_Stream_Connector {
 	public static function get_action_labels() {
 		return array(
 			'updated'   => __( 'Updated', 'mainwp-child-reports' ),
+                        'autosave'   => __( 'Auto save', 'mainwp-child-reports' ),
 			'created'   => __( 'Created', 'mainwp-child-reports' ),
 			'trashed'   => __( 'Trashed', 'mainwp-child-reports' ),
 			'untrashed' => __( 'Restored', 'mainwp-child-reports' ),
@@ -135,11 +136,13 @@ class MainWP_WP_Stream_Connector_Posts extends MainWP_WP_Stream_Connector {
 			);
 			$action  = 'untrashed';
 		} else {
-			$message = _x(
+                    $message = _x(
 				'"%1$s" %2$s updated',
 				'1: Post title, 2: Post type singular name',
 				'mainwp_child_reports'
-			);
+			);  
+                    if (defined( 'DOING_AUTOSAVE' ) ) 		
+                        $action = 'autosave';                    
 		}
 
 		if ( empty( $action ) ) {
