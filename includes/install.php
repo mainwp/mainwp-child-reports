@@ -41,8 +41,10 @@ class MainWP_WP_Stream_Install {
 	private static function check() {
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 			return;
-		}                		
-		if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "stream'" ) !== $wpdb->prefix . "stream" ) 
+		}   
+		
+		global $wpdb;		
+		if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "mainwp_stream'" ) !== $wpdb->prefix . "mainwp_stream" ) 
 			self::$db_version = false;	
 		
 		if ( empty( self::$db_version ) ) {
