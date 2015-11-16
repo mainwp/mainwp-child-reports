@@ -41,10 +41,13 @@ class MainWP_WP_Stream_Install {
 	private static function check() {
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 			return;
-		}                
-                if ( empty( self::$db_version ) ) {
+		}                		
+		if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "stream'" ) !== $wpdb->prefix . "stream" ) 
+			self::$db_version = false;	
+		
+		if ( empty( self::$db_version ) ) {
 			self::install( self::$current );
-                        self::copy_stream_db_149();
+			self::copy_stream_db_149();
 		} elseif ( self::$db_version !== self::$current ) {
 
 		}
@@ -57,7 +60,7 @@ class MainWP_WP_Stream_Install {
                 return;
             }
             
-            $stream_db_version = get_site_option( 'wp_stream_db' );
+            $stream_db_version = get_site_option( 'wp_stream_db' ); // store db version of the plugin stream 1.4.9
             
             if ($stream_db_version !== '1.4.9')
                 return;                        
@@ -111,7 +114,7 @@ class MainWP_WP_Stream_Install {
 		global $wpdb;
 
 		$version = get_site_option( self::KEY );
-
+		
 		return $version;
 	}
 
