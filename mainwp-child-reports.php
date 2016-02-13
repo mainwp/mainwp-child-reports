@@ -5,7 +5,7 @@
   Description: The MainWP Child Report plugin tracks Child sites for the MainWP Client Reports Extension. The plugin is only useful if you are using MainWP and the Client Reports Extension.
   Author: MainWP
   Author URI: https://mainwp.com
-  Version: 0.0.1
+  Version: 0.0.2-beta
  */
 
 /**
