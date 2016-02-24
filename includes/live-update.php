@@ -44,8 +44,14 @@ class MainWP_WP_Stream_Live_Update {
 		if ( ! isset( $data['wp-mainwp-stream-heartbeat-last-id'] ) ) {
 			return;
 		}
+		
+		if ( ! isset( $data['wp-mainwp-stream-heartbeat-last-created'] ) ) {
+			return;
+		}
 
 		$last_id = intval( $data['wp-mainwp-stream-heartbeat-last-id'] );
+		$last_created = intval( $data['wp-mainwp-stream-heartbeat-last-created'] );
+		
 		$query   = $data['wp-mainwp-stream-heartbeat-query'];
 		if ( empty( $query ) ) {
 			$query = array();
@@ -54,7 +60,7 @@ class MainWP_WP_Stream_Live_Update {
 		// Decode the query
 		$query = json_decode( wp_kses_stripslashes( $query ) );
                 
-                $updated_items = MainWP_WP_Stream_Dashboard_Widget::gather_updated_items( $last_id, $query );
+		$updated_items = MainWP_WP_Stream_Dashboard_Widget::gather_updated_items( $last_id, $query, $last_created );
                 
 		if ( ! empty( $updated_items ) ) {
 			ob_start();

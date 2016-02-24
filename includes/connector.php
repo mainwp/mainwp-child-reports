@@ -51,16 +51,25 @@ abstract class MainWP_WP_Stream_Connector {
 		if ( count( $contexts ) == 0 ){
 			return ;
 		}
-
+		
+		$created_timestamp = null;
+		if (is_array($contexts) && isset($contexts['backwpup_backups'])) {
+			$created_timestamp = is_array($args) && isset($args['backup_time']) ? $args['backup_time'] : null;			
+			$saved_item = MainWP_WP_Stream_Log::get_instance()->get_log( array( 'context' => 'backwpup_backups', 'created' =>  get_gmt_from_date( date("Y-m-d H:i:s", $created_timestamp ) ) ) );			
+			if ($saved_item)
+				return;			
+		}		
+		
 		$class = get_called_class();
-
+		
 		return MainWP_WP_Stream_Log::get_instance()->log(
 			$class::$name,
 			$message,
 			$args,
 			$object_id,
 			$contexts,
-			$user_id
+			$user_id,
+			$created_timestamp	
 		);
 	}
 

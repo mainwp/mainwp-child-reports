@@ -222,10 +222,10 @@ class MainWP_WP_Stream_Admin {
 	public static function admin_enqueue_scripts( $hook ) {
 		wp_register_script( 'select2', MAINWP_WP_STREAM_URL . 'ui/select2/select2.min.js', array( 'jquery' ), '3.4.5', true );
 		wp_register_style( 'select2', MAINWP_WP_STREAM_URL . 'ui/select2/select2.css', array(), '3.4.5' );
-		wp_register_script( 'timeago', MAINWP_WP_STREAM_URL . 'ui/timeago/timeago.js', array(), '0.2.0', true );
+		wp_register_script( 'timeago', MAINWP_WP_STREAM_URL . 'ui/timeago/jquery.timeago.js', array(), '1.4.1', true );
 
-		$locale    = substr( get_locale(), 0, 2 );
-		$file_tmpl = 'ui/timeago/locale/jquery.timeago.%s.js';
+		$locale    = strtolower( substr( get_locale(), 0, 2 ) );
+		$file_tmpl = 'ui/timeago/locales/jquery.timeago.%s.js';
 
 		if ( file_exists( MAINWP_WP_STREAM_DIR . sprintf( $file_tmpl, $locale ) ) ) {
 			wp_register_script( 'timeago-locale', MAINWP_WP_STREAM_URL . sprintf( $file_tmpl, $locale ), array( 'timeago' ), '1' );
@@ -246,7 +246,7 @@ class MainWP_WP_Stream_Admin {
 			wp_enqueue_script( 'timeago' );
 			wp_enqueue_script( 'timeago-locale' );
 
-			wp_enqueue_script( 'mainwp-wp-stream-admin', MAINWP_WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2', 'heartbeat' ), MainWP_WP_Stream::VERSION );
+			wp_enqueue_script( 'mainwp-wp-stream-admin', MAINWP_WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'select2', 'heartbeat' ), MainWP_WP_Stream::VERSION );			
 			wp_localize_script(
 				'mainwp-wp-stream-admin',
 				'mainwp_wp_stream',
@@ -262,8 +262,9 @@ class MainWP_WP_Stream_Admin {
 					'current_order'  => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
 					'current_query'  => json_encode( $_GET ),
 					'filters'        => self::$list_table ? self::$list_table->get_filters() : false,
+					'locale'     => esc_js( $locale )					
 				)
-			);
+			);	
 		}
 	}
 

@@ -9,18 +9,18 @@ class MainWP_WP_Stream_Connector_Backupwordpress extends MainWP_WP_Stream_Connec
 	);
 
 	public static function get_label() {
-		return __( 'Backupwordpress Backups', 'default' );
+		return __( 'BackupWordPress', 'default' );
 	}
 
 	public static function get_action_labels() {
             return array(
-                'backupwordpress_backup'    => __( 'Backup', 'default' ),			
+                'backupwordpress_backup'    => __( 'BackupWordPress Backup', 'default' ),			
             );
 	}
 
 	public static function get_context_labels() {
             return array(
-                'backupwordpress_backups' => __( 'Backupwordpress Backups', 'mainwp-child-reports' ),
+                'backupwordpress_backups' => __( 'BackupWordPress Backups', 'mainwp-child-reports' ),
             );
 	}
 

@@ -116,7 +116,7 @@ class MainWP_WP_Stream_List_Table extends WP_List_Table {
 			$order = 'DESC';
 		}
 		if ( ! $orderby = mainwp_wp_stream_filter_input( INPUT_GET, 'orderby' ) ) {
-			$orderby = '';
+			$orderby = 'created';
 		}
 		$args['order']   = $order;
 		$args['orderby'] = $orderby;
@@ -164,14 +164,28 @@ class MainWP_WP_Stream_List_Table extends WP_List_Table {
 	function column_default( $item, $column_name ) {
 		switch ( $column_name ) {
 			case 'date' :
+//				$date_string = sprintf(
+//					'<time datetime="%s" class="relative-time">%s</time>',
+//					$item->created,
+//					get_date_from_gmt( $item->created, 'Y/m/d' )
+//				);
+//				$out         = $this->column_link( $date_string, 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
+//				$out .= '<br />';
+//				$out .= get_date_from_gmt( $item->created, 'h:i:s A' );
+//				
+				$created     = date( 'Y-m-d H:i:s', strtotime( $item->created ) );
 				$date_string = sprintf(
-					'<time datetime="%s" class="relative-time">%s</time>',
-					$item->created,
-					get_date_from_gmt( $item->created, 'Y/m/d' )
+					'<time datetime="%s" class="relative-time record-created">%s</time>',
+					mainwp_wp_stream_get_iso_8601_extended_date( strtotime( $item->created ) ),
+					get_date_from_gmt( $created, 'Y/m/d' )
 				);
-				$out         = $this->column_link( $date_string, 'date', date( 'Y/m/d', strtotime( $item->created ) ) );
-				$out .= '<br />';
-				$out .= get_date_from_gmt( $item->created, 'h:i:s A' );
+				$out  = $this->column_link( $date_string, 'date', get_date_from_gmt( $created, 'Y/m/d' ) );
+				$out .= '<br />';				
+				$out .= get_date_from_gmt( $created, 'h:i:s A' );
+				$out .= '<span class="timestamp" timestamp="' . strtotime( $item->created ) . '"></span>';
+				
+				
+				
 				break;
 
 			case 'summary' :

@@ -22,7 +22,7 @@ class MainWP_WP_Stream_Log {
 		return self::$instance;
 	}
 
-	public function log( $connector, $message, $args, $object_id, $contexts, $user_id = null ) {
+	public function log( $connector, $message, $args, $object_id, $contexts, $user_id = null , $created_timestamp = null) {
 		global $wpdb;
 
 		if ( is_null( $user_id ) ) {
@@ -65,7 +65,7 @@ class MainWP_WP_Stream_Log {
 			'blog_id'     => apply_filters( 'blog_id_logged', is_network_admin() ? 0 : get_current_blog_id() ),
 			'author'      => $user_id,
 			'author_role' => ! empty( $user->roles ) ? $user->roles[0] : null,
-			'created'     => current_time( 'mysql', 1 ),
+			'created'     => !empty($created_timestamp) ? gmdate("Y-m-d H:i:s", $created_timestamp) : current_time( 'mysql', 1 ),
 			'summary'     => vsprintf( $message, $args ),
 			'parent'      => self::$instance->prev_record,
 			'connector'   => $connector,
@@ -79,4 +79,8 @@ class MainWP_WP_Stream_Log {
 		return $record_id;
 	}
 
+	public function get_log( $agrs = array()) {
+		return MainWP_WP_Stream_DB::get_instance()->get_report( $agrs );		
+	}
+		
 }

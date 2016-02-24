@@ -68,18 +68,21 @@ class MainWP_WP_Stream_Dashboard_Widget {
 		return $send;
 	}
 
-	public static function gather_updated_items( $last_id, $query = array() ) {
+	public static function gather_updated_items( $last_id, $query = array(), $last_created = null ) {
 		if ( false === $last_id ) {
 			return '';
 		}
-
-		$default = array(
-			'record_greater_than' => (int) $last_id,
-		);
+		$default = array();
+		
+		if (!empty($last_created)) {
+			 $default['created_greater_than'] = $last_created;
+		} else {
+			$default['record_greater_than'] = (int) $last_id;
+		}
 
 		// Filter default
 		$query = wp_parse_args( $query, $default );
-
+		
 		// Run query
 		$items = mainwp_wp_stream_query( $query );
 

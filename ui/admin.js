@@ -1,5 +1,15 @@
 /* globals confirm, mainwp_wp_stream, ajaxurl */
 jQuery(function( $ ) {
+        // Shorter timeago strings for English locale
+	if ( 'en' === mainwp_wp_stream.locale && 'undefined' !== typeof $.timeago ) {
+		$.timeago.settings.strings.seconds = 'seconds';
+		$.timeago.settings.strings.minute  = 'a minute';
+		$.timeago.settings.strings.hour    = 'an hour';
+		$.timeago.settings.strings.hours   = '%d hours';
+		$.timeago.settings.strings.month   = 'a month';
+		$.timeago.settings.strings.year    = 'a year';
+	}
+
 
 	$( '.mainwp_wp_stream_screen :input.chosen-select' ).each(function( i, el ) {
 		var args = {},
@@ -359,11 +369,18 @@ jQuery(function( $ ) {
 		$( document ).on( 'heartbeat-send.child_reports', function( e, data ) {                       
 			data['wp-mainwp-stream-heartbeat'] = 'live-update';
 			var last_item = $( list_sel + ' tr:first .column-id' );
-			var last_id = 1;                        
+			var last_id = 1;
 			if ( last_item.length !== 0 ) {
-				last_id = ( '' === last_item.text() ) ? 1 : last_item.text();
+				last_id = ( '' === last_item.text() ) ? 1 : last_item.text();                                
 			}
+                        var last_created_item = $( list_sel + ' tr:first .column-date span.timestamp' );
+                        var last_created = 0;
+                        if ( last_created_item.length !== 0 ) {				
+                                last_created = last_created_item.data['timestamp'];
+			}
+                        
 			data['wp-mainwp-stream-heartbeat-last-id'] = last_id;
+                        data['wp-mainwp-stream-heartbeat-last-created'] = last_created;
 			data['wp-mainwp-stream-heartbeat-query']   = mainwp_wp_stream.current_query;
 		});
 

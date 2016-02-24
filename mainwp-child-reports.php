@@ -43,7 +43,8 @@ class MainWP_WP_Stream {
 		define( 'MAINWP_WP_STREAM_DIR', plugin_dir_path( __FILE__ ) );
 		define( 'MAINWP_WP_STREAM_URL', plugin_dir_url( __FILE__ ) );
 		define( 'MAINWP_WP_STREAM_INC_DIR', MAINWP_WP_STREAM_DIR . 'includes/' );
-
+		
+		require_once MAINWP_WP_STREAM_INC_DIR . 'functions.php';
 		// Load filters polyfill
 		require_once MAINWP_WP_STREAM_INC_DIR . 'filter-input.php';
 

@@ -9,12 +9,12 @@ class MainWP_WP_Stream_Connector_Updraftplus extends MainWP_WP_Stream_Connector 
 	);
 
 	public static function get_label() {
-		return __( 'Updraftplus Backups', 'default' );
+		return __( 'Updraftplus', 'default' );
 	}
 
 	public static function get_action_labels() {
             return array(
-                'updraftplus_backup'    => __( 'Backup', 'default' ),			
+                'updraftplus_backup'    => __( 'Updraftplus Backup', 'default' ),			
             );
 	}
 

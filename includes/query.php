@@ -39,6 +39,7 @@ class MainWP_WP_Stream_Query {
 			'visibility'            => null,
 			// __in params
 			'record_greater_than'   => null,
+			'created_greater_than'   => null,
 			'record__in'            => array(),
 			'record__not_in'        => array(),
 			'record_parent'         => '',
@@ -52,7 +53,7 @@ class MainWP_WP_Stream_Query {
 			'ip__not_in'            => array(),
 			// Order
 			'order'                 => 'desc',
-			'orderby'               => 'ID',
+			'orderby'               => 'created',
 			// Meta/Taxonomy sub queries
 			'meta_query'            => array(),
 			'context_query'         => array(),
@@ -143,6 +144,10 @@ class MainWP_WP_Stream_Query {
 			$where .= $wpdb->prepare( " AND $wpdb->mainwp_reports.ID > %d", (int) $args['record_greater_than'] );
 		}
 
+		if ( $args['created_greater_than'] ) {
+			$where .= $wpdb->prepare( " AND $wpdb->mainwp_reports.created > %s", (int) $args['created_greater_than'] );
+		}
+		
 		if ( $args['record__in'] ) {
 			$record__in = array_filter( (array) $args['record__in'], 'is_numeric' );
 			if ( ! empty( $record__in ) ) {
@@ -305,7 +310,7 @@ class MainWP_WP_Stream_Query {
 		$limits";
                 
 		$sql = apply_filters( 'mainwp_wp_stream_query', $sql, $args );
-                
+        
 		$results = $wpdb->get_results( $sql );
 
 		if ( 'with-meta' === $fields && is_array( $results ) && $results ) {
