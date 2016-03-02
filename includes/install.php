@@ -248,7 +248,7 @@ class MainWP_WP_Stream_Install {
 			<form method="post" action="<?php echo esc_url( remove_query_arg( 'message' ) ) ?>">
 				<?php wp_nonce_field( 'mainwp_wp_stream_update_db' ) ?>
 				<input type="hidden" name="mainwp_wp_stream_update" value="not_update_and_continue"/>
-				<p><strong><?php esc_html_e( 'Do you want to copy reports from Stream.', 'mainwp-child-reports' ) ?></strong></p>				
+				<p><strong><?php esc_html_e( 'Do you want to import logs from the Stream plugin?', 'mainwp-child-reports' ) ?></strong></p>				
 				<p class="submit">
 					<?php submit_button( esc_html__( 'Yes', 'mainwp-child-reports' ), 'primary', 'mainwp_reports_copy_db_submit', false ) ?>
 					<?php submit_button( esc_html__( 'No', 'mainwp-child-reports' ), 'primary', 'mainwp_reports_continue_submit', false ) ?>
@@ -259,7 +259,7 @@ class MainWP_WP_Stream_Install {
 	}
 	
 	public static function prompt_copy_data_status() {		
-		printf( '<div class="updated"><p>%s</p></div>', __( 'Reports have been successfully copied.', 'mainwp-child-reports' ) );
+		printf( '<div class="updated"><p>%s</p></div>', __( 'Logs have been successfully imported.', 'mainwp-child-reports' ) );
 		delete_option('mainwp_child_reports_copied_data_ok');		
 	}
 	
