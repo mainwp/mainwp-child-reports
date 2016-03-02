@@ -71,8 +71,8 @@ class MainWP_WP_Stream_Admin {
 				break;
 			case 'child_reports_settings_reset':
 				printf( '<div class="updated"><p>%s</p></div>', __( 'All site settings have been successfully reset.', 'mainwp-child-reports' ) );
-				break;
-		}
+				break;			
+		}		
 	}
         
         public static function hookUpdraftplusBackupComplete($delete_jobdata) {                    
@@ -405,7 +405,8 @@ class MainWP_WP_Stream_Admin {
 		check_ajax_referer( 'stream_nonce', 'mainwp_wp_stream_nonce' );
 
 		if ( current_user_can( self::SETTINGS_CAP ) ) {
-			self::erase_stream_records();
+			self::erase_stream_records();					
+			MainWP_WP_Stream_Install::check_to_copy_data();			
 			wp_redirect(
 				add_query_arg(
 					array(

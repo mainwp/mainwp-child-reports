@@ -14,9 +14,9 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 		'pre_set_site_transient_update_plugins',
 		'wp_redirect',
 		'_core_updated_successfully',
-                'mainwp_child_installPluginTheme',
-                'mainwp_child_plugin_action',
-                'mainwp_child_theme_action'
+		'mainwp_child_installPluginTheme',
+		'mainwp_child_plugin_action',
+		'mainwp_child_theme_action'
 	);
 
 	public static function get_label() {

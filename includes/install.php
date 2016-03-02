@@ -18,6 +18,8 @@ class MainWP_WP_Stream_Install {
 
 	private static $instance = false;
 
+	public static $import_connectors;
+	
 	public static function get_instance() {
 		if ( empty( self::$instance ) ) {
 			self::$instance = new self();
@@ -35,6 +37,7 @@ class MainWP_WP_Stream_Install {
 		$prefix = $wpdb->base_prefix;
 
 		self::$table_prefix = apply_filters( 'mainwp_wp_stream_db_tables_prefix', $prefix );
+		self::$import_connectors = array('comment', 'editor', 'installer', 'media', 'menus', 'posts', 'users', 'widgets');
 		self::check();
 	}
 
@@ -48,25 +51,58 @@ class MainWP_WP_Stream_Install {
 			self::$db_version = false;	
 		
 		if ( empty( self::$db_version ) ) {
-			self::install( self::$current );
-			self::copy_stream_db_149();
-		} elseif ( self::$db_version !== self::$current ) {
-
+			self::install( self::$current );		
+			self::copy_stream_db();	
+		} elseif ( version_compare( self::$db_version, self::$current, '!=') ) {						
+			update_site_option( self::KEY, self::$current );			
+		}	
+		
+		if ('yes' == get_option('mainwp_child_reports_check_to_copy_data', false)) {
+			add_action( 'all_admin_notices', array( __CLASS__, 'update_notice_hook' ) );						
 		}
 	}
-        
-        public static function copy_stream_db_149() {
-            global $wpdb;
-            
+    
+	public static function check_to_copy_data() {		
+		$stream_db_version = get_site_option( 'wp_stream_db' ); // store db version of the plugin stream 1.4.9					
+//		if (empty($stream_db_version)) {
+//			return;
+//		} else if (version_compare($stream_db_version, '1.4.9', '='))	{
+//			if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "stream'" ) !== $wpdb->prefix . "stream" ) 
+//				return;
+//			if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "stream_context'" ) !== $wpdb->prefix . "stream_context" ) 
+//				return;
+//			if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "stream_meta'" ) !== $wpdb->prefix . "stream_meta" ) 
+//				return;
+//		} else if (version_compare($stream_db_version, '3.0' , '>=')) {
+//			if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "stream'" ) !== $wpdb->prefix . "stream" ) 
+//				return;
+//			if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "stream_meta'" ) !== $wpdb->prefix . "stream_meta" ) 
+//				return;
+//		}
+		
+		update_option('mainwp_child_reports_check_to_copy_data', 'yes');
+		return;
+	}
+	
+	public static function copy_stream_db() {
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			return;
+		}				
+		$stream_db_version = get_site_option( 'wp_stream_db' ); // store db version of the plugin stream 1.4.9			
+		if (version_compare($stream_db_version, '1.4.9', '='))					                
+			self::copy_stream_149_db();
+		else if (version_compare($stream_db_version, '3.0' , '>=')) {
+			self::copy_stream_300_db();
+		}
+		update_option('mainwp_child_reports_copied_data_ok', 'yes');
+		update_option('mainwp_child_reports_check_to_copy_data', '');
+	}
+	
+	public static function copy_stream_149_db() {
+            global $wpdb;            
             if ( is_multisite() ) {
                 return;
-            }
-            
-            $stream_db_version = get_site_option( 'wp_stream_db' ); // store db version of the plugin stream 1.4.9
-            
-            if ($stream_db_version !== '1.4.9')
-                return;                        
-            
+            }            
             if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "stream'" ) !== $wpdb->prefix . "stream" ) 
                 return;
             if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "stream_context'" ) !== $wpdb->prefix . "stream_context" ) 
@@ -81,8 +117,7 @@ class MainWP_WP_Stream_Install {
             foreach ( $blog_stream as $key => $stream_entry ) {
                     $prev_entry_id = $stream_entry['ID'];
 
-                    unset( $stream_entry['ID'] );
-                    
+                    unset( $stream_entry['ID'] );                    
 
                     $wpdb->insert( $wpdb->prefix . 'mainwp_stream', $stream_entry );
                     $stream_entry_id = $wpdb->insert_id;
@@ -112,83 +147,127 @@ class MainWP_WP_Stream_Install {
 		
         }
         
-	public static function get_db_version() {
+	public static function copy_stream_300_db() {
 		global $wpdb;
+		if ( is_multisite() ) {
+			return;
+		}
+		if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "stream'" ) !== $wpdb->prefix . "stream" ) 
+			return;
+		if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "stream_meta'" ) !== $wpdb->prefix . "stream_meta" ) 
+			return;
+
+		$timeout = 20 * 60 * 60; /*20 minutes*/
+		$mem           = '512M';
+		// @codingStandardsIgnoreStart
+		@ini_set( 'memory_limit', $mem );
+		@set_time_limit( $timeout );
+		@ini_set( 'max_execution_time', $timeout );
+		
+		$sql = "SELECT * FROM {$wpdb->prefix}stream";
+
+		$blog_stream = $wpdb->get_results( $sql, ARRAY_A );
+		$printed_connector = array();
+		
+		foreach ( $blog_stream as $key => $stream_entry ) {
+			
+				if (!in_array($stream_entry['connector'], self::$import_connectors)) {
+					continue;
+				}
+				
+				if ('users' == $stream_entry['connector'] && 'login' == $stream_entry['action']) {
+					continue;
+				}
+					
+				$prev_entry_id = $stream_entry['ID'];				
+				
+				$insert_entry = array(
+					'site_id' => $stream_entry['site_id'], 
+					'blog_id' => $stream_entry['blog_id'],
+					'object_id' => $stream_entry['object_id'],
+					'author' => $stream_entry['user_id'],
+					'author_role' => $stream_entry['user_role'],
+					'author_role' => $stream_entry['user_role'],
+					'summary' => $stream_entry['summary'],
+					'visibility' => 'publish',
+					'parent' => 0,
+					'type' => 'stream',
+					'created' => $stream_entry['created'],
+					'ip' => $stream_entry['ip']
+				);
+				
+				$wpdb->insert( $wpdb->prefix . 'mainwp_stream', $insert_entry );
+				$stream_entry_id = $wpdb->insert_id;
+				
+				$insert_context = array(										
+					'record_id'	=> $stream_entry_id,
+					'context'	=> $stream_entry['context'],
+					'action'	=> $stream_entry['action'],
+					'connector'	=> $stream_entry['connector']
+				);
+				$wpdb->insert( $wpdb->prefix . 'mainwp_stream_context', $insert_context );				
+
+				$sql = "SELECT * FROM {$wpdb->prefix}stream_meta WHERE record_id = $prev_entry_id";
+
+				$blog_stream_meta = $wpdb->get_results( $sql, ARRAY_A );
+
+				foreach ( $blog_stream_meta as $key => $stream_meta ) {
+						unset( $stream_meta['meta_id'] );
+						$stream_meta['record_id'] = $stream_entry_id;
+						$wpdb->insert( $wpdb->prefix . 'mainwp_stream_meta', $stream_meta );
+				}
+		}
+
+	}
+
+	public static function update_notice_hook() {
+//		if ( ! current_user_can( WP_Stream_Admin::VIEW_CAP ) ) {
+//			return;
+//		}
+		
+		if ( ! isset( $_REQUEST['mainwp_wp_stream_update'] ) ) {
+			self::prompt_copy_data();
+		} else { 
+			check_admin_referer( 'mainwp_wp_stream_update_db' );
+			if ( isset( $_REQUEST['mainwp_reports_copy_db_submit'] ) ) {						
+				self::copy_stream_db();	
+				
+			} else if ( isset( $_REQUEST['mainwp_reports_continue_submit'] ) ) {
+				update_option('mainwp_child_reports_check_to_copy_data', '');
+			}
+		}
+		
+		if ('yes' == get_option('mainwp_child_reports_copied_data_ok')) {
+			self::prompt_copy_data_status();			
+		}
+	}
+	
+	public static function prompt_copy_data() {
+		?>
+		<div class="updated">
+			<form method="post" action="<?php echo esc_url( remove_query_arg( 'message' ) ) ?>">
+				<?php wp_nonce_field( 'mainwp_wp_stream_update_db' ) ?>
+				<input type="hidden" name="mainwp_wp_stream_update" value="not_update_and_continue"/>
+				<p><strong><?php esc_html_e( 'Do you want to copy reports from Stream.', 'mainwp-child-reports' ) ?></strong></p>				
+				<p class="submit">
+					<?php submit_button( esc_html__( 'Yes', 'mainwp-child-reports' ), 'primary', 'mainwp_reports_copy_db_submit', false ) ?>
+					<?php submit_button( esc_html__( 'No', 'mainwp-child-reports' ), 'primary', 'mainwp_reports_continue_submit', false ) ?>
+				</p
+			</form>
+		</div>
+		<?php
+	}
+	
+	public static function prompt_copy_data_status() {		
+		printf( '<div class="updated"><p>%s</p></div>', __( 'Reports have been successfully copied.', 'mainwp-child-reports' ) );
+		delete_option('mainwp_child_reports_copied_data_ok');		
+	}
+	
+	public static function get_db_version() {
 
 		$version = get_site_option( self::KEY );
 		
 		return $version;
-	}
-
-	public static function update_db_option() {
-		if ( self::$success_db ) {
-			$success_op = update_site_option( self::KEY, self::$current );
-		}
-
-		if ( empty( self::$success_db ) || empty( $success_op ) ) {
-			wp_die( __( 'There was an error updating the MainWP Child Reports database. Please try again.', 'mainwp-child-reports' ), 'Database Update Error', array( 'response' => 200, 'back_link' => true ) );
-		}
-	}
-
-	public static function update_notice_hook() {
-		if ( ! current_user_can( MainWP_WP_Stream_Admin::VIEW_CAP ) ) {
-			return;
-		}
-
-		if ( ! isset( $_REQUEST['mainwp_wp_stream_update'] ) ) {
-			self::prompt_update();
-		} elseif ( 'update_and_continue' === $_REQUEST['mainwp_wp_stream_update'] ) {
-			self::prompt_update_status();
-		}
-	}
-
-	public static function prompt_update() {
-		?>
-		<div class="error">
-			<form method="post" action="<?php echo esc_url( remove_query_arg( 'mainwp_wp_stream_update' ) ) ?>">
-				<?php wp_nonce_field( 'mainwp_wp_stream_update_db' ) ?>
-				<input type="hidden" name="mainwp_wp_stream_update" value="update_and_continue"/>
-				<p><strong><?php esc_html_e( 'MainWP Child Reports Database Update Required', 'mainwp-child-reports' ) ?></strong></p>
-				<p><?php esc_html_e( 'MainWP Child Reports has updated! Before we send you on your way, we need to update your database to the newest version.', 'mainwp-child-reports' ) ?></p>
-				<p><?php esc_html_e( 'This process could take a little while, so please be patient.', 'mainwp-child-reports' ) ?></p>
-				<?php submit_button( esc_html__( 'Update Database', 'mainwp-child-reports' ), 'primary', 'stream-update-db-submit' ) ?>
-			</form>
-		</div>
-		<?php
-	}
-
-	public static function prompt_update_status() {
-		check_admin_referer( 'mainwp_wp_stream_update_db' );
-
-		self::update_db_option();
-		?>
-		<div class="updated">
-			<form method="post" action="<?php echo esc_url( remove_query_arg( 'mainwp_wp_stream_update' ) ) ?>" style="display:inline;">
-				<p><strong><?php esc_html_e( 'Update Complete', 'mainwp-child-reports' ) ?></strong></p>
-				<p><?php esc_html_e( sprintf( 'Your MainWP Child Reports database has been successfully updated from %1$s to %2$s!', self::$db_version, self::$current ), 'mainwp-child-reports' ) ?></p>
-				<?php submit_button( esc_html__( 'Continue', 'mainwp-child-reports' ), 'secondary', false ) ?>
-			</form>
-		</div>
-		<?php
-	}
-
-	public static function db_update_versions() {
-		$db_update_versions = array(
-			'1.1.4' /* @version 1.1.4 Fix mysql character set issues */,
-			'1.1.7' /* @version 1.1.7 Modified the ip column to varchar(39) */,
-			'1.2.8' /* @version 1.2.8 Change the context for Media connectors to the attachment type */,
-			'1.3.0' /* @version 1.3.0 Backward settings compatibility for old version plugins */,
-			'1.3.1' /* @version 1.3.1 Update records of Installer to Theme Editor connector */,
-			'1.4.0' /* @version 1.4.0 Add the author_role column and prepare tables for multisite support */,
-			'1.4.2' /* @version 1.4.2 Patch to fix rare multisite upgrade not triggering */,
-			'1.4.5' /* @version 1.4.5 Patch to fix author_meta broken values */,
-		);
-
-		return apply_filters( 'mainwp_wp_stream_db_update_versions', $db_update_versions );
-	}
-
-	public static function update( $db_version, $current, $update_args ) {
-
 	}
 
 	public static function install( $current ) {

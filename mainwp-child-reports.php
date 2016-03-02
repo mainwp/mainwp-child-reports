@@ -28,7 +28,7 @@
 
 class MainWP_WP_Stream {
 
-	const VERSION = '0.0.1';
+	const VERSION = '0.0.2';
 
 	public static $instance;
 
