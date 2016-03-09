@@ -7,7 +7,7 @@ Author URI: https://mainwp.com
 Plugin URI: https://mainwp.com
 Requires at least: 3.6
 Tested up to: 4.2.4
-Stable tag: 0.0.1
+Stable tag: 1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,4 +35,15 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 2. The MainWP Child Reports Settings Screen
 
 == Changelog ==
+
+= 1.0 - 3-9-2016 =
+* Fixed: Issue with recreating tables
+* Fixed: Issue with recreating manually deleted tables
+* Fixed: Issue with updating actions on auto-save Post and Page
+* Fixed: Layout and javascript issue when custom branding is applied
+* Added: Feature to copy reports from the Stream plugin
+* Added: Support for recording BackWPup backups
+* Added: Install Plugins, Install Themes, Delete Plugins, Delete Themes action logging
+* Updated: New timeago js library version
+
 * First version - 07-24-15
