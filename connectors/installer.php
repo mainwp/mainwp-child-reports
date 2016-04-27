@@ -425,7 +425,7 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 		global $pagenow, $wp_version;
 
 		$old_version  = $wp_version;
-		$auto_updated = ( 'update-core.php' !== $pagenow );
+		$auto_updated = ( 'update-core.php' !== $pagenow && !isset($_POST['mainwpsignature']));
 
 		if ( $auto_updated ) {
 			$message = __( 'WordPress auto-updated to %s', 'mainwp-child-reports' );

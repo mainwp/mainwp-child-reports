@@ -145,7 +145,7 @@ class MainWP_WP_Stream_Query {
 		}
 
 		if ( $args['created_greater_than'] ) {
-			$where .= $wpdb->prepare( " AND $wpdb->mainwp_reports.created > %s", (int) $args['created_greater_than'] );
+			$where .= $wpdb->prepare( " AND $wpdb->mainwp_reports.created > %s", date('Y-m-d H:i:s', $args['created_greater_than'] ) );
 		}
 		
 		if ( $args['record__in'] ) {

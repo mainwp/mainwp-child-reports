@@ -170,7 +170,9 @@ class MainWP_WP_Stream_Settings {
 
 	public static function get_fields() {
 		if ( empty( self::$fields ) ) {
-			$fields = array(
+			$title = MainWP_WP_Stream_Admin::get_branding_title();
+			$title = !empty($title) ? 'Reset ' . $title . ' Reports Database' : esc_html__( 'Reset MainWP Child Reports Database', 'mainwp-child-reports' );
+			self::$fields = array(
 				'general' => array(
 					'title'  => esc_html__( 'General', 'default' ),
 					'fields' => array(						
@@ -185,7 +187,7 @@ class MainWP_WP_Stream_Settings {
 						),
 						array(
 							'name'        => 'delete_all_records',
-							'title'       => esc_html__( 'Reset MainWP Child Reports Database', 'mainwp-child-reports' ),
+							'title'       => $title,
 							'type'        => 'link',
 							'href'        => add_query_arg(
 								array(
@@ -199,10 +201,10 @@ class MainWP_WP_Stream_Settings {
 						),
 					),
 				),
-			);
+			);			
 		}
 
-		return apply_filters( 'mainwp_wp_stream_options_fields', $fields );
+		return self::$fields;
 	}
 
 	public static function get_options() {

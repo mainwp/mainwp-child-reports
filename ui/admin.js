@@ -315,58 +315,28 @@ jQuery(function( $ ) {
 		}
 	});
 
-	// Admin page tabs
-	var $tabs          = $( '.nav-tab-wrapper' ),
-		$panels        = $( '.nav-tab-content table.form-table' ),
-		$activeTab     = $tabs.find( '.nav-tab-active' ),
-		defaultIndex   = $activeTab.length > 0 ? $tabs.find( 'a' ).index( $activeTab ) : 0,
-		hashIndex      = window.location.hash.match( /^#(\d+)$/ ),
-		currentHash    = ( null !== hashIndex ? hashIndex[ 1 ] : defaultIndex ),
-		syncFormAction = function( index ) {
-			var $optionsForm  = $( 'input[name="option_page"][value^="mainwp_wp_stream"]' ).parent( 'form' );
-			var currentAction = $optionsForm.attr( 'action' );
-
-			$optionsForm.prop( 'action', currentAction.replace( /(^[^#]*).*$/, '$1#' + index ) );
-		};
-
-	$tabs.on( 'click', 'a', function() {
-		var index     = $tabs.find( 'a' ).index( $( this ) ),
-			hashIndex = window.location.hash.match( /^#(\d+)$/ );
-
-		$panels.hide().eq( index ).show();
-		$tabs
-			.find( 'a' )
-			.removeClass( 'nav-tab-active' )
-			.filter( $( this ) )
-			.addClass( 'nav-tab-active' );
-
-		if ( '' === window.location.hash || null !== hashIndex ) {
-			window.location.hash = index;
-		}
-
-		syncFormAction( index );
-		return false;
-	});
-	$tabs.children().eq( currentHash ).trigger( 'click' );
 
 	// Heartbeat for Live Updates
 	// runs only on stream page (not settings)
 	$( document ).ready(function() {
 		// Only run on page 1 when the order is desc and on page mainwp_wp_stream
 		if (
-			mainwp_wp_stream.current_screen.indexOf('_page_mainwp_wp_stream') == -1 ||
+			mainwp_wp_stream.current_screen.indexOf('_mainwp-reports-page') == -1 ||
 			'1' !== mainwp_wp_stream.current_page ||
 			'asc' === mainwp_wp_stream.current_order
 		) {
 			return;
 		}
 
-		var list_sel = '.mainwp_wp_stream_screen #the-list';
+		var list_sel = '.mainwp_child_reports_wrap #the-list';
 
 		// Set initial beat to fast. WP is designed to slow this to 15 seconds after 2.5 minutes.
 		wp.heartbeat.interval( 'fast' );
 
-		$( document ).on( 'heartbeat-send.child_reports', function( e, data ) {                       
+		$( document ).on( 'heartbeat-send.child_reports', function( e, data ) {                                
+                        if ($(list_sel).length == 0)
+                            return;
+                        
 			data['wp-mainwp-stream-heartbeat'] = 'live-update';
 			var last_item = $( list_sel + ' tr:first .column-id' );
 			var last_id = 1;
@@ -374,11 +344,10 @@ jQuery(function( $ ) {
 				last_id = ( '' === last_item.text() ) ? 1 : last_item.text();                                
 			}
                         var last_created_item = $( list_sel + ' tr:first .column-date span.timestamp' );
-                        var last_created = 0;
+                        var last_created = 0;                        
                         if ( last_created_item.length !== 0 ) {				
-                                last_created = last_created_item.data['timestamp'];
-			}
-                        
+                                last_created = last_created_item.attr('timestamp');                                
+			}                      
 			data['wp-mainwp-stream-heartbeat-last-id'] = last_id;
                         data['wp-mainwp-stream-heartbeat-last-created'] = last_created;
 			data['wp-mainwp-stream-heartbeat-query']   = mainwp_wp_stream.current_query;

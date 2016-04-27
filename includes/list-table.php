@@ -457,7 +457,7 @@ class MainWP_WP_Stream_List_Table extends WP_List_Table {
 		$user_id = get_current_user_id();
 		$filters = $this->get_filters();
 
-		$filters_string  = sprintf( '<input type="hidden" name="page" value="%s"/>', 'mainwp_wp_stream' );
+		$filters_string  = sprintf( '<input type="hidden" name="page" value="%s"/>', 'mainwp-reports-page' );
 		$filters_string .= sprintf( '<span class="filter_info hidden">%s</span>', esc_html__( 'Show filter controls via the screen options tab above.', 'mainwp-child-reports' ) );
 
 		foreach ( $filters as $name => $data ) {
@@ -580,7 +580,7 @@ class MainWP_WP_Stream_List_Table extends WP_List_Table {
 	function display() {
 		$url = self_admin_url( MainWP_WP_Stream_Admin::ADMIN_PARENT_PAGE );
 
-		echo '<form method="get" action="' . esc_url( $url ) . '">';
+		echo '<form method="get" action="' . esc_url( $url ) . '">';		
 		echo $this->filter_search(); // xss ok
 
 		parent::display();

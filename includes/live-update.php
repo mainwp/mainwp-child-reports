@@ -40,7 +40,7 @@ class MainWP_WP_Stream_Live_Update {
 		}
 	}
 
-	public static function live_update( $response, $data ) {
+	public static function live_update( $response, $data ) {		
 		if ( ! isset( $data['wp-mainwp-stream-heartbeat-last-id'] ) ) {
 			return;
 		}
@@ -78,8 +78,8 @@ class MainWP_WP_Stream_Live_Update {
 
 	public static function heartbeat_received( $response, $data ) {
 		$option                  = get_option( 'dashboard_mainwp_stream_activity_options' );
-		$enable_stream_update    = ( 'off' !== get_user_meta( get_current_user_id(), 'stream_live_update_records', true ) );
-		$enable_dashboard_update = ( 'off' !== ( $option['live_update'] ) );
+		$enable_stream_update    = true; //( 'off' !== get_user_meta( get_current_user_id(), 'stream_live_update_records', true ) );
+		$enable_dashboard_update = false; //( 'off' !== ( $option['live_update'] ) );
 
 		// Register list table
 		require_once MAINWP_WP_STREAM_INC_DIR . 'list-table.php';
@@ -123,7 +123,7 @@ class MainWP_WP_Stream_Live_Update {
 				$response['total_pages_i18n'] = number_format_i18n( $total_pages );
 
 				$query_args['page']  = MainWP_WP_Stream_Admin::RECORDS_PAGE_SLUG;
-				$query_args['paged'] = $total_pages;
+				$query_args['paged'] = $total_pages;				
 
 				$response['last_page_link'] = add_query_arg( $query_args, admin_url( 'admin.php' ) );
 			}
