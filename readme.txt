@@ -6,8 +6,8 @@ Author: mainwp
 Author URI: https://mainwp.com
 Plugin URI: https://mainwp.com
 Requires at least: 3.6
-Tested up to: 4.5
-Stable tag: 1.0
+Tested up to: 4.5.1
+Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,9 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 2. The MainWP Child Reports Settings Screen
 
 == Changelog ==
+
+= 1.1 - 4-28-2016 =
+* Updated: Support for the MainWP Child Plugin version 3.1.3
 
 = 1.0 - 3-9-2016 =
 * Fixed: Issue with recreating tables
