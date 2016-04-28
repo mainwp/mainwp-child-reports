@@ -170,6 +170,8 @@ class MainWP_WP_Stream_Settings {
 
 	public static function get_fields() {
 		if ( empty( self::$fields ) ) {
+			if (!class_exists('MainWP_WP_Stream_Admin'))
+				require_once MAINWP_WP_STREAM_INC_DIR . 'admin.php';
 			$title = MainWP_WP_Stream_Admin::get_branding_title();
 			$title = !empty($title) ? 'Reset ' . $title . ' Reports Database' : esc_html__( 'Reset MainWP Child Reports Database', 'mainwp-child-reports' );
 			self::$fields = array(
