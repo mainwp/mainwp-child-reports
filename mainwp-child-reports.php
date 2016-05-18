@@ -83,9 +83,6 @@ class MainWP_WP_Stream {
 		require_once MAINWP_WP_STREAM_INC_DIR . 'query.php';
 		require_once MAINWP_WP_STREAM_INC_DIR . 'context-query.php';
 		
-		// Add frontend indicator
-		add_action( 'wp_head', array( $this, 'frontend_indicator' ) );
-
 		if ( is_admin() ) {
 			require_once MAINWP_WP_STREAM_INC_DIR . 'admin.php';
 			add_action( 'plugins_loaded', array( 'MainWP_WP_Stream_Admin', 'load' ) );
@@ -200,16 +197,6 @@ class MainWP_WP_Stream {
 			$class_name   = empty( $notice['is_error'] ) ? 'updated' : 'error';
 			$html_message = sprintf( '<div class="%s">%s</div>', esc_attr( $class_name ), wpautop( $notice['message'] ) );
 			echo wp_kses_post( $html_message );
-		}
-	}
-
-	public function frontend_indicator() {
-		$comment = sprintf( 'Stream WordPress user activity plugin v%s', esc_html( self::VERSION ) ); // Localization not needed
-
-		$comment = apply_filters( 'mainwp_wp_stream_frontend_indicator', $comment );
-
-		if ( ! empty( $comment ) ) {
-			echo sprintf( "<!-- %s -->\n", esc_html( $comment ) ); // xss ok
 		}
 	}
 

@@ -64,22 +64,6 @@ class MainWP_WP_Stream_Install {
     
 	public static function check_to_copy_data() {		
 		$stream_db_version = get_site_option( 'wp_stream_db' ); // store db version of the plugin stream 1.4.9					
-//		if (empty($stream_db_version)) {
-//			return;
-//		} else if (version_compare($stream_db_version, '1.4.9', '='))	{
-//			if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "stream'" ) !== $wpdb->prefix . "stream" ) 
-//				return;
-//			if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "stream_context'" ) !== $wpdb->prefix . "stream_context" ) 
-//				return;
-//			if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "stream_meta'" ) !== $wpdb->prefix . "stream_meta" ) 
-//				return;
-//		} else if (version_compare($stream_db_version, '3.0' , '>=')) {
-//			if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "stream'" ) !== $wpdb->prefix . "stream" ) 
-//				return;
-//			if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "stream_meta'" ) !== $wpdb->prefix . "stream_meta" ) 
-//				return;
-//		}
-		
 		update_option('mainwp_child_reports_check_to_copy_data', 'yes');
 		return;
 	}
