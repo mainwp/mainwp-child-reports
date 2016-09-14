@@ -53,12 +53,30 @@ abstract class MainWP_WP_Stream_Connector {
 		}
 		
 		$created_timestamp = null;
-		if (is_array($contexts) && isset($contexts['backwpup_backups'])) {
-			$created_timestamp = is_array($args) && isset($args['backup_time']) ? $args['backup_time'] : null;			
-			$saved_item = MainWP_WP_Stream_Log::get_instance()->get_log( array( 'context' => 'backwpup_backups', 'created' =>  get_gmt_from_date( date("Y-m-d H:i:s", $created_timestamp ) ) ) );			
-			if ($saved_item)
-				return;			
-		}		
+                
+                if (is_array($contexts)) {                     
+                    $created_timestamp = 0;
+                    $backup_context = '';                    
+                    
+                    if ( isset($contexts['backwpup_backups']) ) {                            
+                        $backup_context = 'backwpup_backups';
+                    } elseif ( isset($contexts['backupwordpress_backups']) ) {                        
+                        $backup_context = 'backupwordpress_backups';                            		
+                    } elseif ( isset($contexts['backupbuddy_backups']) ) {                        
+                        $backup_context = 'backupbuddy_backups';                            		
+                    } 
+                    
+                    if ( !empty($backup_context) ) {
+                        $created_timestamp = is_array($args) && isset($args['backup_time']) ? $args['backup_time'] : null;			                        
+                        if (empty($created_timestamp) ) 
+                            return;                        
+                        
+                        $saved_item = MainWP_WP_Stream_Log::get_instance()->get_log( array( 'context' => $backup_context, 'created' =>  get_gmt_from_date( date("Y-m-d H:i:s", $created_timestamp ) ) ) );			
+                        
+                        if ($saved_item)
+                            return;	                    
+                    }
+                }
 		
 		$class = get_called_class();
 		

@@ -60,7 +60,8 @@ class MainWP_WP_Stream_Admin {
 		add_action( 'wp_ajax_mainwp_wp_stream_get_filter_value_by_id', array( __CLASS__, 'get_filter_value_by_id' ) );
                 
 		add_filter('updraftplus_backup_complete', array( __CLASS__, 'hookUpdraftplusBackupComplete' ));                
-		add_action('hmbkp_backup_complete', array( __CLASS__, 'hookBackupWordpressComplete' ));                
+                // hmbkp_backup_complete
+		add_action('mainwp_client_reports_backups', array( __CLASS__, 'hookReportsBackups' ), 10, 1);                
 	}
 	
 	public static function get_branding_title() {
@@ -152,22 +153,9 @@ class MainWP_WP_Stream_Admin {
             }
         }
         
-        public static function hookBackupWordpressComplete($backup) {           
-            if (!empty($backup)) {                              
-                $message = "BackupWordpres backup " .  $backup->get_type() . ' finished';
-                $backup_type =  $backup->get_type();
-                $destination = "N/A";
-                $file = $backup->get_archive_filepath(); 
-                if ( file_exists($file) ) {                    
-                    $date = @filemtime( $file );
-                    $size = @filesize( $file );
-                } else {                   
-                    $date = $size = 0;
-                }                
-                do_action("backupwordpress_backup", $destination , $message, 'finished', $backup_type, $date);
-            }           
+        public static function hookReportsBackups($ext_name = '') {
+            do_action('mainwp_extensions_reports_backups', $ext_name);
         }
-        
 
         static function get_record_meta_data($record, $meta_key) { 
         
@@ -189,22 +177,22 @@ class MainWP_WP_Stream_Admin {
             return $value;            
         }
 	
-		public static function init_subpages($subPages = array()) {
-			if ( is_network_admin() && ! is_plugin_active_for_network( MAINWP_WP_STREAM_PLUGIN ) ) {
-				return $subPages;
-			}	
-			
-			$title = MainWP_WP_Stream_Admin::get_branding_title();			
-			if (empty($title)) {
-				$title = 'Child Reports';
-			} else {
-				$title = self::$brandingTitle . ' Reports';
-			}
-			
-			$subPages[] = array('title' => $title, 'slug' => 'reports-page' , 'callback' => array( __CLASS__, 'render_reports_page' ) , 'load_callback' => array( __CLASS__, 'register_list_table' ));
-			$subPages[] = array('title' => $title . ' Settings', 'slug' => 'reports-settings' , 'callback' => array( __CLASS__, 'render_reports_settings' ) );
-			return $subPages;			
-		}
+        public static function init_subpages($subPages = array()) {
+                if ( is_network_admin() && ! is_plugin_active_for_network( MAINWP_WP_STREAM_PLUGIN ) ) {
+                        return $subPages;
+                }	
+
+                $title = MainWP_WP_Stream_Admin::get_branding_title();			
+                if (empty($title)) {
+                        $title = 'Child Reports';
+                } else {
+                        $title = self::$brandingTitle . ' Reports';
+                }
+
+                $subPages[] = array('title' => $title, 'slug' => 'reports-page' , 'callback' => array( __CLASS__, 'render_reports_page' ) , 'load_callback' => array( __CLASS__, 'register_list_table' ));
+                $subPages[] = array('title' => $title . ' Settings', 'slug' => 'reports-settings' , 'callback' => array( __CLASS__, 'render_reports_settings' ) );
+                return $subPages;			
+        }
 		
 	public static function admin_enqueue_scripts( $hook ) {
 		wp_register_script( 'select2', MAINWP_WP_STREAM_URL . 'ui/select2/select2.min.js', array( 'jquery' ), '3.4.5', true );

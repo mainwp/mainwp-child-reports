@@ -30,10 +30,10 @@ class MainWP_WP_Stream_Connector_Backupwordpress extends MainWP_WP_Stream_Connec
             return $links;
 	}
         
-        public static function callback_backupwordpress_backup($destination, $message, $status, $type, $backup_date = 0) {                                                             
+        public static function callback_backupwordpress_backup($destination, $message, $status, $type, $backup_time = 0) {                                                             
             self::log(
                 $message,
-                compact('destination', 'status', 'type', 'backup_date'),
+                compact('destination', 'status', 'type', 'backup_time'),
                 0,
                 array( 'backupwordpress_backups' => 'backupwordpress_backup' )
             );

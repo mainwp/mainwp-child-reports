@@ -28,7 +28,8 @@ class MainWP_WP_Stream_Connectors {
 			'widgets',
 			'updraftplus',
 			'backupwordpress',
-			'backwpup'
+			'backwpup',
+                        'backupbuddy'
 		);
 		$classes = array();
 		foreach ( $connectors as $connector ) {

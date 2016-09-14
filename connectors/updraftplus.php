@@ -30,7 +30,7 @@ class MainWP_WP_Stream_Connector_Updraftplus extends MainWP_WP_Stream_Connector 
             return $links;
 	}
         
-        public static function callback_updraftplus_backup($destination, $message, $status, $type, $backup_date) {                                                
+        public static function callback_updraftplus_backup($destination, $message, $status, $type, $backup_date) {                                                          
             self::log(
                 $message,
                 compact('destination', 'status', 'type', 'backup_date'),
