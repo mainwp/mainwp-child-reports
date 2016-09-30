@@ -107,9 +107,9 @@ class MainWP_WP_Stream_Admin {
                         $record = current($items);
                         $updraftplus_last_backupdate = self::get_record_meta_data($record, 'backup_date');
                     }
-                        
+                    $saved_date = array();   
                     foreach($backup_history as $date => $backup) {    
-                        if ($date > $updraftplus_last_backupdate) { 
+                        if ($date > $updraftplus_last_backupdate && !in_array($date, $saved_date)) { 
                             $message = "";
                             $backup_type = "";
                             if (isset($backup['db'])) {
@@ -145,6 +145,7 @@ class MainWP_WP_Stream_Admin {
 //                                }
 //                                 $destination = rtrim($destination, ', ');                                
                             do_action("updraftplus_backup", $destination , $message, __('Finished', 'mainwp-child-reports'), $backup_type, $date);
+                            $saved_date[] = $date;
                         }
                     }
                     
