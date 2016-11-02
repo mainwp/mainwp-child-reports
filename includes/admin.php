@@ -152,9 +152,10 @@ class MainWP_WP_Stream_Admin {
                 }
                 
             }
+            return $delete_jobdata;
         }
         
-        public static function hookReportsBackups($ext_name = '') {
+        public static function hookReportsBackups($ext_name = '') {            
             do_action('mainwp_extensions_reports_backups', $ext_name);
         }
 

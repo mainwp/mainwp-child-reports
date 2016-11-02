@@ -96,7 +96,13 @@ class MainWP_WP_Stream {
 
 			require_once MAINWP_WP_STREAM_INC_DIR . 'live-update.php';
 			add_action( 'plugins_loaded', array( 'MainWP_WP_Stream_Live_Update', 'load' ) );
-
+                        
+                        // enable in next release?
+//                        $cancelled_branding = ( get_option( 'mainwp_child_branding_disconnected' ) === 'yes' ) && ! get_option( 'mainwp_branding_preserve_branding' );
+//                        if ( !$cancelled_branding ) {                            
+//                            add_filter( 'all_plugins', array( $this, 'branding_child_plugin' ) );
+//                        }
+                        
 		}
                 
 	}
@@ -208,7 +214,51 @@ class MainWP_WP_Stream {
 
 		return self::$instance;
 	}
+        
+        public function branding_child_plugin( $plugins ) {
+		if ( 'T' === get_option( 'mainwp_branding_child_hide' ) ) {
+			foreach ( $plugins as $key => $value ) {
+				$plugin_slug = basename( $key, '.php' );
+				if ( 'mainwp-child-reports' === $plugin_slug ) {
+					unset( $plugins[ $key ] );
+				}
+			}
 
+			return $plugins;
+		}
+
+		$header = get_option( 'mainwp_branding_plugin_header' );
+		if ( is_array( $header ) && ! empty( $header['name'] ) ) {
+			return $this->update_child_header( $plugins, $header );
+		} else {
+			return $plugins;
+		}
+	}
+
+	public function update_child_header( $plugins, $header ) {
+		$plugin_key = '';
+		foreach ( $plugins as $key => $value ) {
+			$plugin_slug = basename( $key, '.php' );
+			if ( 'mainwp-child-reports' === $plugin_slug ) {
+				$plugin_key  = $key;
+				$plugin_data = $value;
+			}
+		}
+                
+//		if ( ! empty( $plugin_key ) ) {                            
+//			$plugin_data['Name']        = stripslashes( $header['name'] . " reports" );                        
+//                        $plugin_data['Description'] = stripslashes( $header['description'] . " reports" );
+//			$plugin_data['Author']      = stripslashes( $header['author'] );
+//			$plugin_data['AuthorURI']   = stripslashes( $header['authoruri'] );
+//			if ( ! empty( $header['pluginuri'] ) ) {
+//				$plugin_data['PluginURI'] = stripslashes( $header['pluginuri'] );
+//			}                        
+//			$plugins[ $plugin_key ] = $plugin_data;
+//		}
+
+		return $plugins;
+	}
+        
 }
 
 if ( MainWP_WP_Stream::is_valid_php_version() ) {
