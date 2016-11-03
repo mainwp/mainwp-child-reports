@@ -122,7 +122,24 @@ class MainWP_WP_Stream_Query {
 		if ( $args['visibility'] ) {
 			$where .= $wpdb->prepare( " AND $wpdb->mainwp_reports.visibility = %s", $args['visibility'] );
 		}
-
+                
+                if (isset($args['hide_child_reports']) && $args['hide_child_reports']) {                    
+                        $child_record_ids = array();
+                        $sql_meta = "SELECT record_id FROM $wpdb->mainwp_reportsmeta WHERE meta_key = 'slug' AND (meta_value = 'mainwp-child/mainwp-child.php' OR meta_value = 'mainwp-child-reports/mainwp-child-reports.php')";                                
+                        $ret  = $wpdb->get_results( $sql_meta, 'ARRAY_A' );                         
+                        
+                        error_log(print_r($ret, true));
+                        
+                        if (is_array($ret) && count($ret)> 0) {
+                            foreach($ret as $val) {
+                                $child_record_ids[] = $val['record_id'];
+                            }
+                        }
+                        if (count($child_record_ids) > 0) {
+                            $where .= " AND $wpdb->mainwp_reports.ID NOT IN (" . implode(",", $child_record_ids). ") ";
+                        }                                          
+                }
+                
 		/**
 		 * PARSE DATE FILTERS
 		 */
