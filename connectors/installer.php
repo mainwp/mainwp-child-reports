@@ -266,15 +266,14 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 	public static function callback_activate_plugin( $slug, $network_wide ) {
 		$plugins      = get_plugins();                
 		$name         = $plugins[ $slug ]['Name'];
-		$network_wide = $network_wide ? __( 'network wide', 'mainwp-child-reports' ) : null;
-
+		$network_wide = $network_wide ? __( 'network wide', 'mainwp-child-reports' ) : null;                
 		self::log(
 			_x(
 				'"%1$s" plugin activated %2$s',
 				'1: Plugin name, 2: Single site or network wide',
 				'mainwp_child_reports'
 			),
-			compact( 'name', 'network_wide' ),
+			compact( 'name', 'network_wide', 'slug' ),
 			null,
 			array( 'plugins' => 'activated' )
 		);
@@ -284,14 +283,13 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 		$plugins      = get_plugins();
 		$name         = $plugins[ $slug ]['Name'];
 		$network_wide = $network_wide ? __( 'network wide', 'mainwp-child-reports' ) : null;
-
 		self::log(
 			_x(
 				'"%1$s" plugin deactivated %2$s',
 				'1: Plugin name, 2: Single site or network wide',
 				'mainwp_child_reports'
 			),
-			compact( 'name', 'network_wide' ),
+			compact( 'name', 'network_wide', 'slug' ),
 			null,
 			array( 'plugins' => 'deactivated' )
 		);
