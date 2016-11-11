@@ -37,12 +37,12 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 == Changelog ==
 
 = 1.2 - 11-9-2016
-Fixed: Issue with hiding the plugin in Client Reports
-Fixed: Conflict with the auto backup feature of the UpdraftPlus Backups plugin (#8435)
-Fixed: Issue with double records for the UpdraftPlus backups
-Fixed: Issue with recorging UpdraftPlus and BackUpWordPress backups
-Added: Support for the BackupBuddy plugin
-Added: Support for the MainWP Branding (#10609)
+* Fixed: Issue with hiding the plugin in Client Reports
+* Fixed: Conflict with the auto backup feature of the UpdraftPlus Backups plugin (#8435)
+* Fixed: Issue with double records for the UpdraftPlus backups
+* Fixed: Issue with recorging UpdraftPlus and BackUpWordPress backups
+* Added: Support for the BackupBuddy plugin
+* Added: Support for the MainWP Branding (#10609)
 
 = 1.1 - 4-28-2016 =
 * Updated: Support for the MainWP Child Plugin version 3.1.3
