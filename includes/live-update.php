@@ -14,7 +14,7 @@ class MainWP_WP_Stream_Live_Update {
 	}
 
 	public static function enable_live_update() {
-		check_ajax_referer( 'stream_live_update_records_nonce', 'nonce' );
+		check_ajax_referer( 'mainwp_creport_live_update_records_nonce', 'nonce' );
 
 		$input = array(
 			'checked' => FILTER_SANITIZE_STRING,

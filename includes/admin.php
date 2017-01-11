@@ -59,16 +59,16 @@ class MainWP_WP_Stream_Admin {
 		// Ajax author's name by ID
 		add_action( 'wp_ajax_mainwp_wp_stream_get_filter_value_by_id', array( __CLASS__, 'get_filter_value_by_id' ) );
                 
-		add_filter('updraftplus_backup_complete', array( __CLASS__, 'hookUpdraftplusBackupComplete' ));                
+		add_filter('updraftplus_save_last_backup', array( __CLASS__, 'hookUpdraftplusSaveLastBackup' ));                
                 // hmbkp_backup_complete
-		add_action('mainwp_client_reports_backups', array( __CLASS__, 'hookReportsBackups' ), 10, 1);                
+		add_action('mainwp_child_reports_log', array( __CLASS__, 'hook_reports_log' ), 10, 1);                                
 	}
 	
 	public static function get_branding_title() {
 		if (self::$brandingTitle  === null) {
 			$cancelled_branding = ( get_option( 'mainwp_child_branding_disconnected' ) === 'yes' ) && ! get_option( 'mainwp_branding_preserve_branding' );
 			$branding_header = get_option( 'mainwp_branding_plugin_header' );
-			if ( ( is_array( $branding_header ) && ! empty( $branding_header['name'] ) ) && ! $cancelled_branding ) {
+			if ( ! $cancelled_branding && ( is_array( $branding_header ) && ! empty( $branding_header['name'] ) ) ) {
 				self::$brandingTitle   = stripslashes( $branding_header['name'] );
 			} else {
 				self::$brandingTitle = '';
@@ -90,73 +90,50 @@ class MainWP_WP_Stream_Admin {
 		}		
 	}
         
-        public static function hookUpdraftplusBackupComplete($delete_jobdata) {                    
-            if ($delete_jobdata) {
-                $backup_history = get_option('updraft_backup_history', array());                 
-                if (is_array($backup_history) && count($backup_history) > 0) {
-                    $args = array();
-                    $args['connector'] =  'updraftplus_backups';      
-                    $args['fields'] = 'with-meta';              
-                    $args['records_per_page'] = 9999;   
-                    $args['orderby'] = 'created';
-                    $args['order'] = 'desc';                        
-                    $items = mainwp_wp_stream_query( $args );
+        public static function hookUpdraftplusSaveLastBackup($last_backup) {                 
+            
+            if (!is_array($last_backup))
+                return $last_backup;
+
+            if (isset($last_backup['backup_time'])) {                                      
+                    $date = $last_backup['backup_time'];
+                    $backup = $last_backup['backup_array'];
                     
-                    $updraftplus_last_backupdate = 0;
-                    if (is_array($items) && count($items) > 0) {
-                        $record = current($items);
-                        $updraftplus_last_backupdate = self::get_record_meta_data($record, 'backup_date');
+                    $message = "";
+                    $backup_type = "";
+                    if (isset($backup['db'])) {
+                        $message .= "database, ";
+                        $backup_type .= "database, ";
                     }
-                    $saved_date = array();   
-                    foreach($backup_history as $date => $backup) {    
-                        if ($date > $updraftplus_last_backupdate && !in_array($date, $saved_date)) { 
-                            $message = "";
-                            $backup_type = "";
-                            if (isset($backup['db'])) {
-                                $message .= "database, ";
-                                $backup_type .= "database, ";
-                            }
-                            if (isset($backup['plugins'])) {
-                                $message .= "plugins, ";
-                                $backup_type .= "plugins, ";
-                            }
-                            
-                            if (isset($backup['themes'])) {
-                                $message .= "themes, ";
-                                $backup_type .= "themes, ";
-                            }
-
-                            $message = rtrim($message, ', ');                                
-                            $message = "Updraftplus backup " . $message ." finished"; 
-
-                            $backup_type = rtrim($backup_type, ', ');
-
-                            $size = "N/A";
-                            if (isset($backup['db-size'])) {
-                                $size = $backup['db-size'];
-                            } else if (isset($backup['themes-size'])) {
-                                $size = $backup['themes-size'];
-                            }
-                            $destination = "";
-//                                if (isset($backup['service']) && is_array($backup['service'])) {
-//                                    foreach($backup['service'] as $ser) {
-//                                        $destination .= $ser . ", ";
-//                                    }
-//                                }
-//                                 $destination = rtrim($destination, ', ');                                
-                            do_action("updraftplus_backup", $destination , $message, __('Finished', 'mainwp-child-reports'), $backup_type, $date);
-                            $saved_date[] = $date;
-                        }
+                    if (isset($backup['plugins'])) {
+                        $message .= "plugins, ";
+                        $backup_type .= "plugins, ";
                     }
-                    
-                }
-                
+
+                    if (isset($backup['themes'])) {
+                        $message .= "themes, ";
+                        $backup_type .= "themes, ";
+                    }
+
+                    $message = rtrim($message, ', ');                                
+                    $message = "Updraftplus backup " . $message ." finished"; 
+
+                    $backup_type = rtrim($backup_type, ', ');
+
+                    $size = "N/A";
+                    if (isset($backup['db-size'])) {
+                        $size = $backup['db-size'];
+                    } else if (isset($backup['themes-size'])) {
+                        $size = $backup['themes-size'];
+                    }
+                    $destination = "";                          
+                    do_action("updraftplus_backup", $destination , $message, __('Finished', 'mainwp-child-reports'), $backup_type, $date);                    
             }
-            return $delete_jobdata;
+            return $last_backup;
         }
         
-        public static function hookReportsBackups($ext_name = '') {            
-            do_action('mainwp_extensions_reports_backups', $ext_name);
+        public static function hook_reports_log($ext_name = '') {            
+            do_action('mainwp_child_log', $ext_name);
         }
 
         static function get_record_meta_data($record, $meta_key) { 
@@ -184,15 +161,15 @@ class MainWP_WP_Stream_Admin {
                         return $subPages;
                 }	
 
-                $title = MainWP_WP_Stream_Admin::get_branding_title();			
-                if (empty($title)) {
-                        $title = 'Child Reports';
+                $branding_text = MainWP_WP_Stream_Admin::get_branding_title();			
+                if (empty($branding_text)) {
+                        $branding_text = 'Child Reports';
                 } else {
-                        $title = self::$brandingTitle . ' Reports';
+                        $branding_text = $branding_text . ' Reports';
                 }
 
-                $subPages[] = array('title' => $title, 'slug' => 'reports-page' , 'callback' => array( __CLASS__, 'render_reports_page' ) , 'load_callback' => array( __CLASS__, 'register_list_table' ));
-                $subPages[] = array('title' => $title . ' Settings', 'slug' => 'reports-settings' , 'callback' => array( __CLASS__, 'render_reports_settings' ) );
+                $subPages[] = array('title' => $branding_text, 'slug' => 'reports-page' , 'callback' => array( __CLASS__, 'render_reports_page' ) , 'load_callback' => array( __CLASS__, 'register_list_table' ));
+                $subPages[] = array('title' => $branding_text . ' Settings', 'slug' => 'reports-settings' , 'callback' => array( __CLASS__, 'render_reports_settings' ) );
                 return $subPages;			
         }
 		
@@ -296,7 +273,11 @@ class MainWP_WP_Stream_Admin {
 	
 	public static function register_list_table() {
 		require_once MAINWP_WP_STREAM_INC_DIR . 'list-table.php';
-		self::$list_table = new MainWP_WP_Stream_List_Table( array( 'screen' => self::$screen_id['main'] ) );
+                $param = array();
+                if (isset(self::$screen_id['main'])) {
+                    $param['screen'] = self::$screen_id['main'];
+                }
+		self::$list_table = new MainWP_WP_Stream_List_Table( $param );
 	}
 
 	public static function render_reports_page() {	
@@ -448,7 +429,7 @@ class MainWP_WP_Stream_Admin {
 		if ( is_multisite() && ! is_plugin_active_for_network( MAINWP_WP_STREAM_PLUGIN ) ) {
 			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
 		}
-
+                        
 		$wpdb->query(
 			$wpdb->prepare(
 				"DELETE `stream`, `context`, `meta`
@@ -515,6 +496,12 @@ class MainWP_WP_Stream_Admin {
 	}
 
 	public static function ajax_filters() {
+                if ( ! defined( 'DOING_AJAX' ) ) {
+			wp_die( '-1' );
+		}
+
+		check_ajax_referer( 'mainwp_creport_filters_user_search_nonce', 'nonce' );
+                  
 		switch ( mainwp_wp_stream_filter_input( INPUT_GET, 'filter' ) ) {
 			case 'author':
 				$users = array_merge(

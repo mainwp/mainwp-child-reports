@@ -53,7 +53,8 @@ class MainWP_WP_Stream_Install {
 		if ( empty( self::$db_version ) ) {
 			self::install( self::$current );		
 			self::copy_stream_db();	
-		} elseif ( version_compare( self::$db_version, self::$current, '!=') ) {						
+		} elseif ( version_compare( self::$db_version, self::$current, '!=') ) {                    
+                        self::check_updates();
 			update_site_option( self::KEY, self::$current );			
 		}	
 		
@@ -322,11 +323,10 @@ class MainWP_WP_Stream_Install {
 			meta_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			record_id bigint(20) unsigned NOT NULL,
 			meta_key varchar(200) NOT NULL,
-			meta_value varchar(200) NOT NULL,
+			meta_value text NOT NULL,
 			PRIMARY KEY  (meta_id),
 			KEY record_id (record_id),
-			KEY meta_key (meta_key),
-			KEY meta_value (meta_value)
+			KEY meta_key (meta_key)
 		)";
 
 		if ( ! empty( $wpdb->charset ) ) {
@@ -345,4 +345,19 @@ class MainWP_WP_Stream_Install {
 
 		return $current;
 	}
+
+        public static function check_updates() {
+            global $wpdb;
+            
+            require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+            $current_version = self::get_db_version();
+            
+            $prefix = self::$table_prefix;
+                
+            if (version_compare($current_version, '0.0.4', '<')) {
+                $wpdb->query( "ALTER TABLE {$prefix}mainwp_stream_meta CHANGE `meta_value` `meta_value` TEXT " . ( !empty($wpdb->charset) ? "CHARACTER SET " . $wpdb->charset : "" ) . ( !empty($wpdb->collate) ? " COLLATE " . $wpdb->collate : "" ) . " NOT NULL;");
+                $wpdb->query( "ALTER TABLE {$prefix}mainwp_stream_meta DROP INDEX meta_value");
+            }  
+            
+        }        
 }

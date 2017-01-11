@@ -128,8 +128,6 @@ class MainWP_WP_Stream_Query {
                         $sql_meta = "SELECT record_id FROM $wpdb->mainwp_reportsmeta WHERE meta_key = 'slug' AND (meta_value = 'mainwp-child/mainwp-child.php' OR meta_value = 'mainwp-child-reports/mainwp-child-reports.php')";                                
                         $ret  = $wpdb->get_results( $sql_meta, 'ARRAY_A' );                         
                         
-                        error_log(print_r($ret, true));
-                        
                         if (is_array($ret) && count($ret)> 0) {
                             foreach($ret as $val) {
                                 $child_record_ids[] = $val['record_id'];
@@ -143,16 +141,19 @@ class MainWP_WP_Stream_Query {
 		/**
 		 * PARSE DATE FILTERS
 		 */
-		if ( $args['date'] ) {
+		if ( isset( $args['date'] ) && !empty( $args['date'] ) ) {
 			$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_reports.created) = %s", $args['date'] );
 		} else {
-			if ( $args['date_from'] ) {
+			if ( isset($args['date_from']) && !empty($args['date_from']) ) {
 				$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_reports.created) >= %s", $args['date_from'] );
 			}
-			if ( $args['date_to'] ) {
+			if ( isset($args['date_to']) && !empty($args['date_to']) ) {
 				$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_reports.created) <= %s", $args['date_to'] );
+			}                        
+                        if ( isset($args['datetime_from']) && !empty($args['datetime_from']) ) {
+				$where .= $wpdb->prepare( " AND $wpdb->mainwp_reports.created >= %s", $args['datetime_from'] );
 			}
-		}
+		} 
 
 		/**
 		 * PARSE __IN PARAM FAMILY
@@ -327,7 +328,9 @@ class MainWP_WP_Stream_Query {
 		$limits";
                 
 		$sql = apply_filters( 'mainwp_wp_stream_query', $sql, $args );
-        
+                
+                //error_log($sql);
+                
 		$results = $wpdb->get_results( $sql );
 
 		if ( 'with-meta' === $fields && is_array( $results ) && $results ) {

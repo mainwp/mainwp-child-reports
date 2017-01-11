@@ -87,6 +87,8 @@ class MainWP_WP_Stream_DB {
 			}
 			foreach ( (array) $vals as $val ) {
 				$val = maybe_serialize( $val );
+                                if (empty($val))
+                                    continue;
 				$this->insert_meta( $record_id, $key, $val );
 			}
 		}

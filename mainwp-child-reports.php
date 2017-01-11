@@ -28,7 +28,7 @@
 
 class MainWP_WP_Stream {
 
-	const VERSION = '0.0.2';
+	const VERSION = '0.0.4'; // to check for update
 
 	public static $instance;
 
@@ -83,27 +83,39 @@ class MainWP_WP_Stream {
 		require_once MAINWP_WP_STREAM_INC_DIR . 'query.php';
 		require_once MAINWP_WP_STREAM_INC_DIR . 'context-query.php';
 		$this->plugin_slug    = plugin_basename( __FILE__ );
-		if ( is_admin() ) {
-			require_once MAINWP_WP_STREAM_INC_DIR . 'admin.php';
-			add_action( 'plugins_loaded', array( 'MainWP_WP_Stream_Admin', 'load' ) );
+		
+                require_once MAINWP_WP_STREAM_INC_DIR . 'admin.php';
+                add_action( 'plugins_loaded', array( 'MainWP_WP_Stream_Admin', 'load' ) );
 
 
-			// Registers a hook that connectors and other plugins can use whenever a stream update happens
-			add_action( 'admin_init', array( __CLASS__, 'update_activation_hook' ) );
-                        
-                        require_once MAINWP_WP_STREAM_INC_DIR . 'dashboard.php';
-			add_action( 'plugins_loaded', array( 'MainWP_WP_Stream_Dashboard_Widget', 'load' ) );
+                // Registers a hook that connectors and other plugins can use whenever a stream update happens
+                add_action( 'admin_init', array( __CLASS__, 'update_activation_hook' ) );
 
-			require_once MAINWP_WP_STREAM_INC_DIR . 'live-update.php';
-			add_action( 'plugins_loaded', array( 'MainWP_WP_Stream_Live_Update', 'load' ) );
-                        add_filter( 'plugin_row_meta', array( &$this, 'plugin_row_meta' ), 10, 2 );
-                        // branding proccess                        
-                        $cancelled_branding = ( get_option( 'mainwp_child_branding_disconnected' ) === 'yes' ) && ! get_option( 'mainwp_branding_preserve_branding' );
-                        if ( !$cancelled_branding ) {                            
-                            add_filter( 'all_plugins', array( $this, 'branding_child_plugin' ) );                            
-                        }                        
-		}
+                require_once MAINWP_WP_STREAM_INC_DIR . 'dashboard.php';
+                add_action( 'plugins_loaded', array( 'MainWP_WP_Stream_Dashboard_Widget', 'load' ) );
+
+                require_once MAINWP_WP_STREAM_INC_DIR . 'live-update.php';
+                add_action( 'plugins_loaded', array( 'MainWP_WP_Stream_Live_Update', 'load' ) );
+                add_filter( 'plugin_row_meta', array( &$this, 'plugin_row_meta' ), 10, 2 );
+                // branding proccess                        
+                $cancelled_branding = ( get_option( 'mainwp_child_branding_disconnected' ) === 'yes' ) && ! get_option( 'mainwp_branding_preserve_branding' );
+                if ( !$cancelled_branding ) {                            
+                    add_filter( 'all_plugins', array( $this, 'branding_child_plugin' ) );                            
+                }   
                 
+                if (false === get_option('mainwp_creport_first_time_activated')) {
+                    global $wpdb;
+
+                    $sql = "SELECT MIN( created ) AS first_time " .
+                            "FROM {$wpdb->prefix}mainwp_stream " . 
+                            "WHERE created != '0000-00-00 00:00:00'";                                
+                    $result = $wpdb->get_results( $sql, ARRAY_A );                 
+                    $time = time();
+                    if (isset($result[0]) && !empty($result[0]['first_time'])) {
+                        $time = strtotime( $result[0]['first_time'] );                            
+                    } 
+                    update_option('mainwp_creport_first_time_activated', $time);
+                }
 	}
 
 	static function fail_php_version() {
@@ -118,7 +130,7 @@ class MainWP_WP_Stream {
 	public static function install() {
 		// Install plugin tables
 		require_once MAINWP_WP_STREAM_INC_DIR . 'install.php';
-		$update = MainWP_WP_Stream_Install::get_instance();
+		$update = MainWP_WP_Stream_Install::get_instance();                
 	}
 
 	public function verify_database_present() {
@@ -170,7 +182,7 @@ class MainWP_WP_Stream {
 			if ( ! empty( $uninstall_message ) ) {
 				self::notice( $uninstall_message );
 			}
-		}
+		} 
 	}
         
         static function update_activation_hook() {

@@ -168,12 +168,21 @@ class MainWP_WP_Stream_Settings {
 		return apply_filters( 'mainwp_wp_stream_settings_option_key', $option_key );
 	}
 
-	public static function get_fields() {
-		if ( empty( self::$fields ) ) {
-			if (!class_exists('MainWP_WP_Stream_Admin'))
-				require_once MAINWP_WP_STREAM_INC_DIR . 'admin.php';
-			$title = MainWP_WP_Stream_Admin::get_branding_title();
-			$title = !empty($title) ? 'Reset ' . $title . ' Reports Database' : esc_html__( 'Reset MainWP Child Reports Database', 'mainwp-child-reports' );
+	public static function get_fields() {                
+		if ( empty( self::$fields ) ) {			 
+                        if (!class_exists('MainWP_WP_Stream_Admin'))
+				require_once MAINWP_WP_STREAM_INC_DIR . 'admin.php';                        
+			$branding_text = MainWP_WP_Stream_Admin::get_branding_title();
+			$branding_text = !empty($branding_text) ? 'Reset ' . $branding_text . ' Reports Database' : esc_html__( 'Reset MainWP Child Reports Database', 'mainwp-child-reports' );                        
+                        $branding_name = !empty($branding_text) ? $branding_text : 'MainWP Child';
+                        $chk_label = 'Hide ' . $branding_name . ' and ' . $branding_name . ' Reports from reports';
+			$chk_desc = 'If selected, the ' . $branding_name . ' plugin and the ' . $branding_name . ' Reports plugin will be left out from reports for this site.';
+                        $hide_child_plugins = get_option('mainwp_creport_hide_child_plugins', 'yes');
+                        // to fix can not set default checked checkbox
+                        $checkbox_hide_childs = '<tr><th scope="row"><label for="mainwp_creport_hide_child_plugins">' . $chk_label;
+                        $checkbox_hide_childs .= '</label></th><td><label><input name="mainwp_creport_hide_child_plugins" id="mainwp_creport_hide_child_plugins" value="1" type="checkbox" ' . ($hide_child_plugins == 'yes' ? 'checked' : '') . '> '; 
+                        $checkbox_hide_childs .= '</label><p class="description">' . $chk_desc . '.</p></td></tr>';
+                        
 			self::$fields = array(
 				'general' => array(
 					'title'  => esc_html__( 'General', 'default' ),
@@ -187,9 +196,19 @@ class MainWP_WP_Stream_Settings {
 							'default'     => 180,
 							'after_field' => esc_html__( 'days', 'mainwp-child-reports' ),
 						),
+                                                array(
+							'name'        => 'period_of_time',
+							'title'       => esc_html__( 'Minimum time between posts/pages update reports', 'mainwp-child-reports' ),
+							'type'        => 'select',
+							'choices'       => array( '0' => '0', '30' => '30', '60' => '60', '90' => '90', '120' => '120'),
+							'desc'        => '',
+                                                        'default'     => 30, 
+							'current_value'     => array( '30' ),
+							'after_field' => esc_html__( 'minutes', 'mainwp-child-reports' ) . $checkbox_hide_childs, // to add checkbox
+						),                                                
 						array(
 							'name'        => 'delete_all_records',
-							'title'       => $title,
+							'title'       => 'Reset ' . $branding_name . ' Reports Database',
 							'type'        => 'link',
 							'href'        => add_query_arg(
 								array(
@@ -252,7 +271,7 @@ class MainWP_WP_Stream_Settings {
 	public static function register_settings() {
 		$sections = self::get_fields();
 
-		register_setting( self::$option_key, self::$option_key );
+		register_setting( self::$option_key, self::$option_key, array( 'MainWP_WP_Stream_Settings', 'sanitize_settings' ) );                
 
 		foreach ( $sections as $section_name => $section ) {
 			add_settings_section(
@@ -280,7 +299,16 @@ class MainWP_WP_Stream_Settings {
 			}
 		}
 	}
-
+        
+        public static function sanitize_settings( $input ) {
+            if (isset($_POST['mainwp_creport_hide_child_plugins'])) {
+                update_option('mainwp_creport_hide_child_plugins', 'yes');
+            } else {
+                update_option('mainwp_creport_hide_child_plugins', 'no');
+            }		
+            return $input;
+	}
+  
 	public static function updated_option_trigger_flush_rules( $old_value, $new_value ) {
 		if ( is_array( $new_value ) && is_array( $old_value ) ) {
 			$new_value = ( array_key_exists( 'general_private_feeds', $new_value ) ) ? $new_value['general_private_feeds'] : 0;
@@ -307,7 +335,8 @@ class MainWP_WP_Stream_Settings {
 		$nonce         = isset( $field['nonce'] ) ? $field['nonce'] : null;
 		$current_value = self::$options[ $section . '_' . $name ];
 		$option_key    = self::$option_key;
-
+                
+                    
 		if ( is_callable( $current_value ) ) {
 			$current_value = call_user_func( $current_value );
 		}
@@ -382,11 +411,11 @@ class MainWP_WP_Stream_Settings {
 				}
 				$output .= '</fieldset></div>';
 				break;
-			case 'select':
-				$current_value = (array) self::$options[ $section . '_' . $name ];
+			case 'select':                                
+                                $current_value = (array) self::$options[ $section . '_' . $name ];                                       
 				$default_value = isset( $default['value'] ) ? $default['value'] : '-1';
 				$default_name  = isset( $default['name'] ) ? $default['name'] : 'Choose Setting';
-
+                                                                
 				$output  = sprintf(
 					'<select name="%1$s[%2$s_%3$s]" id="%1$s_%2$s_%3$s">',
 					esc_attr( $option_key ),
@@ -396,18 +425,19 @@ class MainWP_WP_Stream_Settings {
 				$output .= sprintf(
 					'<option value="%1$s" %2$s>%3$s</option>',
 					esc_attr( $default_value ),
-					checked( in_array( $default_value, $current_value ), true, false ),
+					selected( in_array( $default_value, $current_value ), true, false ),
 					esc_html( $default_name )
 				);
 				foreach ( $field['choices'] as $value => $label ) {
 					$output .= sprintf(
 						'<option value="%1$s" %2$s>%3$s</option>',
 						esc_attr( $value ),
-						checked( in_array( $value, $current_value ), true, false ),
+						selected( in_array( $value, $current_value ), true, false ),
 						esc_html( $label )
 					);
 				}
 				$output .= '</select>';
+                                $output .= $after_field;
 				break;
 			case 'file':
 				$output = sprintf(

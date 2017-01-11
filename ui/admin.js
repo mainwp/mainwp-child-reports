@@ -52,7 +52,8 @@ jQuery(function( $ ) {
 					datatype: 'json',
 					data: function( term ) {
 						return {
-							action: 'mainwp_wp_stream_filters',
+							action: 'mainwp_wp_stream_filters', 
+                                                        nonce: $( '#mainwp_creport_filters_user_search_nonce' ).val(),
 							filter: $( el ).attr( 'name' ),
 							q: term
 						};
@@ -428,7 +429,7 @@ jQuery(function( $ ) {
 
 		//Enable Live Update Checkbox Ajax
 		$( '#enable_live_update' ).click(function() {
-			var nonce   = $( '#stream_live_update_nonce' ).val();
+			var nonce   = $( '#mainwp_creport_live_update_nonce' ).val();
 			var user    = $( '#enable_live_update_user' ).val();
 			var checked = 'unchecked';
 			if ( $( '#enable_live_update' ).is( ':checked' ) ) {

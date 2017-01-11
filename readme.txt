@@ -36,7 +36,7 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 
 == Changelog ==
 
-= 1.2 - 11-9-2016
+= 1.2 - 11-9-2016 =
 * Fixed: Issue with hiding the plugin in Client Reports
 * Fixed: Conflict with the auto backup feature of the UpdraftPlus Backups plugin (#8435)
 * Fixed: Issue with double records for the UpdraftPlus backups

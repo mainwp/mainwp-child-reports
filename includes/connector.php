@@ -54,24 +54,52 @@ abstract class MainWP_WP_Stream_Connector {
 		
 		$created_timestamp = null;
                 
-                if (is_array($contexts)) {                     
+                if (is_array($contexts) && is_array($args)) {      
+                    
+                    if (isset($contexts['plugins']) && !empty($contexts['plugins']) ) {
+                        if (isset($args['slug']) && ( $args['slug'] == 'mainwp-child/mainwp-child.php' || $args['slug'] ==  'mainwp-child-reports/mainwp-child-reports.php' )) {                            
+                            $hide_child_plugins = get_option('mainwp_creport_hide_child_plugins', 'yes');
+                            if ($hide_child_plugins == 'yes') {
+                                return false;
+                            } else {
+                                $branding_text = MainWP_WP_Stream_Admin::get_branding_title();                                
+                                if (!empty($branding_text)) {                
+                                    if ($args['slug'] == 'mainwp-child/mainwp-child.php') {
+                                        $args['name'] = $branding_text;
+                                    } else {
+                                        $args['name'] = $branding_text . ' Reports';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
                     $created_timestamp = 0;
-                    $backup_context = '';                    
+                    $child_context = '';                    
                     
                     if ( isset($contexts['backwpup_backups']) ) {                            
-                        $backup_context = 'backwpup_backups';
+                        $child_context = 'backwpup_backups';
                     } elseif ( isset($contexts['backupwordpress_backups']) ) {                        
-                        $backup_context = 'backupwordpress_backups';                            		
+                        $child_context = 'backupwordpress_backups';                            		
                     } elseif ( isset($contexts['backupbuddy_backups']) ) {                        
-                        $backup_context = 'backupbuddy_backups';                            		
+                        $child_context = 'backupbuddy_backups';                            		
+                    } elseif ( isset($contexts['wordfence_scans']) ) {                        
+                        $child_context = 'wordfence_scans';                            		
                     } 
                     
-                    if ( !empty($backup_context) ) {
-                        $created_timestamp = is_array($args) && isset($args['backup_time']) ? $args['backup_time'] : null;			                        
+                    if ( !empty($child_context) ) {
+                        if (is_array($args)) {
+                            if (isset($args['backup_time'])) {
+                                $created_timestamp = $args['backup_time'];
+                            } else if (isset($args['scan_time'])) {
+                                $created_timestamp = $args['scan_time'];
+                            }
+                        }
+                        
                         if (empty($created_timestamp) ) 
                             return;                        
                         
-                        $saved_item = MainWP_WP_Stream_Log::get_instance()->get_log( array( 'context' => $backup_context, 'created' =>  get_gmt_from_date( date("Y-m-d H:i:s", $created_timestamp ) ) ) );			
+                        $saved_item = MainWP_WP_Stream_Log::get_instance()->get_log( array( 'context' => $child_context, 'created' =>  date("Y-m-d H:i:s", $created_timestamp ) ) );
                         
                         if ($saved_item)
                             return;	                    

@@ -469,7 +469,8 @@ class MainWP_WP_Stream_List_Table extends WP_List_Table {
 		}
 
 		$filters_string .= sprintf( '<input type="submit" id="record-query-submit" class="button" value="%s">', __( 'Filter', 'default' ) );
-
+                $filters_string .= wp_nonce_field( 'mainwp_creport_filters_user_search_nonce', 'mainwp_creport_filters_user_search_nonce' );
+                
 		$url = self_admin_url( MainWP_WP_Stream_Admin::ADMIN_PARENT_PAGE );
 
 		printf( '<div class="alignleft actions">%s</div>', $filters_string ); // xss ok
@@ -632,7 +633,7 @@ class MainWP_WP_Stream_List_Table extends WP_List_Table {
 		$user_id = get_current_user_id();
 		$option  = get_user_meta( $user_id, 'stream_live_update_records', true );
 
-		$stream_live_update_records_nonce = wp_create_nonce( 'stream_live_update_records_nonce' );
+		$mainwp_creport_live_update_records_nonce = wp_create_nonce( 'mainwp_creport_live_update_records_nonce' );
 
 		ob_start();
 		?>
@@ -640,7 +641,7 @@ class MainWP_WP_Stream_List_Table extends WP_List_Table {
 			<h5><?php esc_html_e( 'Live updates', 'mainwp-child-reports' ) ?></h5>
 
 			<div>
-				<input type="hidden" name="stream_live_update_nonce" id="stream_live_update_nonce" value="<?php echo esc_attr( $stream_live_update_records_nonce ) ?>" />
+				<input type="hidden" name="mainwp_creport_live_update_nonce" id="mainwp_creport_live_update_nonce" value="<?php echo esc_attr( $mainwp_creport_live_update_records_nonce ) ?>" />
 			</div>
 			<div>
 				<input type="hidden" name="enable_live_update_user" id="enable_live_update_user" value="<?php echo absint( $user_id ) ?>" />
