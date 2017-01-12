@@ -46,9 +46,23 @@ class MainWP_WP_Stream_Install {
 			return;
 		}   
 		
-		global $wpdb;		
-		if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "mainwp_stream'" ) !== $wpdb->prefix . "mainwp_stream" ) 
+		global $wpdb;	
+                
+		if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "mainwp_stream'" ) !== $wpdb->prefix . "mainwp_stream" )  {
 			self::$db_version = false;	
+                } else {                    
+                    if (false === get_option('mainwp_creport_first_time_activated')) {                        
+                        $sql = "SELECT MIN( created ) AS first_time " .
+                                "FROM {$wpdb->prefix}mainwp_stream " . 
+                                "WHERE created != '0000-00-00 00:00:00'";                                
+                        $result = $wpdb->get_results( $sql, ARRAY_A );                 
+                        $time = time();
+                        if (isset($result[0]) && !empty($result[0]['first_time'])) {
+                            $time = strtotime( $result[0]['first_time'] );                            
+                        } 
+                        update_option('mainwp_creport_first_time_activated', $time);
+                    }
+                }
 		
 		if ( empty( self::$db_version ) ) {
 			self::install( self::$current );		
@@ -355,8 +369,10 @@ class MainWP_WP_Stream_Install {
             $prefix = self::$table_prefix;
                 
             if (version_compare($current_version, '0.0.4', '<')) {
-                $wpdb->query( "ALTER TABLE {$prefix}mainwp_stream_meta CHANGE `meta_value` `meta_value` TEXT " . ( !empty($wpdb->charset) ? "CHARACTER SET " . $wpdb->charset : "" ) . ( !empty($wpdb->collate) ? " COLLATE " . $wpdb->collate : "" ) . " NOT NULL;");
-                $wpdb->query( "ALTER TABLE {$prefix}mainwp_stream_meta DROP INDEX meta_value");
+                $wpdb->query( "ALTER TABLE {$prefix}mainwp_stream_meta CHANGE `meta_value` `meta_value` TEXT " . ( !empty($wpdb->charset) ? "CHARACTER SET " . $wpdb->charset : "" ) . ( !empty($wpdb->collate) ? " COLLATE " . $wpdb->collate : "" ) . " NOT NULL;");                
+                if ( $wpdb->get_var( "SHOW INDEX FROM {$prefix}mainwp_stream_meta WHERE column_name = 'meta_value'")) {
+                    $wpdb->query( "ALTER TABLE {$prefix}mainwp_stream_meta DROP INDEX meta_value");
+                }
             }  
             
         }        

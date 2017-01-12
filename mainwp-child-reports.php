@@ -103,19 +103,6 @@ class MainWP_WP_Stream {
                     add_filter( 'all_plugins', array( $this, 'branding_child_plugin' ) );                            
                 }   
                 
-                if (false === get_option('mainwp_creport_first_time_activated')) {
-                    global $wpdb;
-
-                    $sql = "SELECT MIN( created ) AS first_time " .
-                            "FROM {$wpdb->prefix}mainwp_stream " . 
-                            "WHERE created != '0000-00-00 00:00:00'";                                
-                    $result = $wpdb->get_results( $sql, ARRAY_A );                 
-                    $time = time();
-                    if (isset($result[0]) && !empty($result[0]['first_time'])) {
-                        $time = strtotime( $result[0]['first_time'] );                            
-                    } 
-                    update_option('mainwp_creport_first_time_activated', $time);
-                }
 	}
 
 	static function fail_php_version() {
