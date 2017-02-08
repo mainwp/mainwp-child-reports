@@ -54,6 +54,16 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 		return $links;
 	}        
  
+        
+        public static function get_plugins() {
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		return get_plugins();
+	}
+        
+        
         public static function callback_mainwp_child_installPluginTheme($args ) {                
                 $logs    = array();
 		$success = isset($args['success']) ? $args['success'] : 0;
@@ -215,13 +225,12 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 				} else {
 					$slugs = array( $upgrader->skin->plugin );
 				}
-				$plugins = get_plugins();
+                                                                
 				foreach ( $slugs as $slug ) {
 					$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $slug );
 					$name        = $plugin_data['Name'];
 					$version     = $plugin_data['Version'];
-					$old_version = $plugins[ $slug ]['Version'];
-
+					$old_version = $upgrader->skin->plugin_info['Version']; // to fix old version 
 					$logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action' );
 				}
 			} else { // theme
@@ -264,7 +273,7 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 	}
 
 	public static function callback_activate_plugin( $slug, $network_wide ) {
-		$plugins      = get_plugins();                
+		$plugins      = self::get_plugins();                
 		$name         = $plugins[ $slug ]['Name'];
 		$network_wide = $network_wide ? __( 'network wide', 'mainwp-child-reports' ) : null;                
 		self::log(
@@ -280,7 +289,7 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 	}
 
 	public static function callback_deactivate_plugin( $slug, $network_wide ) {
-		$plugins      = get_plugins();
+		$plugins      = self::get_plugins();
 		$name         = $plugins[ $slug ]['Name'];
 		$network_wide = $network_wide ? __( 'network wide', 'mainwp-child-reports' ) : null;
 		self::log(
@@ -338,7 +347,7 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 			return false;
 		}
 
-		$_plugins = get_plugins();
+		$_plugins = self::get_plugins();
 
 		foreach ( $plugins as $plugin ) {
 			$plugins_to_delete[ $plugin ] = $_plugins[ $plugin ];
