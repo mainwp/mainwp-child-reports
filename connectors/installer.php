@@ -244,11 +244,11 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 					$stylesheet  = $theme['Stylesheet Dir'] . '/style.css';
 					$theme_data  = get_file_data( $stylesheet, array( 'Version' => 'Version' ) );
 					$name        = $theme['Name'];
-					$old_version = $theme['Version'];
+                                        $old_version = $upgrader->skin->theme_info->get('Version'); // to fix old version  //$theme['Version'];
 					$version     = $theme_data['Version'];
 
 					$logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action' );
-				}
+				}                                                             
 			}
 		} else {
 			return false;
