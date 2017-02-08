@@ -1,13 +1,13 @@
 === MainWP Child Reports ===
-Contributors: mainwp
+Contributors: MainWP
 Donate link: 
 Tags: MainWP Child Reports, MainWP, MainWP Child, MainWP Client Reports Extension, child reports, reports, actions, activity, admin, analytics, dashboard, log, notification, users, Backupwordpress, Updraftplus
-Author: mainwp
+Author: MainWP
 Author URI: https://mainwp.com
 Plugin URI: https://mainwp.com
 Requires at least: 3.6
-Tested up to: 4.6.1
-Stable tag: 1.2
+Tested up to: 4.7.2
+Stable tag: 1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,16 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 2. The MainWP Child Reports Settings Screen
 
 == Changelog ==
+
+= 1.3 - 8-2-2017 =
+* Fixed: an issue with recording duplicate values for UpdraftPlus backups
+* Fixed: multiple issues with recording backups made by supported plugins
+* Fixed: an issue with recording incorrect values for plugins and themes versions
+* Added: support for Wordfence tokens
+* Added: support for Maintanence tokens
+* Added: support for Page Speed tokens
+* Added: support for Broken Links tokens 
+* Updated: system compatibility udpates required by upcoming MainWP Client Reports Extension versoin
 
 = 1.2 - 11-9-2016 =
 * Fixed: Issue with hiding the plugin in Client Reports
