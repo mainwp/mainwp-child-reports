@@ -48,7 +48,9 @@ class MainWP_WP_Stream_Install {
 		
 		global $wpdb;	
                 
-		if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "mainwp_stream'" ) !== $wpdb->prefix . "mainwp_stream" )  {
+		if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "mainwp_stream'" ) !== $wpdb->prefix . "mainwp_stream" ||
+                        $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "mainwp_stream_meta'" ) !== $wpdb->prefix . "mainwp_stream_meta" 
+                        )  {
 			self::$db_version = false;	
                 } else {                    
                     if (false === get_option('mainwp_creport_first_time_activated')) {                        
@@ -339,8 +341,8 @@ class MainWP_WP_Stream_Install {
 			meta_key varchar(200) NOT NULL,
 			meta_value text NOT NULL,
 			PRIMARY KEY  (meta_id),
-			KEY record_id (record_id),
-			KEY meta_key (meta_key)
+			KEY record_id (record_id(100)),
+			KEY meta_key (meta_key(100))
 		)";
 
 		if ( ! empty( $wpdb->charset ) ) {
