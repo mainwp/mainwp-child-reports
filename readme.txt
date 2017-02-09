@@ -36,7 +36,7 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 
 == Changelog ==
 
-= 1.3 - 8-2-2017 =
+= 1.3 - 2-9-2017 =
 * Fixed: an issue with recording duplicate values for UpdraftPlus backups
 * Fixed: multiple issues with recording backups made by supported plugins
 * Fixed: an issue with recording incorrect values for plugins and themes versions
