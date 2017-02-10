@@ -341,7 +341,7 @@ class MainWP_WP_Stream_Install {
 			meta_key varchar(200) NOT NULL,
 			meta_value text NOT NULL,
 			PRIMARY KEY  (meta_id),
-			KEY record_id (record_id(100)),
+			KEY record_id (record_id),
 			KEY meta_key (meta_key(100))
 		)";
 
