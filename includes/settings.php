@@ -173,15 +173,14 @@ class MainWP_WP_Stream_Settings {
                         if (!class_exists('MainWP_WP_Stream_Admin'))
 				require_once MAINWP_WP_STREAM_INC_DIR . 'admin.php';                        
 			$branding_text = MainWP_WP_Stream_Admin::get_branding_title();
-			$branding_text = !empty($branding_text) ? 'Reset ' . $branding_text . ' Reports Database' : esc_html__( 'Reset MainWP Child Reports Database', 'mainwp-child-reports' );                        
                         $branding_name = !empty($branding_text) ? $branding_text : 'MainWP Child';
-                        $chk_label = 'Hide ' . $branding_name . ' and ' . $branding_name . ' Reports from reports';
-			$chk_desc = 'If selected, the ' . $branding_name . ' plugin and the ' . $branding_name . ' Reports plugin will be left out from reports for this site.';
+                        $chk_label = 'Hide ' . $branding_name . ' Reports from reports';
+			$chk_desc = 'If selected, the ' . $branding_name . ' Reports plugin will be left out from reports for this site.';
                         $hide_child_plugins = get_option('mainwp_creport_hide_child_plugins', 'yes');
                         // to fix can not set default checked checkbox
                         $checkbox_hide_childs = '<tr><th scope="row"><label for="mainwp_creport_hide_child_plugins">' . $chk_label;
                         $checkbox_hide_childs .= '</label></th><td><label><input name="mainwp_creport_hide_child_plugins" id="mainwp_creport_hide_child_plugins" value="1" type="checkbox" ' . ($hide_child_plugins == 'yes' ? 'checked' : '') . '> '; 
-                        $checkbox_hide_childs .= '</label><p class="description">' . $chk_desc . '.</p></td></tr>';
+                        $checkbox_hide_childs .= '</label><p class="description">' . $chk_desc . '</p></td></tr>';
                         
 			self::$fields = array(
 				'general' => array(
