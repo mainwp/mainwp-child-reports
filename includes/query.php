@@ -142,16 +142,24 @@ class MainWP_WP_Stream_Query {
 		 * PARSE DATE FILTERS
 		 */
 		if ( isset( $args['date'] ) && !empty( $args['date'] ) ) {
-			$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_reports.created) = %s", $args['date'] );
+                        $date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date'] ) ) );
+			//$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_reports.created) = %s", $date );
+                        $where .= " AND (DATE($wpdb->mainwp_reports.created) = STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
 		} else {
 			if ( isset($args['date_from']) && !empty($args['date_from']) ) {
-				$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_reports.created) >= %s", $args['date_from'] );
+                                $date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_from'] ) ) );
+				//$where .= $wpdb->prepare( " AND ($wpdb->mainwp_reports.created >= STR_TO_DATE(%s, '%Y-%m-%d %H:%i:%s'))", $date );                                
+                                $where .= " AND ($wpdb->mainwp_reports.created >= STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
 			}
 			if ( isset($args['date_to']) && !empty($args['date_to']) ) {
-				$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_reports.created) <= %s", $args['date_to'] );
+                                $date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_to'] ) ) );
+				//$where .= $wpdb->prepare( " AND ($wpdb->mainwp_reports.created <= STR_TO_DATE(%s, '%Y-%m-%d %H:%i:%s'))", $date );
+                                $where .= " AND ($wpdb->mainwp_reports.created <= STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
 			}                        
                         if ( isset($args['datetime_from']) && !empty($args['datetime_from']) ) {
-				$where .= $wpdb->prepare( " AND $wpdb->mainwp_reports.created >= %s", $args['datetime_from'] );
+                            $date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['datetime_from'] ) ) );
+				//$where .= $wpdb->prepare( " AND ($wpdb->mainwp_reports.created >= STR_TO_DATE(%s, '%Y-%m-%d %H:%i:%s'))", $args['datetime_from'] );
+                            $where .= " AND ($wpdb->mainwp_reports.created >= STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))"; 
 			}
 		} 
 
@@ -163,7 +171,9 @@ class MainWP_WP_Stream_Query {
 		}
 
 		if ( $args['created_greater_than'] ) {
-			$where .= $wpdb->prepare( " AND $wpdb->mainwp_reports.created > %s", date('Y-m-d H:i:s', $args['created_greater_than'] ) );
+                         $date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['created_greater_than'] ) ) );
+			//$where .= $wpdb->prepare( " AND $wpdb->mainwp_reports.created > %s", date('Y-m-d H:i:s', $args['created_greater_than'] ) );
+                        $where .= " AND ($wpdb->mainwp_reports.created > STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
 		}
 		
 		if ( $args['record__in'] ) {

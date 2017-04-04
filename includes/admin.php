@@ -174,8 +174,8 @@ class MainWP_WP_Stream_Admin {
         }
 		
 	public static function admin_enqueue_scripts( $hook ) {
-		wp_register_script( 'select2', MAINWP_WP_STREAM_URL . 'ui/select2/select2.min.js', array( 'jquery' ), '3.4.5', true );
-		wp_register_style( 'select2', MAINWP_WP_STREAM_URL . 'ui/select2/select2.css', array(), '3.4.5' );
+//		wp_register_script( 'select2', MAINWP_WP_STREAM_URL . 'ui/select2/select2.min.js', array( 'jquery' ), '3.4.5', true );
+//		wp_register_style( 'select2', MAINWP_WP_STREAM_URL . 'ui/select2/select2.css', array(), '3.4.5' );
 		wp_register_script( 'timeago', MAINWP_WP_STREAM_URL . 'ui/timeago/jquery.timeago.js', array(), '1.4.1', true );
 
 		$locale    = strtolower( substr( get_locale(), 0, 2 ) );
@@ -189,14 +189,16 @@ class MainWP_WP_Stream_Admin {
 
 		wp_enqueue_style( 'mainwp-wp-stream-admin', MAINWP_WP_STREAM_URL . 'ui/admin.css', array(), MainWP_WP_Stream::VERSION );
 		
-		$script_screens = array( 'plugins.php', 'user-edit.php', 'user-new.php', 'profile.php' );
+		//$script_screens = array( 'plugins.php', 'user-edit.php', 'user-new.php', 'profile.php' );
 
 		if ( 'index.php' === $hook ) {
 			
-		} elseif ( in_array( $hook, self::$screen_id ) || in_array( $hook, $script_screens ) || $hook == 'settings_page_mainwp-reports-page' ) {
-			
-			wp_enqueue_script( 'select2' );
-			wp_enqueue_style( 'select2' );
+		} elseif ( in_array( $hook, self::$screen_id ) || $hook == 'settings_page_mainwp-reports-page' ) {
+			wp_register_script( 'child-report-select2', MAINWP_WP_STREAM_URL . 'ui/select2/select2.min.js', array( 'jquery' ), '3.4.5', true );
+                        wp_register_style( 'child-report-select2', MAINWP_WP_STREAM_URL . 'ui/select2/select2.css', array(), '3.4.5' );
+		
+			wp_enqueue_script( 'child-report-select2' );
+			wp_enqueue_style( 'child-report-select2' );
 
 			wp_enqueue_script( 'timeago' );
 			wp_enqueue_script( 'timeago-locale' );
