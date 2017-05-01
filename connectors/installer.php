@@ -224,14 +224,15 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 					$slugs = $extra['plugins'];
 				} else {
 					$slugs = array( $upgrader->skin->plugin );
-				}
-                                                                
+				}                
 				foreach ( $slugs as $slug ) {
 					$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $slug );
 					$name        = $plugin_data['Name'];
 					$version     = $plugin_data['Version'];
-					$old_version = $upgrader->skin->plugin_info['Version']; // to fix old version 
-					$logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action' );
+					$old_version = $upgrader->skin->plugin_info['Version']; // to fix old version                                     
+                    if (version_compare($version, $old_version, '>')) { // to fix
+                        $logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action' );
+                    }
 				}
 			} else { // theme
 				if ( isset( $extra['bulk'] ) && true == $extra['bulk'] ) {
@@ -244,10 +245,11 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 					$stylesheet  = $theme['Stylesheet Dir'] . '/style.css';
 					$theme_data  = get_file_data( $stylesheet, array( 'Version' => 'Version' ) );
 					$name        = $theme['Name'];
-                                        $old_version = $upgrader->skin->theme_info->get('Version'); // to fix old version  //$theme['Version'];
+                    $old_version = $upgrader->skin->theme_info->get('Version'); // to fix old version  //$theme['Version'];
 					$version     = $theme_data['Version'];
-
-					$logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action' );
+                    if (version_compare($version, $old_version, '>')) { // to fix
+                        $logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action' );
+                    }
 				}                                                             
 			}
 		} else {
