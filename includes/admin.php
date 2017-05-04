@@ -422,6 +422,10 @@ class MainWP_WP_Stream_Admin {
 		}
 
 		$days = $options['general_records_ttl'];
+        
+        if (empty($days))
+            return;
+        
 		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
 
 		$date->sub( DateInterval::createFromDateString( "$days days" ) );
