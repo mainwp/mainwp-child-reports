@@ -16,7 +16,8 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 		'_core_updated_successfully',
 		'mainwp_child_installPluginTheme',
 		'mainwp_child_plugin_action',
-		'mainwp_child_theme_action'
+		'mainwp_child_theme_action',
+        'mainwp_child_upgradePluginTheme'
 	);
 
 	public static function get_label() {
@@ -148,7 +149,7 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
             }
 	}
         
-        public static function callback_mainwp_child_theme_action($args) {
+    public static function callback_mainwp_child_theme_action($args) {
             if (!is_array($args) || !isset($args['action']))
                 return;
             $action = $args['action'];
@@ -164,6 +165,10 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 	}
         
 	public static function callback_upgrader_process_complete( $upgrader, $extra ) {
+        // do not logging if update from mainwp dashboard
+        if (isset($_POST['mainwpsignature']) && isset($_POST['function']) && $_POST['function'] == 'upgradeplugintheme') {
+            return false;
+        }
 		$logs    = array();
 		$success = ! is_wp_error( $upgrader->skin->result );
 		$error   = null;
@@ -274,6 +279,62 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 		}
 	}
 
+    public static function callback_mainwp_child_upgradePluginTheme( $extra ) {
+		$logs    = array();
+		
+		if ( ! isset( $extra['type'] ) ) {
+			return false;
+		}
+
+		$type   = $extra['type'];
+		$action = $extra['action'];
+
+		if ( ! in_array( $type, array( 'plugin', 'theme' ) ) ) {
+			return;
+		}
+
+		if ( 'update' === $action ) {
+            if ( 'plugin' === $type ) {				
+				$slug    = $extra['slug'];
+				$name    = $extra['name'];
+				$version = $extra['version'];  
+                $old_version = $extra['old_version'];
+			} else { // theme
+				$name    = $extra['name'];
+				$version = $extra['version'];
+                $old_version = $extra['old_version'];
+			}
+            
+			$action  = 'updated';
+			$message = _x(
+				'Updated %1$s: %2$s %3$s',
+				'Plugin/theme update. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
+				'mainwp_child_reports'
+			);
+            $logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action' );			
+		} else {
+			return false;
+		}
+
+		$context = $type . 's';
+
+		foreach ( $logs as $log ) {
+			$name        = isset( $log['name'] ) ? $log['name'] : null;
+			$version     = isset( $log['version'] ) ? $log['version'] : null;
+			$slug        = isset( $log['slug'] ) ? $log['slug'] : null;
+			$old_version = isset( $log['old_version'] ) ? $log['old_version'] : null;
+			$message     = isset( $log['message'] ) ? $log['message'] : null;
+			$action      = isset( $log['action'] ) ? $log['action'] : null;
+			self::log(
+				$message,
+				compact( 'type', 'name', 'version', 'slug', 'success', 'error', 'old_version' ),
+				null,
+				array( $context => $action )
+			);
+		}
+	}
+
+    
 	public static function callback_activate_plugin( $slug, $network_wide ) {
 		$plugins      = self::get_plugins();                
 		$name         = $plugins[ $slug ]['Name'];
