@@ -84,24 +84,24 @@ class MainWP_WP_Stream {
 		require_once MAINWP_WP_STREAM_INC_DIR . 'context-query.php';
 		$this->plugin_slug    = plugin_basename( __FILE__ );
 		
-                require_once MAINWP_WP_STREAM_INC_DIR . 'admin.php';
-                add_action( 'plugins_loaded', array( 'MainWP_WP_Stream_Admin', 'load' ) );
+        require_once MAINWP_WP_STREAM_INC_DIR . 'admin.php';
+        add_action( 'plugins_loaded', array( 'MainWP_WP_Stream_Admin', 'load' ) );
 
 
-                // Registers a hook that connectors and other plugins can use whenever a stream update happens
-                add_action( 'admin_init', array( __CLASS__, 'update_activation_hook' ) );
+        // Registers a hook that connectors and other plugins can use whenever a stream update happens
+        add_action( 'admin_init', array( __CLASS__, 'update_activation_hook' ) );
 
-                require_once MAINWP_WP_STREAM_INC_DIR . 'dashboard.php';
-                add_action( 'plugins_loaded', array( 'MainWP_WP_Stream_Dashboard_Widget', 'load' ) );
+        require_once MAINWP_WP_STREAM_INC_DIR . 'dashboard.php';
+        add_action( 'plugins_loaded', array( 'MainWP_WP_Stream_Dashboard_Widget', 'load' ) );
 
-                require_once MAINWP_WP_STREAM_INC_DIR . 'live-update.php';
-                add_action( 'plugins_loaded', array( 'MainWP_WP_Stream_Live_Update', 'load' ) );
-                add_filter( 'plugin_row_meta', array( &$this, 'plugin_row_meta' ), 10, 2 );
-                // branding proccess                        
-                $cancelled_branding = ( get_option( 'mainwp_child_branding_disconnected' ) === 'yes' ) && ! get_option( 'mainwp_branding_preserve_branding' );
-                if ( !$cancelled_branding ) {                            
-                    add_filter( 'all_plugins', array( $this, 'branding_child_plugin' ) );                            
-                }   
+        require_once MAINWP_WP_STREAM_INC_DIR . 'live-update.php';
+        add_action( 'plugins_loaded', array( 'MainWP_WP_Stream_Live_Update', 'load' ) );
+        add_filter( 'plugin_row_meta', array( &$this, 'plugin_row_meta' ), 10, 2 );
+        // branding proccess                        
+        $cancelled_branding = ( get_option( 'mainwp_child_branding_disconnected' ) === 'yes' ) && ! get_option( 'mainwp_branding_preserve_branding' );
+        if ( !$cancelled_branding ) {                            
+            add_filter( 'all_plugins', array( $this, 'branding_child_plugin' ) );                            
+        }   
                 
 	}
 
@@ -172,7 +172,7 @@ class MainWP_WP_Stream {
 		} 
 	}
         
-        static function update_activation_hook() {
+    static function update_activation_hook() {
 		MainWP_WP_Stream_Admin::register_update_hook( dirname( plugin_basename( __FILE__ ) ), array( __CLASS__, 'install' ), self::VERSION );
 	}
 

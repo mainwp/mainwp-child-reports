@@ -95,7 +95,10 @@ class MainWP_WP_Stream_Admin {
             if (!is_array($last_backup))
                 return $last_backup;
 
-            if (isset($last_backup['backup_time'])) {                                      
+            if (isset($last_backup['backup_time'])) {    
+                    if (empty($last_backup['success']))
+                        return false;
+                    
                     $date = $last_backup['backup_time'];
                     $backup = $last_backup['backup_array'];
                     
@@ -218,6 +221,7 @@ class MainWP_WP_Stream_Admin {
 					'current_page'   => isset( $_GET['paged'] ) ? esc_js( $_GET['paged'] ) : '1',
 					'current_order'  => isset( $_GET['order'] ) ? esc_js( $_GET['order'] ) : 'desc',
 					'current_query'  => json_encode( $_GET ),
+                    'current_query_count'  => count( $_GET ),
 					'filters'        => self::$list_table ? self::$list_table->get_filters() : false,
 					'locale'     => esc_js( $locale )					
 				)

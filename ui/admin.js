@@ -329,6 +329,11 @@ jQuery(function( $ ) {
 			return;
 		}
 
+                // Do not run if there are filters in use
+		if ( parseInt( mainwp_wp_stream.current_query_count, 10 ) > 1 ) {
+			return;
+		}
+                
 		var list_sel = '.mainwp_child_reports_wrap #the-list';
 
 		// Set initial beat to fast. WP is designed to slow this to 15 seconds after 2.5 minutes.

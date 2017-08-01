@@ -29,9 +29,10 @@ class MainWP_WP_Stream_Connectors {
 			'updraftplus',
 			'backupwordpress',
 			'backwpup',
-                        'backupbuddy',
-                        'wordfence',
-                        'maintenance',
+            'backupbuddy',
+            'wordfence',
+            'maintenance',
+            'wptimecapsule',
 		);
 		$classes = array();
 		foreach ( $connectors as $connector ) {
