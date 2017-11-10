@@ -84,8 +84,6 @@ abstract class MainWP_WP_Stream_Connector {
                 $child_context = 'backupbuddy_backups';                            		
             } elseif ( isset($contexts['wordfence_scans']) ) {                        
                 $child_context = 'wordfence_scans';                            		
-            } elseif ( isset($contexts['wptimecapsule_backups']) ) {                        
-                $child_context = 'wptimecapsule_backups';                            		
             } 
 
             if ( !empty($child_context) ) {
