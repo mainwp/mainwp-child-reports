@@ -650,7 +650,7 @@ class Carbon extends DateTime
     *
     * @return Carbon
     */
-   public function setTime($hour, $minute, $second = 0)
+   public function setTime($hour, $minute, $second = null, $microseconds = null)
    {
       return $this->hour($hour)->minute($minute)->second($second);
    }
