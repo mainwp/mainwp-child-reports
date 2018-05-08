@@ -450,8 +450,7 @@ class MainWP_WP_Stream_Admin {
 				ON `meta`.`record_id` = `stream`.`ID`
 				WHERE `stream`.`type` = %s
 				$where;",
-				'stream',
-				$date->format( 'Y-m-d H:i:s' )
+				'stream'
 			)
 		);
 	}
