@@ -5,6 +5,7 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 	public static $name = 'installer';
 
 	public static $actions = array(
+	    'upgrader_pre_install', // use to the current version of all plugins, before they are upgraded ( Net-Concept - Xavier NUEL )
 		'upgrader_process_complete', // plugins::installed | themes::installed
 		'activate_plugin', // plugins::activated
 		'deactivate_plugin', // plugins::deactivated
@@ -19,6 +20,7 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 		'mainwp_child_theme_action',
         'mainwp_child_upgradePluginTheme'
 	);
+	public static $old_plugins = array();
 
 	public static function get_label() {
 		return __( 'Installer', 'mainwp-child-reports' );
@@ -64,9 +66,13 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 		return get_plugins();
 	}
         
-        
-        public static function callback_mainwp_child_installPluginTheme($args ) {                
-                $logs    = array();
+	// ( Net-Concept - Xavier NUEL ) : save all plugins versions before upgrade
+	public static function callback_upgrader_pre_install() {        
+		self::$old_plugins = self::get_plugins();        
+	}
+
+	public static function callback_mainwp_child_installPluginTheme($args) {
+		$logs = array();
 		$success = isset($args['success']) ? $args['success'] : 0;
 		$error   = null;
 
@@ -234,10 +240,18 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 					$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $slug );
 					$name        = $plugin_data['Name'];
 					$version     = $plugin_data['Version'];
-					$old_version = $upgrader->skin->plugin_info['Version']; // to fix old version                                     
-                    if (version_compare($version, $old_version, '>')) { // to fix
-                        $logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action' );
-                    }
+                    
+//                     ( Net-Concept - Xavier NUEL ) : get old versions
+					if (isset(self::$old_plugins[$slug])) {
+						$old_version = self::$old_plugins[$slug]['Version'];
+					} else {
+                      //$old_version = ''; // Hummm... will this happen ?
+                      $old_version = $upgrader->skin->plugin_info['Version']; // to fix old version
+					}                    
+					
+                    if (version_compare($version, $old_version, '>')) {
+						$logs[] = compact('slug', 'name', 'old_version', 'version', 'message', 'action');
+					}
 				}
 			} else { // theme
 				if ( isset( $extra['bulk'] ) && true == $extra['bulk'] ) {
@@ -335,7 +349,7 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 	}
 
     
-	public static function callback_activate_plugin( $slug, $network_wide ) {
+	public static function callback_activate_plugin( $slug, $network_wide = false ) {
 		$plugins      = self::get_plugins();                
 		$name         = $plugins[ $slug ]['Name'];
 		$network_wide = $network_wide ? __( 'network wide', 'mainwp-child-reports' ) : null;                
@@ -351,7 +365,7 @@ class MainWP_WP_Stream_Connector_Installer extends MainWP_WP_Stream_Connector {
 		);
 	}
 
-	public static function callback_deactivate_plugin( $slug, $network_wide ) {
+	public static function callback_deactivate_plugin( $slug, $network_wide = false) {
 		$plugins      = self::get_plugins();
 		$name         = $plugins[ $slug ]['Name'];
 		$network_wide = $network_wide ? __( 'network wide', 'mainwp-child-reports' ) : null;

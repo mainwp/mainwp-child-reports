@@ -167,7 +167,7 @@ class MainWP_WP_Stream_Query {
 		}
 
 		if ( $args['created_greater_than'] ) {
-            $date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['created_greater_than'] ) ) );
+            $date   = date( 'Y-m-d H:i:s', $args['created_greater_than'] );            
             $where .= " AND ($wpdb->mainwp_reports.created > STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
 		}
 		

@@ -182,12 +182,8 @@ class MainWP_WP_Stream_List_Table extends WP_List_Table {
 				$out  = $this->column_link( $date_string, 'date', get_date_from_gmt( $created, 'Y/m/d' ) );
 				$out .= '<br />';				
 				$out .= get_date_from_gmt( $created, 'h:i:s A' );
-				$out .= '<span class="timestamp" timestamp="' . strtotime( $item->created ) . '"></span>';
-				
-				
-				
+				$out .= '<span class="timestamp" timestamp="' . strtotime( $item->created ) . '"></span>';                
 				break;
-
 			case 'summary' :
 				$out = $item->summary;
 				if ( $item->object_id ) {

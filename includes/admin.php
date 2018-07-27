@@ -394,7 +394,7 @@ class MainWP_WP_Stream_Admin {
 	private static function reset_stream_settings() {
 		global $wpdb;
 
-		$blogs = wp_get_sites();
+		$blogs = get_sites();
 
 		if ( $blogs ) {
 			foreach ( $blogs as $blog ) {

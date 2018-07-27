@@ -100,7 +100,7 @@ class MainWP_WP_Stream_Context_Query {
 					}
 					$compare_string = '(' . substr( str_repeat( ',%s', count( $value ) ), 1 ) . ')';
 				} elseif ( 'LIKE' === substr( $compare, -4 ) ) {
-					$value          = '%' . like_escape( $value ) . '%';
+					$value          = '%' .  $wpdb->esc_like( $value ) . '%';
 					$compare_string = '%s';
 				} else {
 					$compare_string = '%s';

@@ -309,7 +309,7 @@ class MainWP_WP_Stream_Network {
 			);
 
 			// add all sites
-			foreach ( (array) wp_get_sites() as $blog ) {
+			foreach ( (array) get_sites() as $blog ) {
 				$blog_data = get_blog_details( $blog );
 
 				$blogs[ $blog['blog_id'] ] = array(

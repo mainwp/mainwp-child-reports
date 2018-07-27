@@ -134,7 +134,7 @@ class MainWP_WP_Stream_Settings {
 					ORDER BY inet_aton(`ip`) ASC
 					LIMIT %d;
 				",
-				like_escape( $_POST['find'] ) . '%',
+				 $wpdb->esc_like( $_POST['find'] ) . '%',
 				$_POST['limit']
 			)
 		);
