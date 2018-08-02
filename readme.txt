@@ -6,8 +6,8 @@ Author: mainwp
 Author URI: https://mainwp.com
 Plugin URI: https://mainwp.com
 Requires at least: 3.6
-Tested up to: 4.7.4
-Stable tag: 1.7
+Tested up to: 4.9.8
+Stable tag: 1.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,12 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 2. The MainWP Child Reports Settings Screen
 
 == Changelog ==
+
+= 1.8 - 8-2-2018 =
+* Fixed: an issue with logging plugin installations
+* Fixed: an issue with displaying double records
+* Fixed: multiple PHP Warnings
+* Improved: support for UpdraftPlus backups
 
 = 1.7 - 5-12-2017 =
 * Fixed: an issue with recording version numbers
