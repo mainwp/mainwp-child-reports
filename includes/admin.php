@@ -11,7 +11,7 @@ class MainWP_WP_Stream_Admin {
 
 	const ADMIN_BODY_CLASS     = 'mainwp_wp_stream_screen';
 	const RECORDS_PAGE_SLUG    = 'mainwp-reports-page';
-	const SETTINGS_PAGE_SLUG   = 'mainwp_wp_stream_settings';	
+	const SETTINGS_PAGE_SLUG   = 'mainwp_wp_stream_settings';
 	const ADMIN_PARENT_PAGE    = 'options-general.php';
 	const VIEW_CAP             = 'view_stream';
 	const SETTINGS_CAP         = 'manage_options';
@@ -26,7 +26,7 @@ class MainWP_WP_Stream_Admin {
 
 		// Register settings page
 		if (get_option('mainwp_creport_branding_stream_hide') !== "hide") {
-			add_filter( 'mainwp-child-init-subpages', array( __CLASS__, 'init_subpages' ) );						
+			add_filter( 'mainwp-child-init-subpages', array( __CLASS__, 'init_subpages' ) );
 		}
 
 		// Admin notices
@@ -58,12 +58,12 @@ class MainWP_WP_Stream_Admin {
 
 		// Ajax author's name by ID
 		add_action( 'wp_ajax_mainwp_wp_stream_get_filter_value_by_id', array( __CLASS__, 'get_filter_value_by_id' ) );
-                
-		add_filter('updraftplus_save_last_backup', array( __CLASS__, 'hookUpdraftplusSaveLastBackup' ));                
+
+		add_filter('updraftplus_save_last_backup', array( __CLASS__, 'hookUpdraftplusSaveLastBackup' ));
                 // hmbkp_backup_complete
-		add_action('mainwp_child_reports_log', array( __CLASS__, 'hook_reports_log' ), 10, 1);                                
+		add_action('mainwp_child_reports_log', array( __CLASS__, 'hook_reports_log' ), 10, 1);
 	}
-	
+
 	public static function get_branding_title() {
 		if (self::$brandingTitle  === null) {
 			$cancelled_branding = ( get_option( 'mainwp_child_branding_disconnected' ) === 'yes' ) && ! get_option( 'mainwp_branding_preserve_branding' );
@@ -72,7 +72,7 @@ class MainWP_WP_Stream_Admin {
 				self::$brandingTitle   = stripslashes( $branding_header['name'] );
 			} else {
 				self::$brandingTitle = '';
-			}	
+			}
 		}
 		return self::$brandingTitle;
 	}
@@ -86,22 +86,22 @@ class MainWP_WP_Stream_Admin {
 				break;
 			case 'child_reports_settings_reset':
 				printf( '<div class="updated"><p>%s</p></div>', __( 'All site settings have been successfully reset.', 'mainwp-child-reports' ) );
-				break;			
-		}		
+				break;
+		}
 	}
-        
-        public static function hookUpdraftplusSaveLastBackup($last_backup) {                 
-            
+
+        public static function hookUpdraftplusSaveLastBackup($last_backup) {
+
             if (!is_array($last_backup))
                 return $last_backup;
 
-            if (isset($last_backup['backup_time'])) {    
+            if (isset($last_backup['backup_time'])) {
                     if (empty($last_backup['success']))
-                        return false;
-                    
-                    $date = $last_backup['backup_time'];
+                        return $last_backup;
+
+                    $backup_time = $last_backup['backup_time'];
                     $backup = $last_backup['backup_array'];
-                    
+
                     $message = "";
                     $backup_type = "";
                     if (isset($backup['db'])) {
@@ -118,8 +118,8 @@ class MainWP_WP_Stream_Admin {
                         $backup_type .= "themes, ";
                     }
 
-                    $message = rtrim($message, ', ');                                
-                    $message = "Updraftplus backup " . $message ." finished"; 
+                    $message = rtrim($message, ', ');
+                    $message = "Updraftplus backup " . $message ." finished";
 
                     $backup_type = rtrim($backup_type, ', ');
 
@@ -129,18 +129,20 @@ class MainWP_WP_Stream_Admin {
                     } else if (isset($backup['themes-size'])) {
                         $size = $backup['themes-size'];
                     }
-                    $destination = "";                          
-                    do_action("updraftplus_backup", $destination , $message, __('Finished', 'mainwp-child-reports'), $backup_type, $date);                    
+                    $destination = "";
+
+                    // to logging updraftplus backup
+                    do_action("updraftplus_backup", $destination , $message, __('Finished', 'mainwp-child-reports'), $backup_type, $backup_time);
             }
             return $last_backup;
         }
-        
-        public static function hook_reports_log($ext_name = '') {            
+
+        public static function hook_reports_log($ext_name = '') {
             do_action('mainwp_child_log', $ext_name);
         }
 
-        static function get_record_meta_data($record, $meta_key) { 
-        
+        static function get_record_meta_data($record, $meta_key) {
+
             if (empty($record))
                 return "";
             $value = "";
@@ -148,23 +150,23 @@ class MainWP_WP_Stream_Admin {
                 $meta = $record->meta;
                 if (isset($meta[$meta_key])) {
                     $value = $meta[$meta_key];
-                    $value = current($value); 
+                    $value = current($value);
                     if ($meta_key == "author_meta") {
-                        $value = unserialize($value); 
-                        $value = $value['display_name'];                    
+                        $value = unserialize($value);
+                        $value = $value['display_name'];
                     }
 
-                }             
+                }
             }
-            return $value;            
+            return $value;
         }
-	
+
         public static function init_subpages($subPages = array()) {
                 if ( is_network_admin() && ! is_plugin_active_for_network( MAINWP_WP_STREAM_PLUGIN ) ) {
                         return $subPages;
-                }	
+                }
 
-                $branding_text = MainWP_WP_Stream_Admin::get_branding_title();			
+                $branding_text = MainWP_WP_Stream_Admin::get_branding_title();
                 if (empty($branding_text)) {
                         $branding_text = 'Child Reports';
                 } else {
@@ -173,9 +175,9 @@ class MainWP_WP_Stream_Admin {
 
                 $subPages[] = array('title' => $branding_text, 'slug' => 'reports-page' , 'callback' => array( __CLASS__, 'render_reports_page' ) , 'load_callback' => array( __CLASS__, 'register_list_table' ));
                 $subPages[] = array('title' => $branding_text . ' Settings', 'slug' => 'reports-settings' , 'callback' => array( __CLASS__, 'render_reports_settings' ) );
-                return $subPages;			
+                return $subPages;
         }
-		
+
 	public static function admin_enqueue_scripts( $hook ) {
 //		wp_register_script( 'select2', MAINWP_WP_STREAM_URL . 'ui/select2/select2.min.js', array( 'jquery' ), '3.4.5', true );
 //		wp_register_style( 'select2', MAINWP_WP_STREAM_URL . 'ui/select2/select2.css', array(), '3.4.5' );
@@ -191,22 +193,22 @@ class MainWP_WP_Stream_Admin {
 		}
 
 		wp_enqueue_style( 'mainwp-wp-stream-admin', MAINWP_WP_STREAM_URL . 'ui/admin.css', array(), MainWP_WP_Stream::VERSION );
-		
+
 		//$script_screens = array( 'plugins.php', 'user-edit.php', 'user-new.php', 'profile.php' );
 
 		if ( 'index.php' === $hook ) {
-			
+
 		} elseif ( in_array( $hook, self::$screen_id ) || $hook == 'settings_page_mainwp-reports-page' ) {
 			wp_register_script( 'child-report-select2', MAINWP_WP_STREAM_URL . 'ui/select2/select2.min.js', array( 'jquery' ), '3.4.5', true );
                         wp_register_style( 'child-report-select2', MAINWP_WP_STREAM_URL . 'ui/select2/select2.css', array(), '3.4.5' );
-		
+
 			wp_enqueue_script( 'child-report-select2' );
 			wp_enqueue_style( 'child-report-select2' );
 
 			wp_enqueue_script( 'timeago' );
 			wp_enqueue_script( 'timeago-locale' );
 
-			wp_enqueue_script( 'mainwp-wp-stream-admin', MAINWP_WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'child-report-select2', 'heartbeat' ), MainWP_WP_Stream::VERSION );			
+			wp_enqueue_script( 'mainwp-wp-stream-admin', MAINWP_WP_STREAM_URL . 'ui/admin.js', array( 'jquery', 'child-report-select2', 'heartbeat' ), MainWP_WP_Stream::VERSION );
 			wp_localize_script(
 				'mainwp-wp-stream-admin',
 				'mainwp_wp_stream',
@@ -223,13 +225,13 @@ class MainWP_WP_Stream_Admin {
 					'current_query'  => json_encode( $_GET ),
                     'current_query_count'  => count( $_GET ),
 					'filters'        => self::$list_table ? self::$list_table->get_filters() : false,
-					'locale'     => esc_js( $locale )					
+					'locale'     => esc_js( $locale )
 				)
-			);	
+			);
 		}
 	}
 
-	
+
 	public static function admin_body_class( $classes ) {
 		if ( isset( $_GET['page'] ) && false !== strpos( $_GET['page'], self::RECORDS_PAGE_SLUG ) ) {
 			$classes .= sprintf( ' %s ', self::ADMIN_BODY_CLASS );
@@ -276,7 +278,7 @@ class MainWP_WP_Stream_Admin {
 
 		return;
 	}
-	
+
 	public static function register_list_table() {
 		require_once MAINWP_WP_STREAM_INC_DIR . 'list-table.php';
                 $param = array();
@@ -286,11 +288,11 @@ class MainWP_WP_Stream_Admin {
 		self::$list_table = new MainWP_WP_Stream_List_Table( $param );
 	}
 
-	public static function render_reports_page() {	
+	public static function render_reports_page() {
 		do_action('mainwp-child-pageheader', 'reports-page');
 		self::$list_table->prepare_items();
 		echo '<div class="mainwp_child_reports_wrap">';
-		self::$list_table->display();		
+		self::$list_table->display();
 		echo '</div>';
 		do_action('mainwp-child-pagefooter', 'reports-page');
 	}
@@ -300,7 +302,7 @@ class MainWP_WP_Stream_Admin {
 		$option_key  = MainWP_WP_Stream_Settings::$option_key;
 		$form_action = apply_filters( 'mainwp_wp_stream_settings_form_action', admin_url( 'options.php' ) );
 		$sections   = MainWP_WP_Stream_Settings::get_fields();
-		//settings_errors();			
+		//settings_errors();
 		do_action('mainwp-child-pageheader', 'reports-settings')
 		?>
 		<div class="postbox">
@@ -311,31 +313,31 @@ class MainWP_WP_Stream_Admin {
 					foreach ( $sections as $section => $data ) {
 						$i++;
 						settings_fields( $option_key );
-						do_settings_sections( $option_key );						
+						do_settings_sections( $option_key );
 					}
 					submit_button();
 					?>
 				</form>
 			</div>
 		</div>
-		
+
 	<?php
 		do_action('mainwp-child-pagefooter', 'reports-settings');
 	}
-	
+
 	public static function ajax_reset_reports() {
 		check_ajax_referer( 'stream_nonce', 'mainwp_wp_stream_nonce' );
 
 		if ( current_user_can( self::SETTINGS_CAP ) ) {
-			self::erase_stream_records();					
-			MainWP_WP_Stream_Install::check_to_copy_data();			
-			wp_redirect(					
+			self::erase_stream_records();
+			MainWP_WP_Stream_Install::check_to_copy_data();
+			wp_redirect(
 				add_query_arg(
 					array(
-						'page'    => 'mainwp-reports-settings',						
+						'page'    => 'mainwp-reports-settings',
 						'message' => 'child_reports_data_erased'
 					),
-					admin_url( 'options-general.php' )					
+					admin_url( 'options-general.php' )
 				)
 			);
 			exit;
@@ -426,10 +428,10 @@ class MainWP_WP_Stream_Admin {
 		}
 
 		$days = $options['general_records_ttl'];
-        
+
         if (empty($days))
             return;
-        
+
 		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
 
 		$date->sub( DateInterval::createFromDateString( "$days days" ) );
@@ -439,7 +441,7 @@ class MainWP_WP_Stream_Admin {
 		if ( is_multisite() && ! is_plugin_active_for_network( MAINWP_WP_STREAM_PLUGIN ) ) {
 			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
 		}
-                        
+
 		$wpdb->query(
 			$wpdb->prepare(
 				"DELETE `stream`, `context`, `meta`
@@ -510,7 +512,7 @@ class MainWP_WP_Stream_Admin {
 		}
 
 		check_ajax_referer( 'mainwp_creport_filters_user_search_nonce', 'nonce' );
-                  
+
 		switch ( mainwp_wp_stream_filter_input( INPUT_GET, 'filter' ) ) {
 			case 'author':
 				$users = array_merge(

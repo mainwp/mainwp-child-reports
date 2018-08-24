@@ -5,7 +5,7 @@ class MainWP_WP_Stream_Connector_Updraftplus extends MainWP_WP_Stream_Connector 
 	public static $name = 'updraftplus_backups';
 
 	public static $actions = array(
-		'updraftplus_backup',                
+		'updraftplus_backup',
 	);
 
 	public static function get_label() {
@@ -14,7 +14,7 @@ class MainWP_WP_Stream_Connector_Updraftplus extends MainWP_WP_Stream_Connector 
 
 	public static function get_action_labels() {
             return array(
-                'updraftplus_backup'    => __( 'Updraftplus Backup', 'default' ),			
+                'updraftplus_backup'    => __( 'Updraftplus Backup', 'default' ),
             );
 	}
 
@@ -29,13 +29,13 @@ class MainWP_WP_Stream_Connector_Updraftplus extends MainWP_WP_Stream_Connector 
             }
             return $links;
 	}
-        
-        public static function callback_updraftplus_backup($destination, $message, $status, $type, $backup_date) {                                                          
+
+        public static function callback_updraftplus_backup($destination, $message, $status, $type, $backup_time) {
             self::log(
                 $message,
-                compact('destination', 'status', 'type', 'backup_date'),
+                compact('destination', 'status', 'type', 'backup_time'),
                 0,
                 array( 'updraftplus_backups' => 'updraftplus_backup' )
             );
-        }    
+        }
 }
