@@ -31,7 +31,8 @@ class MainWP_WP_Stream_Connectors {
 			'backwpup',
             'backupbuddy',
             'wordfence',
-            'maintenance'
+            'maintenance',
+            'wptimecapsule'
 		);
 		$classes = array();
 		foreach ( $connectors as $connector ) {
