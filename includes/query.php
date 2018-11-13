@@ -65,7 +65,7 @@ class MainWP_WP_Stream_Query {
 		);
 
 		$args = wp_parse_args( $args, $defaults );
-		
+
 		$args = apply_filters( 'mainwp_wp_stream_query_args', $args );
 
 		if ( true === $args['hide_excluded'] ) {
@@ -122,12 +122,12 @@ class MainWP_WP_Stream_Query {
 		if ( $args['visibility'] ) {
 			$where .= $wpdb->prepare( " AND $wpdb->mainwp_reports.visibility = %s", $args['visibility'] );
 		}
-                
-                if (isset($args['hide_child_reports']) && $args['hide_child_reports']) {                    
+
+                if (isset($args['hide_child_reports']) && $args['hide_child_reports']) {
                         $child_record_ids = array();
-                        $sql_meta = "SELECT record_id FROM $wpdb->mainwp_reportsmeta WHERE meta_key = 'slug' AND (meta_value = 'mainwp-child/mainwp-child.php' OR meta_value = 'mainwp-child-reports/mainwp-child-reports.php')";                                
-                        $ret  = $wpdb->get_results( $sql_meta, 'ARRAY_A' );                         
-                        
+                        $sql_meta = "SELECT record_id FROM $wpdb->mainwp_reportsmeta WHERE meta_key = 'slug' AND (meta_value = 'mainwp-child/mainwp-child.php' OR meta_value = 'mainwp-child-reports/mainwp-child-reports.php')";
+                        $ret  = $wpdb->get_results( $sql_meta, 'ARRAY_A' );
+
                         if (is_array($ret) && count($ret)> 0) {
                             foreach($ret as $val) {
                                 $child_record_ids[] = $val['record_id'];
@@ -135,14 +135,14 @@ class MainWP_WP_Stream_Query {
                         }
                         if (count($child_record_ids) > 0) {
                             $where .= " AND $wpdb->mainwp_reports.ID NOT IN (" . implode(",", $child_record_ids). ") ";
-                        }                                          
+                        }
                 }
-                
+
 		/**
 		 * PARSE DATE FILTERS
 		 */
 		if ( isset( $args['date'] ) && !empty( $args['date'] ) ) {
-                $date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date'] ) ) );			
+                $date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date'] ) ) );
                 $where .= " AND (DATE($wpdb->mainwp_reports.created) = STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
 		} else {
 			if ( isset($args['date_from']) && !empty($args['date_from']) ) {
@@ -150,14 +150,14 @@ class MainWP_WP_Stream_Query {
                 $where .= " AND ($wpdb->mainwp_reports.created >= STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
 			}
 			if ( isset($args['date_to']) && !empty($args['date_to']) ) {
-                $date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_to'] ) ) );				
+                $date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_to'] ) ) );
                 $where .= " AND ($wpdb->mainwp_reports.created <= STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
-			}                        
+			}
             if ( isset($args['datetime_from']) && !empty($args['datetime_from']) ) {
                 $date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['datetime_from'] ) ) );
-                $where .= " AND ($wpdb->mainwp_reports.created >= STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))"; 
+                $where .= " AND ($wpdb->mainwp_reports.created >= STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
 			}
-		} 
+		}
 
 		/**
 		 * PARSE __IN PARAM FAMILY
@@ -167,10 +167,10 @@ class MainWP_WP_Stream_Query {
 		}
 
 		if ( $args['created_greater_than'] ) {
-            $date   = date( 'Y-m-d H:i:s', $args['created_greater_than'] );            
+            $date   = date( 'Y-m-d H:i:s', $args['created_greater_than'] );
             $where .= " AND ($wpdb->mainwp_reports.created > STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
 		}
-		
+
 		if ( $args['record__in'] ) {
 			$record__in = array_filter( (array) $args['record__in'], 'is_numeric' );
 			if ( ! empty( $record__in ) ) {
@@ -331,26 +331,38 @@ class MainWP_WP_Stream_Query {
 		WHERE 1=1 $where
 		$orderby
 		$limits";
-                
+
 		$sql = apply_filters( 'mainwp_wp_stream_query', $sql, $args );
-                
+
                 //error_log($sql);
-                
+
 		$results = $wpdb->get_results( $sql );
 
 		if ( 'with-meta' === $fields && is_array( $results ) && $results ) {
 			$ids      = array_map( 'absint', wp_list_pluck( $results, 'ID' ) );
-			$sql_meta = sprintf(
-				"SELECT * FROM $wpdb->mainwp_reportsmeta WHERE record_id IN ( %s )",
-				implode( ',', $ids )
-			);
+            // to fix issue long query
+            $start_slice = 0;
+            $max_slice = 100;
+            
+            while( $start_slice <=  count($ids)) {
+                $slice_ids = array_slice($ids, $start_slice, $max_slice);
+                $start_slice += $max_slice;
 
-			$meta  = $wpdb->get_results( $sql_meta );
-			$ids_f = array_flip( $ids );
+                if (!empty($slice_ids)) {
+                    $sql_meta = sprintf(
+                        "SELECT * FROM $wpdb->mainwp_reportsmeta WHERE record_id IN ( %s )",
+                        implode( ',', $slice_ids )
+                    );
 
-			foreach ( $meta as $meta_record ) {
-				$results[ $ids_f[ $meta_record->record_id ] ]->meta[ $meta_record->meta_key ][] = $meta_record->meta_value;
-			}
+                    $meta  = $wpdb->get_results( $sql_meta );
+                    $ids_f = array_flip( $ids );
+
+                    foreach ( $meta as $meta_record ) {
+                        $results[ $ids_f[ $meta_record->record_id ] ]->meta[ $meta_record->meta_key ][] = $meta_record->meta_value;
+                    }
+                }
+            }
+            // end
 		}
 
 		return $results;

@@ -427,7 +427,7 @@ class MainWP_WP_Stream_Admin {
 			$options = MainWP_WP_Stream_Settings::get_options();
 		}
 
-		$days = $options['general_records_ttl'];
+		$days = !isset($options['general_records_ttl']) ? 180 : intval($options['general_records_ttl']);
 
         if (empty($days))
             return;
@@ -436,25 +436,24 @@ class MainWP_WP_Stream_Admin {
 
 		$date->sub( DateInterval::createFromDateString( "$days days" ) );
 
-		$where = $wpdb->prepare( ' AND `stream`.`created` < %s', $date->format( 'Y-m-d H:i:s' ) );
+        $where = " AND (`stream`.`created` < STR_TO_DATE(" . $wpdb->prepare('%s', $date->format( 'Y-m-d H:i:s' )) . ", '%Y-%m-%d %H:%i:%s')) ";
+		//$where = $wpdb->prepare( ' AND `stream`.`created` < %s', $date->format( 'Y-m-d H:i:s' ) );
 
 		if ( is_multisite() && ! is_plugin_active_for_network( MAINWP_WP_STREAM_PLUGIN ) ) {
 			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
 		}
-
-		$wpdb->query(
-			$wpdb->prepare(
-				"DELETE `stream`, `context`, `meta`
+        $sql = "DELETE `stream`, `context`, `meta`
 				FROM {$wpdb->mainwp_reports} AS `stream`
 				LEFT JOIN {$wpdb->mainwp_reportscontext} AS `context`
 				ON `context`.`record_id` = `stream`.`ID`
 				LEFT JOIN {$wpdb->mainwp_reportsmeta} AS `meta`
 				ON `meta`.`record_id` = `stream`.`ID`
 				WHERE `stream`.`type` = %s
-				$where;",
-				'stream'
-			)
-		);
+                {$where};" ;
+
+
+
+		$wpdb->query( $sql );
 	}
 
 	private static function _role_can_view_stream( $role ) {

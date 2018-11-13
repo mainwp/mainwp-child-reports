@@ -4,7 +4,7 @@ class MainWP_WP_Stream_Connector_Comments extends MainWP_WP_Stream_Connector {
 
 	public static $name = 'comments';
 
-	public static $actions = array(		
+	public static $actions = array(
 		'wp_insert_comment',
 		'edit_comment',
 		'delete_comment',
@@ -309,9 +309,11 @@ class MainWP_WP_Stream_Connector_Comments extends MainWP_WP_Stream_Connector {
 	}
 
 	public static function get_ignored_comment_types() {
+        $comment_types[] = 'order_note';
+        $comment_types[] = 'action_log';
 		return apply_filters(
 			'mainwp_wp_stream_comment_exclude_comment_types',
-			array()
+			$comment_types
 		);
 	}
 

@@ -13,7 +13,7 @@ class MainWP_WP_Stream_DB {
 	public function __construct() {
 		global $wpdb;
 
-		$prefix = apply_filters( 'mainwp_wp_stream_db_tables_prefix', $wpdb->base_prefix );
+		$prefix = $wpdb->prefix;
 
 		self::$table         = $prefix . 'mainwp_stream';
 		self::$table_meta    = $prefix . 'mainwp_stream_meta';
@@ -114,65 +114,65 @@ class MainWP_WP_Stream_DB {
 		return $result;
 	}
 
-	
+
 	public function get_report( $args = array() ) {
 		if (!is_array($args))
 			return false;
 		global $wpdb;
-		$where = "";	
-		$left_join = "";		
+		$where = "";
+		$left_join = "";
 		if (isset($args['context'])) {
-			$left_join = " LEFT JOIN " . self::$table_context . " AS `context` ON `stream`.`ID` = `context`.`record_id` " ;				
+			$left_join = " LEFT JOIN " . self::$table_context . " AS `context` ON `stream`.`ID` = `context`.`record_id` " ;
 		}
-		
+
 		foreach ($args as $key => $value) {
 			if ($key == 'context') {
-				$where .= $wpdb->prepare( ' `context`.`context` = %s AND ', $value); 			
-			} else 
-				$where .= $wpdb->prepare( ' `stream`.`' . $key . '` = %s AND ', $value); 			
-		}		
-		
+				$where .= $wpdb->prepare( ' `context`.`context` = %s AND ', $value);
+			} else
+				$where .= $wpdb->prepare( ' `stream`.`' . $key . '` = %s AND ', $value);
+		}
+
 		$where = rtrim($where, "AND ");
-		
-		if (!empty($where)) {		
-			$where .= " AND blog_id = " . apply_filters( 'blog_id_logged', is_network_admin() ? 0 : get_current_blog_id() );									
-			$result = $wpdb->get_row( 'SELECT `stream`.* FROM ' . self::$table . ' AS `stream` ' . $left_join . ' WHERE ' . $where );			
+
+		if (!empty($where)) {
+			$where .= " AND blog_id = " . apply_filters( 'blog_id_logged', is_network_admin() ? 0 : get_current_blog_id() );
+			$result = $wpdb->get_row( 'SELECT `stream`.* FROM ' . self::$table . ' AS `stream` ' . $left_join . ' WHERE ' . $where );
 			return $result;
 		}
 		return false;
 	}
-	
-	public function delete_report( $args = array() ) {		
+
+	public function delete_report( $args = array() ) {
 		if (!is_array($args))
-			return false;	
-		
+			return false;
+
 		global $wpdb;
 		$sql = "";
-		
+
 		foreach ($args as $key => $value) {
-			$sql .= $key ." = " . $value . " AND "; 
+			$sql .= $key ." = " . $value . " AND ";
 		}
-					
+
 		$sql = rtrim($sql, "AND ");
-		
+
 		if ( ! empty( $sql ) ) {
 			$sql .= " AND blog_id = " . apply_filters( 'blog_id_logged', is_network_admin() ? 0 : get_current_blog_id() );
-			
+
 			$sql = $wpdb->prepare( 'SELECT ID  FROM ' . self::$table . ' WHERE %s ', $sql );
-			$record_id = $wpdb->get_var( $sql );			
-			if ($record_id) {			
+			$record_id = $wpdb->get_var( $sql );
+			if ($record_id) {
 				$sql = $wpdb->prepare( 'DELETE FROM ' . self::$table . ' WHERE %s ', $sql );
-				$wpdb->query( $sql ); 		
+				$wpdb->query( $sql );
 				$sql = $wpdb->prepare( 'DELETE FROM ' . self::$table_context . ' WHERE record_id = %d ', $record_id );
-				$wpdb->query( $sql ); 
+				$wpdb->query( $sql );
 				$sql = $wpdb->prepare( 'DELETE FROM ' . self::$table_meta . ' WHERE record_id = %d ', $record_id );
-				$wpdb->query( $sql ); 
+				$wpdb->query( $sql );
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	public function insert_meta( $record_id, $key, $val ) {
 		global $wpdb;
 

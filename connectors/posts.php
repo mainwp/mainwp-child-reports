@@ -16,7 +16,7 @@ class MainWP_WP_Stream_Connector_Posts extends MainWP_WP_Stream_Connector {
 	public static function get_action_labels() {
 		return array(
 			'updated'   => __( 'Updated', 'mainwp-child-reports' ),
-                        'autosave'   => __( 'Auto save', 'mainwp-child-reports' ),
+            'autosave'   => __( 'Auto save', 'mainwp-child-reports' ),
 			'created'   => __( 'Created', 'mainwp-child-reports' ),
 			'trashed'   => __( 'Trashed', 'mainwp-child-reports' ),
 			'untrashed' => __( 'Restored', 'mainwp-child-reports' ),
@@ -140,9 +140,9 @@ class MainWP_WP_Stream_Connector_Posts extends MainWP_WP_Stream_Connector {
 				'"%1$s" %2$s updated',
 				'1: Post title, 2: Post type singular name',
 				'mainwp_child_reports'
-			);  
-                    if (defined( 'DOING_AUTOSAVE' ) ) 		
-                        $action = 'autosave';                    
+			);
+                    if (defined( 'DOING_AUTOSAVE' ) )
+                        $action = 'autosave';
 		}
 
 		if ( empty( $action ) ) {
@@ -168,26 +168,26 @@ class MainWP_WP_Stream_Connector_Posts extends MainWP_WP_Stream_Connector {
 		}
 
 		$post_type_name = strtolower( self::get_post_type_name( $post->post_type ) );
-                
+
                 if ($action == 'updated' && ($post->post_type == 'page' || $post->post_type == 'post')) {
-                        $report_settings = get_option('mainwp_wp_stream', array());                    
-                        $minutes = is_array($report_settings) && isset($report_settings['general_period_of_time']) ?  $report_settings['general_period_of_time'] : 30;                        
-                        if (!empty($minutes) && intval($minutes) > 0) {                    
+                        $report_settings = get_option('mainwp_wp_stream', array());
+                        $minutes = is_array($report_settings) && isset($report_settings['general_period_of_time']) ?  $report_settings['general_period_of_time'] : 30;
+                        if (!empty($minutes) && intval($minutes) > 0) {
                             $args = array();
                             $args['object_id'] =  $post->ID;
                             $date_from = time() - $minutes * 60;
-                            $args['datetime_from'] = date( 'Y-m-d H:i:s', $date_from );   
+                            $args['datetime_from'] = date( 'Y-m-d H:i:s', $date_from );
                             $args['context'] =  $post->post_type;
-                            $args['action'] = 'updated';                    
-                            $args['records_per_page'] = 9999;   
+                            $args['action'] = 'updated';
+                            $args['records_per_page'] = 9999;
                             $args['orderby'] = 'created';
-                            $args['order'] = 'desc';   
-                            $items = mainwp_wp_stream_query( $args );                            
+                            $args['order'] = 'desc';
+                            $items = mainwp_wp_stream_query( $args );
                             if (count($items) > 0)
                                 return;
                         }
                 }
-                
+
 		self::log(
 			$message,
 			array(
