@@ -6,8 +6,8 @@ Author: mainwp
 Author URI: https://mainwp.com
 Plugin URI: https://mainwp.com
 Requires at least: 3.6
-Tested up to: 4.9.8
-Stable tag: 1.9
+Tested up to: 5.0
+Stable tag: 1.9.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,7 +16,7 @@ The MainWP Child Report plugin tracks changes to Child sites for the Client Repo
 
 == Description ==
 
-**Note: This plugin requires PHP 5.3 or higher to be activated and is only useful if you are using [MainWP](https://wordpress.org/plugins/mainwp/) and the [MainWP Client Reports Extension](https://mainwp.com/extension/client-reports/).**
+**Note: This plugin requires PHP 5.4 or higher to be activated and is only useful if you are using [MainWP](https://wordpress.org/plugins/mainwp/) and the [MainWP Client Reports Extension](https://mainwp.com/extension/client-reports/).**
 
 Install the [MainWP Child Plugin](https://wordpress.org/plugins/mainwp-child/) plugin first.
 
@@ -35,6 +35,11 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 2. The MainWP Child Reports Settings Screen
 
 == Changelog ==
+
+= 1.9.1 - 11-13-2018 =
+* Fixed: an issue with missing data fields
+* Updated: WooCommerce order notes excluded from showing as comments
+* Updated: translation files
 
 = 1.9 - 9-4-2018 =
 * Fixed: an issue with recording UpdraftPlus backups
