@@ -448,7 +448,7 @@ class MainWP_WP_Stream_Admin {
 				ON `context`.`record_id` = `stream`.`ID`
 				LEFT JOIN {$wpdb->mainwp_reportsmeta} AS `meta`
 				ON `meta`.`record_id` = `stream`.`ID`
-				WHERE `stream`.`type` = %s
+				WHERE `stream`.`type` = 'stream'
                 {$where};" ;
 
 

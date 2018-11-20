@@ -36,10 +36,10 @@ class MainWP_WP_Stream_Install {
 
 		self::$table_prefix = $wpdb->prefix;
 		self::$import_connectors = array('comment', 'editor', 'installer', 'media', 'menus', 'posts', 'users', 'widgets');
-		self::check();
+        add_action( 'init', array( __CLASS__ , 'check' ) );
 	}
 
-	private static function check() {
+	public static function check() {
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 			return;
 		}
