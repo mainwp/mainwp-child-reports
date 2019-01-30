@@ -36,7 +36,8 @@ class MainWP_WP_Stream_Install {
 
 		self::$table_prefix = $wpdb->prefix;
 		self::$import_connectors = array('comment', 'editor', 'installer', 'media', 'menus', 'posts', 'users', 'widgets');
-        add_action( 'init', array( __CLASS__ , 'check' ) );
+        //add_action( 'init', array( __CLASS__ , 'check' ) );
+        self::check();
 	}
 
 	public static function check() {
@@ -46,40 +47,36 @@ class MainWP_WP_Stream_Install {
 
 		global $wpdb;
 
-		if ( $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "mainwp_stream'" ) !== $wpdb->prefix . "mainwp_stream" ||
-                        $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "mainwp_stream_meta'" ) !== $wpdb->prefix . "mainwp_stream_meta"
-                        )  {
-			self::$db_version = false;
-                } else {
-                    if (false === get_option('mainwp_creport_first_time_activated')) {
-                        $sql = "SELECT MIN( created ) AS first_time " .
-                                "FROM {$wpdb->prefix}mainwp_stream " .
-                                "WHERE created != '0000-00-00 00:00:00'";
-                        $result = $wpdb->get_results( $sql, ARRAY_A );
-                        $time = time();
-                        if (isset($result[0]) && !empty($result[0]['first_time'])) {
-                            $time = strtotime( $result[0]['first_time'] );
-                        }
-                        update_option('mainwp_creport_first_time_activated', $time);
-                    }
-                }
-
-		if ( empty( self::$db_version ) ) {
+//		if ( empty( self::$db_version ) ) {
 			self::install( self::$current );
-			self::copy_stream_db();
-		} elseif ( version_compare( self::$db_version, self::$current, '!=') ) {
+//			self::copy_stream_db();
+//		}
+
+        if ( version_compare( self::$db_version, self::$current, '!=') ) {
             self::check_updates();
 			update_site_option( self::KEY, self::$current );
 		}
 
-		if ('yes' == get_option('mainwp_child_reports_check_to_copy_data', false)) {
-			add_action( 'all_admin_notices', array( __CLASS__, 'update_notice_hook' ) );
-		}
+        if (false === get_option('mainwp_creport_first_time_activated')) {
+            $sql = "SELECT MIN( created ) AS first_time " .
+                    "FROM {$wpdb->prefix}mainwp_stream " .
+                    "WHERE created != '0000-00-00 00:00:00'";
+            $result = $wpdb->get_results( $sql, ARRAY_A );
+            $time = time();
+            if (isset($result[0]) && !empty($result[0]['first_time'])) {
+                $time = strtotime( $result[0]['first_time'] );
+            }
+            update_option('mainwp_creport_first_time_activated', $time);
+        }
+
+//		if ('yes' == get_option('mainwp_child_reports_check_to_copy_data', false)) {
+//			add_action( 'all_admin_notices', array( __CLASS__, 'update_notice_hook' ) );
+//		}
 	}
 
 	public static function check_to_copy_data() {
 		$stream_db_version = get_site_option( 'wp_stream_db' ); // store db version of the plugin stream 1.4.9
-		update_option('mainwp_child_reports_check_to_copy_data', 'yes');
+		//update_option('mainwp_child_reports_check_to_copy_data', 'yes');
 		return;
 	}
 
@@ -225,20 +222,20 @@ class MainWP_WP_Stream_Install {
 //		}
 
 		if ( ! isset( $_REQUEST['mainwp_wp_stream_update'] ) ) {
-			self::prompt_copy_data();
+//			self::prompt_copy_data();
 		} else {
-			check_admin_referer( 'mainwp_wp_stream_update_db' );
-			if ( isset( $_REQUEST['mainwp_reports_copy_db_submit'] ) ) {
-				self::copy_stream_db();
-
-			} else if ( isset( $_REQUEST['mainwp_reports_continue_submit'] ) ) {
-				update_option('mainwp_child_reports_check_to_copy_data', '');
-			}
+//			check_admin_referer( 'mainwp_wp_stream_update_db' );
+//			if ( isset( $_REQUEST['mainwp_reports_copy_db_submit'] ) ) {
+//				self::copy_stream_db();
+//
+//			} else if ( isset( $_REQUEST['mainwp_reports_continue_submit'] ) ) {
+//				//update_option('mainwp_child_reports_check_to_copy_data', '');
+//			}
 		}
 
-		if ('yes' == get_option('mainwp_child_reports_copied_data_ok')) {
-			self::prompt_copy_data_status();
-		}
+//		if ('yes' == get_option('mainwp_child_reports_copied_data_ok')) {
+//			self::prompt_copy_data_status();
+//		}
 	}
 
 	public static function prompt_copy_data() {

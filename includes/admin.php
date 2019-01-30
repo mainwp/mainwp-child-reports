@@ -7,7 +7,6 @@ class MainWP_WP_Stream_Admin {
 	public static $list_table = null;
 
 	public static $disable_access = false;
-	public static $brandingTitle = null;
 
 	const ADMIN_BODY_CLASS     = 'mainwp_wp_stream_screen';
 	const RECORDS_PAGE_SLUG    = 'mainwp-reports-page';
@@ -23,11 +22,6 @@ class MainWP_WP_Stream_Admin {
 		add_filter( 'role_has_cap', array( __CLASS__, '_filter_role_caps' ), 10, 3 );
 
 		self::$disable_access = apply_filters( 'mainwp_wp_stream_disable_admin_access', false );
-
-		// Register settings page
-		if (get_option('mainwp_creport_branding_stream_hide') !== "hide") {
-			add_filter( 'mainwp-child-init-subpages', array( __CLASS__, 'init_subpages' ) );
-		}
 
 		// Admin notices
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
@@ -64,19 +58,6 @@ class MainWP_WP_Stream_Admin {
 		add_action('mainwp_child_reports_log', array( __CLASS__, 'hook_reports_log' ), 10, 1);
 	}
 
-	public static function get_branding_title() {
-		if (self::$brandingTitle  === null) {
-			$cancelled_branding = ( get_option( 'mainwp_child_branding_disconnected' ) === 'yes' ) && ! get_option( 'mainwp_branding_preserve_branding' );
-			$branding_header = get_option( 'mainwp_branding_plugin_header' );
-			if ( ! $cancelled_branding && ( is_array( $branding_header ) && ! empty( $branding_header['name'] ) ) ) {
-				self::$brandingTitle   = stripslashes( $branding_header['name'] );
-			} else {
-				self::$brandingTitle = '';
-			}
-		}
-		return self::$brandingTitle;
-	}
-
 	public static function admin_notices() {
 		$message = mainwp_wp_stream_filter_input( INPUT_GET, 'message' );
 
@@ -90,7 +71,7 @@ class MainWP_WP_Stream_Admin {
 		}
 	}
 
-        public static function hookUpdraftplusSaveLastBackup($last_backup) {
+    public static function hookUpdraftplusSaveLastBackup($last_backup) {
 
             if (!is_array($last_backup))
                 return $last_backup;
@@ -159,23 +140,6 @@ class MainWP_WP_Stream_Admin {
                 }
             }
             return $value;
-        }
-
-        public static function init_subpages($subPages = array()) {
-                if ( is_network_admin() && ! is_plugin_active_for_network( MAINWP_WP_STREAM_PLUGIN ) ) {
-                        return $subPages;
-                }
-
-                $branding_text = MainWP_WP_Stream_Admin::get_branding_title();
-                if (empty($branding_text)) {
-                        $branding_text = 'Child Reports';
-                } else {
-                        $branding_text = $branding_text . ' Reports';
-                }
-
-                $subPages[] = array('title' => $branding_text, 'slug' => 'reports-page' , 'callback' => array( __CLASS__, 'render_reports_page' ) , 'load_callback' => array( __CLASS__, 'register_list_table' ));
-                $subPages[] = array('title' => $branding_text . ' Settings', 'slug' => 'reports-settings' , 'callback' => array( __CLASS__, 'render_reports_settings' ) );
-                return $subPages;
         }
 
 	public static function admin_enqueue_scripts( $hook ) {
@@ -330,7 +294,7 @@ class MainWP_WP_Stream_Admin {
 
 		if ( current_user_can( self::SETTINGS_CAP ) ) {
 			self::erase_stream_records();
-			MainWP_WP_Stream_Install::check_to_copy_data();
+			//MainWP_WP_Stream_Install::check_to_copy_data();
 			wp_redirect(
 				add_query_arg(
 					array(

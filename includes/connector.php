@@ -61,7 +61,7 @@ abstract class MainWP_WP_Stream_Connector {
                     if ($hide_child_plugins == 'yes') {
                         return false;
                     } else {
-                        $branding_text = MainWP_WP_Stream_Admin::get_branding_title();
+                        $branding_text = MainWP_WP_Stream::get_instance()->get_branding_title();
                         if (!empty($branding_text)) {
                             if ($args['slug'] == 'mainwp-child/mainwp-child.php') {
                                 $args['name'] = $branding_text;
@@ -88,7 +88,7 @@ abstract class MainWP_WP_Stream_Connector {
                 $child_context = 'updraftplus_backups';
             } elseif ( isset($contexts['wptimecapsule_backups']) ) {
                 $child_context = 'wptimecapsule_backups';
-            } 
+            }
 
             if ( !empty($child_context) ) {
                 if (is_array($args)) {

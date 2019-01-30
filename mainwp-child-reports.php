@@ -5,7 +5,7 @@
   Description: The MainWP Child Report plugin tracks Child sites for the MainWP Client Reports Extension. The plugin is only useful if you are using MainWP and the Client Reports Extension.
   Author: MainWP
   Author URI: https://mainwp.com
-  Version: 1.9.1
+  Version: 1.9.0
  */
 
 /**
@@ -27,18 +27,17 @@
  */
 
 class MainWP_WP_Stream {
-
 	const VERSION = '0.0.4'; // to check for update
-
 	public static $instance;
-
 	public $db = null;
-        private $plugin_slug;
+    private $plugin_slug;
 	public $network = null;
-
 	public static $notices = array();
 
-	private function __construct() {
+    public $branding_options = null;
+    public $branding_title = null;
+
+    private function __construct() {
 		define( 'MAINWP_WP_STREAM_PLUGIN', plugin_basename( __FILE__ ) );
 		define( 'MAINWP_WP_STREAM_DIR', plugin_dir_path( __FILE__ ) );
 		define( 'MAINWP_WP_STREAM_URL', plugin_dir_url( __FILE__ ) );
@@ -47,6 +46,13 @@ class MainWP_WP_Stream {
 		require_once MAINWP_WP_STREAM_INC_DIR . 'functions.php';
 		// Load filters polyfill
 		require_once MAINWP_WP_STREAM_INC_DIR . 'filter-input.php';
+
+        $_opts = $this->init_branding_options();
+        $hide = is_array($_opts) && isset($_opts['hide_child_reports']) && ($_opts['hide_child_reports'] == 'hide');
+        if ( ! $hide ) {
+            // Register settings page
+            add_filter( 'mainwp-child-init-subpages', array( $this, 'init_subpages' ) );
+       }
 
 		// Load DB helper class
 		require_once MAINWP_WP_STREAM_INC_DIR . 'db.php';
@@ -98,14 +104,78 @@ class MainWP_WP_Stream {
         add_action( 'plugins_loaded', array( 'MainWP_WP_Stream_Live_Update', 'load' ) );
         add_filter( 'plugin_row_meta', array( &$this, 'plugin_row_meta' ), 10, 2 );
         // branding proccess
-        $cancelled_branding = ( get_option( 'mainwp_child_branding_disconnected' ) === 'yes' ) && ! get_option( 'mainwp_branding_preserve_branding' );
-        if ( !$cancelled_branding ) {
-            add_filter( 'all_plugins', array( $this, 'branding_child_plugin' ) );
-        }
-
+        add_filter( 'all_plugins', array( $this, 'modify_plugin_header' ) );
 	}
 
-	static function fail_php_version() {
+	public static function get_instance() {
+		if ( empty( self::$instance ) ) {
+			$class = __CLASS__;
+			self::$instance = new $class;
+		}
+
+		return self::$instance;
+	}
+
+    public function init_branding_options() {
+        return $this->get_branding_options();
+    }
+
+    public function get_branding_options() {
+        if ( $this->branding_options === null ) {
+
+            $opts = get_option( 'mainwp_child_branding_options' ); // settings from mainwp-child plugin
+            // this is new update
+            if ( is_array($opts) ) {
+                if (isset($opts['cancelled_branding'])) { // if it was set
+                    $cancelled_branding = $opts['cancelled_branding'];
+                } else {
+                    $disconnected = isset( $opts['branding_disconnected'] ) ? $opts['branding_disconnected'] : '';
+                    $preserve_branding = isset( $opts['preserve_branding'] ) ? $opts['preserve_branding'] : '';
+                    $cancelled_branding = ( $disconnected === 'yes' ) && ! $preserve_branding;
+                    $opts['cancelled_branding'] = $cancelled_branding;
+                }
+                $branding_header = isset( $opts['branding_header'] ) ? $opts['branding_header'] : '';
+            } else { // to compatible will old code
+                $opts = array();
+                $opts['hide'] = get_option( 'mainwp_branding_child_hide' );
+                $opts['branding_header'] = get_option( 'mainwp_branding_plugin_header' );
+                $cancelled_branding = ( get_option( 'mainwp_child_branding_disconnected' ) === 'yes' ) && ! get_option( 'mainwp_branding_preserve_branding' );
+                $opts['cancelled_branding'] = $cancelled_branding;
+            }
+
+            if ( ! $cancelled_branding && ( is_array( $branding_header ) && ! empty( $branding_header['name'] ) ) ) {
+                $this->branding_title = stripslashes( $branding_header['name'] );
+            } else {
+                $this->branding_title = '';
+            }
+
+            $this->branding_options = $opts;
+        }
+
+        return $this->branding_options;
+    }
+
+    public function init_subpages( $subPages = array() ) {
+
+        if ( is_network_admin() && ! is_plugin_active_for_network( MAINWP_WP_STREAM_PLUGIN ) ) {
+            return $subPages;
+        }
+
+        $branding_text = $this->branding_title;
+
+        if (empty($branding_text)) {
+                $branding_text = 'Child Reports';
+        } else {
+                $branding_text = $branding_text . ' Reports';
+        }
+
+        $subPages[] = array('title' => $branding_text, 'slug' => 'reports-page' , 'callback' => array( 'MainWP_WP_Stream_Admin', 'render_reports_page' ) , 'load_callback' => array( 'MainWP_WP_Stream_Admin', 'register_list_table' ));
+        $subPages[] = array('title' => $branding_text . ' Settings', 'slug' => 'reports-settings' , 'callback' => array( 'MainWP_WP_Stream_Admin', 'render_reports_settings' ) );
+
+        return $subPages;
+    }
+
+    static function fail_php_version() {
 		add_action( 'plugins_loaded', array( __CLASS__, 'i18n' ) );
 		self::notice( __( 'MainWP Child Report requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'mainwp-child-reports' ) );
 	}
@@ -121,10 +191,6 @@ class MainWP_WP_Stream {
 	}
 
 	public function verify_database_present() {
-
-		if ( apply_filters( 'mainwp_wp_stream_no_tables', false ) ) {
-			return;
-		}
 
 		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
 			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
@@ -162,9 +228,8 @@ class MainWP_WP_Stream {
 			$uninstall_message = sprintf( __( 'Please <a href="%s">uninstall</a> the MainWP Child Reports plugin and activate it again.', 'mainwp-child-reports' ), admin_url( 'plugins.php#mainwp-child-reports' ) );
 		}
 
-		do_action( 'mainwp_wp_stream_before_db_notices' );
-
 		if ( ! empty( $database_message ) ) {
+            do_action( 'mainwp_wp_stream_before_db_notices' );
 			self::notice( $database_message );
 			if ( ! empty( $uninstall_message ) ) {
 				self::notice( $uninstall_message );
@@ -204,41 +269,67 @@ class MainWP_WP_Stream {
 		}
 	}
 
-	public static function get_instance() {
-		if ( empty( self::$instance ) ) {
-			$class = __CLASS__;
-			self::$instance = new $class;
-		}
-
-		return self::$instance;
+	public function get_branding_title() {
+		return $this->branding_title;
 	}
 
-        public function branding_child_plugin( $plugins ) {
-		if ( 'T' === get_option( 'mainwp_branding_child_hide' ) ) {
+
+    public function modify_plugin_header( $plugins ) {
+        $_opts = $this->branding_options;
+        $is_hide = isset( $_opts['hide'] ) ? $_opts['hide'] : '';
+        $cancelled_branding = isset( $_opts['cancelled_branding'] ) ? $_opts['cancelled_branding'] : false;
+        $branding_header = isset( $_opts['branding_header'] ) ? $_opts['branding_header'] : '';
+
+        if ( $cancelled_branding ) {
+            return $plugins;
+        }
+
+		if ( 'T' === $is_hide ) {
 			foreach ( $plugins as $key => $value ) {
 				$plugin_slug = basename( $key, '.php' );
 				if ( 'mainwp-child-reports' === $plugin_slug ) {
 					unset( $plugins[ $key ] );
 				}
 			}
-
 			return $plugins;
 		}
 
-		$header = get_option( 'mainwp_branding_plugin_header' );
-		if ( is_array( $header ) && ! empty( $header['name'] ) ) {
-			return $this->update_child_header( $plugins, $header );
+		if ( is_array( $branding_header ) && ! empty( $branding_header['name'] ) ) {
+			return $this->update_plugin_header( $plugins, $branding_header );
 		} else {
 			return $plugins;
 		}
 	}
 
-        public function plugin_row_meta( $plugin_meta, $plugin_file ) {
-                if ( $this->plugin_slug !== $plugin_file ) {
+
+    public function is_branding() {
+
+        $_opts = $this->branding_options;
+        $is_hide = isset( $_opts['hide'] ) ? $_opts['hide'] : '';
+        $cancelled_branding = isset( $_opts['cancelled_branding'] ) ? $_opts['cancelled_branding'] : false;
+        $branding_header = isset( $_opts['branding_header'] ) ? $_opts['branding_header'] : array();
+
+        if ( $cancelled_branding ) {
+            return false;
+        }
+        // hide
+        if ( 'T' === $is_hide ) {
+            return true;
+        }
+        if ( is_array( $branding_header ) && !empty( $branding_header['name'] ) ) {
+            return true;
+        }
+        return false;
+
+    }
+
+
+    public function plugin_row_meta( $plugin_meta, $plugin_file ) {
+        if ( $this->plugin_slug !== $plugin_file ) {
 			return $plugin_meta;
 		}
 
-		if ( ! self::is_branding() ) {
+		if ( ! $this->is_branding() ) {
 			return $plugin_meta;
 		}
                 // hide View details links
@@ -254,27 +345,7 @@ class MainWP_WP_Stream {
 		return $plugin_meta;
 	}
 
-        public static function is_branding() {
-		$cancelled_branding = ( get_option( 'mainwp_child_branding_disconnected' ) === 'yes' ) && ! get_option( 'mainwp_branding_preserve_branding' );
-		if ( $cancelled_branding ) {
-			return false;
-		}
-
-		// hide
-		if ( 'T' === get_option( 'mainwp_branding_child_hide' ) ) {
-			return true;
-		}
-		// branding
-		$header = get_option( 'mainwp_branding_plugin_header' );
-		if ( is_array( $header ) && ! empty( $header['name'] ) ) {
-			return true;
-		}
-
-		return false;
-	}
-
-
-	public function update_child_header( $plugins, $header ) {
+	public function update_plugin_header( $plugins, $header ) {
 		$plugin_key = '';
 		foreach ( $plugins as $key => $value ) {
 			$plugin_slug = basename( $key, '.php' );
@@ -286,7 +357,7 @@ class MainWP_WP_Stream {
 
 		if ( ! empty( $plugin_key ) ) {
 			$plugin_data['Name']        = stripslashes( $header['name'] . " reports" );
-                        $plugin_data['Description'] = stripslashes( $header['description'] );
+            $plugin_data['Description'] = stripslashes( $header['description'] );
 			$plugin_data['Author']      = stripslashes( $header['author'] );
 			$plugin_data['AuthorURI']   = stripslashes( $header['authoruri'] );
 			if ( ! empty( $header['pluginuri'] ) ) {
