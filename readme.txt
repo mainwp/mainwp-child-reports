@@ -7,7 +7,7 @@ Author URI: https://mainwp.com
 Plugin URI: https://mainwp.com
 Requires at least: 3.6
 Tested up to: 5.0.3
-Stable tag: 1.9.2
+Stable tag: 1.9.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,10 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 2. The MainWP Child Reports Settings Screen
 
 == Changelog ==
+
+= 1.9.3 - 2-14-2019 =
+* Fixed: an issue with catching Media upload records
+* Fixed: "Undefined variable: branding_header" PHP warning
 
 = 1.9.2 - 1-30-2019 =
 * Fixed: an issue with cleaning the plugin database tables on some setups
