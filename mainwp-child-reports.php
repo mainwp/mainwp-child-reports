@@ -123,7 +123,7 @@ class MainWP_WP_Stream {
     public function get_branding_options() {
         if ( $this->branding_options === null ) {
 
-            $opts = get_option( 'mainwp_child_branding_options' ); // settings from mainwp-child plugin
+            $opts = get_option( 'mainwp_child_branding_settings' ); // settings from mainwp-child plugin
             // this is new update
             if ( is_array($opts) ) {
                 if (isset($opts['cancelled_branding'])) { // if it was set
@@ -141,6 +141,7 @@ class MainWP_WP_Stream {
                 $opts['branding_header'] = get_option( 'mainwp_branding_plugin_header' );
                 $cancelled_branding = ( get_option( 'mainwp_child_branding_disconnected' ) === 'yes' ) && ! get_option( 'mainwp_branding_preserve_branding' );
                 $opts['cancelled_branding'] = $cancelled_branding;
+                $branding_header = $opts['branding_header'];
             }
 
             if ( ! $cancelled_branding && ( is_array( $branding_header ) && ! empty( $branding_header['name'] ) ) ) {
