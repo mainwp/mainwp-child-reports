@@ -7,7 +7,7 @@ class MainWP_WP_Stream_Log {
 	public $prev_record;
 
 	public static function load() {
-		
+
 		$log_handler = apply_filters( 'mainwp_wp_stream_log_handler', __CLASS__ );
 
 		self::$instance = new $log_handler;
@@ -24,6 +24,10 @@ class MainWP_WP_Stream_Log {
 
 	public function log( $connector, $message, $args, $object_id, $contexts, $user_id = null , $created_timestamp = null) {
 		global $wpdb;
+
+        if ( defined( 'WP_IMPORTING' ) ) {
+            return; // avoid logging when importing
+        }
 
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
@@ -80,7 +84,7 @@ class MainWP_WP_Stream_Log {
 	}
 
 	public function get_log( $agrs = array()) {
-		return MainWP_WP_Stream_DB::get_instance()->get_report( $agrs );		
+		return MainWP_WP_Stream_DB::get_instance()->get_report( $agrs );
 	}
-		
+
 }

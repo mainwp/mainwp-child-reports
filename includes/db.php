@@ -126,17 +126,20 @@ class MainWP_WP_Stream_DB {
 		}
 
 		foreach ($args as $key => $value) {
-			if ($key == 'context') {
+			if ( $key == 'context' ) {
 				$where .= $wpdb->prepare( ' `context`.`context` = %s AND ', $value);
-			} else
+			} else if ( $key == 'created' ) {
+                $where .= ' `stream`.`created` =  STR_TO_DATE(' . $wpdb->prepare('%s', $value) . ", '%Y-%m-%d %H:%i:%s') AND ";
+            } else
 				$where .= $wpdb->prepare( ' `stream`.`' . $key . '` = %s AND ', $value);
 		}
 
 		$where = rtrim($where, "AND ");
 
-		if (!empty($where)) {
+		if ( !empty($where) ) {
 			$where .= " AND blog_id = " . apply_filters( 'blog_id_logged', is_network_admin() ? 0 : get_current_blog_id() );
-			$result = $wpdb->get_row( 'SELECT `stream`.* FROM ' . self::$table . ' AS `stream` ' . $left_join . ' WHERE ' . $where );
+            $sql =  'SELECT `stream`.* FROM ' . self::$table . ' AS `stream` ' . $left_join . ' WHERE ' . $where ;
+			$result = $wpdb->get_row( $sql );
 			return $result;
 		}
 		return false;

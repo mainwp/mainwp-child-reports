@@ -1,17 +1,17 @@
 === MainWP Child Reports ===
 Contributors: maiwnp
-Donate link: 
+Donate link:
 Tags: MainWP Child Reports, MainWP, MainWP Child, MainWP Client Reports Extension, child reports, reports, actions, activity, admin, analytics, dashboard, log, notification, users, Backupwordpress, Updraftplus
 Author: mainwp
 Author URI: https://mainwp.com
 Plugin URI: https://mainwp.com
 Requires at least: 3.6
-Tested up to: 5.0.3
+Tested up to: 5.2
 Stable tag: 1.9.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-The MainWP Child Report plugin tracks changes to Child sites for the Client Reports Extension. 
+The MainWP Child Report plugin tracks changes to Child sites for the Client Reports Extension.
 
 
 == Description ==
@@ -20,9 +20,9 @@ The MainWP Child Report plugin tracks changes to Child sites for the Client Repo
 
 Install the [MainWP Child Plugin](https://wordpress.org/plugins/mainwp-child/) plugin first.
 
-The MainWP Child Report plugin communicates changes on your Child sites to the [MainWP Client Reports Extension](https://mainwp.com/extension/client-reports/) in order to create the Client Reports. 
+The MainWP Child Report plugin communicates changes on your Child sites to the [MainWP Client Reports Extension](https://mainwp.com/extension/client-reports/) in order to create the Client Reports.
 
-Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the MainWP Child Reports plugin is built on.  
+Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the MainWP Child Reports plugin is built on.
 
 == Installation ==
 
@@ -80,7 +80,7 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 * Added: support for Wordfence tokens
 * Added: support for Maintanence tokens
 * Added: support for Page Speed tokens
-* Added: support for Broken Links tokens 
+* Added: support for Broken Links tokens
 * Updated: system compatibility udpates required by upcoming MainWP Client Reports Extension versoin
 
 = 1.2 - 11-9-2016 =

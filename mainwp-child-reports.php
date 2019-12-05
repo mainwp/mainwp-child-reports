@@ -372,6 +372,14 @@ class MainWP_WP_Stream {
 
 }
 
+
+register_deactivation_hook( __FILE__, 'mainwp_child_reports_deactivate' );
+function mainwp_child_reports_deactivate() {
+    if ( ( $sched = wp_next_scheduled( 'mainwp_wp_stream_auto_purge' ) ) != false ) {
+			wp_unschedule_event( $sched, 'mainwp_wp_stream_auto_purge' );
+    }
+}
+
 if ( MainWP_WP_Stream::is_valid_php_version() ) {
 	$GLOBALS['mainwp_wp_stream'] = MainWP_WP_Stream::get_instance();
 	register_activation_hook( __FILE__, array( 'MainWP_WP_Stream', 'install' ) );
