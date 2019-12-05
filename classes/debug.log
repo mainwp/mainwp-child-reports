@@ -1,0 +1,42 @@
+[08-Nov-2019 11:30:04 UTC] =========000000000=========1573212604
+[08-Nov-2019 11:30:04 UTC] =========3333333333=========Array
+(
+    [0] => stdClass Object
+        (
+            [ID] => 508
+            [site_id] => 1
+            [blog_id] => 1
+            [object_id] => 
+            [user_id] => 1
+            [user_role] => administrator
+            [summary] => Sucuri scan successful!
+            [created] => 2019-11-05 15:05:55
+            [connector] => mainwp_sucuri
+            [context] => sucuri_scan
+            [action] => sucuri_scan
+            [ip] => 112.213.89.26
+        )
+
+)
+
+[08-Nov-2019 11:30:05 UTC] =========000000000=========1573212593
+[08-Nov-2019 11:30:05 UTC] =========3333333333=========Array
+(
+    [0] => stdClass Object
+        (
+            [ID] => 508
+            [site_id] => 1
+            [blog_id] => 1
+            [object_id] => 
+            [user_id] => 1
+            [user_role] => administrator
+            [summary] => Sucuri scan successful!
+            [created] => 2019-11-05 15:05:55
+            [connector] => mainwp_sucuri
+            [context] => sucuri_scan
+            [action] => sucuri_scan
+            [ip] => 112.213.89.26
+        )
+
+)
+
