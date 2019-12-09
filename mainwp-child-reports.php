@@ -1,40 +1,33 @@
 <?php
 /*
-  Plugin Name: MainWP Child Reports
-  Plugin URI: https://mainwp.com/
-  Description: The MainWP Child Report plugin tracks Child sites for the MainWP Client Reports Extension. The plugin is only useful if you are using MainWP and the Client Reports Extension.
-  Author: MainWP
-  Author URI: https://mainwp.com
-  Version: 1.9.3
+ * Plugin Name: MainWP Child Reports
+ * Plugin URI: https://mainwp.com/
+ * Description: The MainWP Child Report plugin tracks Child sites for the MainWP Client Reports Extension. The plugin is only useful if you are using MainWP and the Client Reports Extension.
+ * Author: MainWP
+ * Author URI: https://mainwp.com
+ * Version: 2.0
  */
 
-/**
- * Copyright (c) 2015 XWP.Co Pty Ltd. (https://xwp.co/)
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2 or, at
- * your discretion, any later version, as published by the Free
- * Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- */
+ /*
+	* Credit to the Stream Plugin which the MainWP Child Reports plugin is built on.
+	*
+  * Plugin-Name: Stream
+  * Plugin-URI: https://wp-stream.com/
+  * Description: Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
+  * Author: XWP
+  * Author URI: https://xwp.co/
+  * License: GPLv2+
+  */
 
-if ( ! version_compare( PHP_VERSION, '5.3', '>=' ) ) {
+if ( ! version_compare( PHP_VERSION, '5.6', '>=' ) ) {
 	load_plugin_textdomain( 'mainwp-child-reports', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	add_action( 'shutdown', 'wp_mainwp_stream_fail_php_version' );
 } else {
 	require __DIR__ . '/classes/class-plugin.php';
 	$plugin_class_name = 'WP_MainWP_Stream\Plugin';
 	if ( class_exists( $plugin_class_name ) ) {
-		define( 'WP_MAINWP_STREAM_PLUGIN', plugin_basename( __FILE__ ) );		
-		$GLOBALS['wp_mainwp_stream'] = new $plugin_class_name();			
+		define( 'WP_MAINWP_STREAM_PLUGIN', plugin_basename( __FILE__ ) );
+		$GLOBALS['wp_mainwp_stream'] = new $plugin_class_name();
 	}
 }
 
@@ -59,5 +52,3 @@ function wp_mainwp_stream_fail_php_version() {
 function wp_mainwp_stream_get_instance() {
 	return $GLOBALS['wp_mainwp_stream'];
 }
-
-
