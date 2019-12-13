@@ -301,7 +301,7 @@ class Settings {
 						'type'        => 'number',
 						'class'       => 'small-text',
 						'desc'        => esc_html__( 'Maximum number of days to keep activity records.', 'mainwp-child-reports' ),
-						'default'     => 30,
+						'default'     => 100,
 						'min'         => 1,
 						'max'         => 999,
 						'step'        => 1,
@@ -357,6 +357,22 @@ class Settings {
 						'default' => 0,
 						'sticky'  => 'bottom',
 					),
+//					array(
+//						'name'    => 'convert_old_data',
+//						'title'   => esc_html__( 'Convert Old Data', 'mainwp-child-reports' ),
+//						'type'    => 'link',
+//						'href'    => add_query_arg(
+//							array(
+//								'action'                => 'wp_mainwp_stream_convert',
+//								'wp_mainwp_stream_nonce_convert' => wp_create_nonce( 'stream_nonce_convert' ),
+//							),
+//							admin_url( 'admin-ajax.php' )
+//						),
+//						'class'   => 'warning',
+//						'desc'    => esc_html__( 'Warning: This will convert old data.', 'mainwp-child-reports' ),
+//						'default' => 0,
+//						'sticky'  => 'bottom',
+//					),
 				),
 			),
 		);

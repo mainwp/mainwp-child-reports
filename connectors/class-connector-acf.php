@@ -22,15 +22,15 @@ class Connector_ACF extends Connector {
 	 * @var array
 	 */
 	public $actions = array(
-		'added_post_meta',
-		'updated_post_meta',
-		'delete_post_meta',
-		'added_user_meta',
-		'updated_user_meta',
-		'delete_user_meta',
-		'added_option',
-		'updated_option',
-		'deleted_option',
+		//'added_post_meta',
+		//'updated_post_meta',
+		//'delete_post_meta',
+		//'added_user_meta',
+		//'updated_user_meta',
+		//'delete_user_meta',
+		//'added_option',
+		//'updated_option',
+		//'deleted_option',
 		'pre_post_update',
 	);
 

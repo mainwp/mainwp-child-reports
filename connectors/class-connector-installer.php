@@ -28,7 +28,7 @@ class Connector_Installer extends Connector {
 		'mainwp_child_installPluginTheme',
 		'mainwp_child_plugin_action',
 		'mainwp_child_theme_action',
-        'mainwp_child_upgradePluginTheme'
+        //'mainwp_child_upgradePluginTheme'
 	);
 
 	public $old_plugins = array();
@@ -275,7 +275,10 @@ class Connector_Installer extends Connector {
 		$_plugins     = $this->get_plugins();
 		$name         = $_plugins[ $slug ]['Name'];
 		$network_wide = $network_wide ? esc_html__( 'network wide', 'mainwp-child-reports' ) : null;
-
+	
+		if (empty($name))
+			return;
+		
 		$this->log(
 			// translators: Placeholders refer to a plugin name, and whether it is on a single site or network wide (e.g. "Stream", "network wide") (a single site results in a blank string)
 			_x(
@@ -433,7 +436,7 @@ class Connector_Installer extends Connector {
 			$message,
 			compact( 'new_version', 'old_version', 'auto_updated' ),
 			null,
-			'WordPress',
+			'wordpress',
 			'updated'
 		);
 	}
@@ -546,61 +549,61 @@ class Connector_Installer extends Connector {
 		$this->old_plugins = $this->get_plugins();        
 	}
 	
-    public function callback_mainwp_child_upgradePluginTheme( $extra ) {
-		$logs    = array();
-		
-		if ( ! isset( $extra['type'] ) ) {
-			return false;
-		}
-
-		$type   = $extra['type'];
-		$action = $extra['action'];
-
-		if ( ! in_array( $type, array( 'plugin', 'theme' ) ) ) {
-			return;
-		}
-
-		if ( 'update' === $action ) {
-            if ( 'plugin' === $type ) {				
-				$slug    = $extra['slug'];
-				$name    = $extra['name'];
-				$version = $extra['version'];  
-                $old_version = $extra['old_version'];
-			} else { // theme
-				$name    = $extra['name'];
-				$version = $extra['version'];
-                $old_version = $extra['old_version'];
-			}
-            
-			$action  = 'updated';
-			$message = _x(
-				'Updated %1$s: %2$s %3$s',
-				'Plugin/theme update. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
-				'mainwp_child_reports'
-			);
-            $logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action' );			
-		} else {
-			return false;
-		}
-
-		$context = $type . 's';
-
-		foreach ( $logs as $log ) {
-			$name        = isset( $log['name'] ) ? $log['name'] : null;
-			$version     = isset( $log['version'] ) ? $log['version'] : null;
-			$slug        = isset( $log['slug'] ) ? $log['slug'] : null;
-			$old_version = isset( $log['old_version'] ) ? $log['old_version'] : null;
-			$message     = isset( $log['message'] ) ? $log['message'] : null;
-			$action      = isset( $log['action'] ) ? $log['action'] : null;
-			$this->log(
-				$message,
-				compact( 'type', 'name', 'version', 'slug', 'success', 'error', 'old_version' ),
-				null,
-				$context,
-				$action				
-			);
-		}
-	}
+//    public function callback_mainwp_child_upgradePluginTheme( $extra ) {
+//		$logs    = array();
+//		
+//		if ( ! isset( $extra['type'] ) ) {
+//			return false;
+//		}
+//
+//		$type   = $extra['type'];
+//		$action = $extra['action'];
+//
+//		if ( ! in_array( $type, array( 'plugin', 'theme' ) ) ) {
+//			return;
+//		}
+//
+//		if ( 'update' === $action ) {
+//            if ( 'plugin' === $type ) {				
+//				$slug    = $extra['slug'];
+//				$name    = $extra['name'];
+//				$version = $extra['version'];  
+//                $old_version = $extra['old_version'];
+//			} else { // theme
+//				$name    = $extra['name'];
+//				$version = $extra['version'];
+//                $old_version = $extra['old_version'];
+//			}
+//            
+//			$action  = 'updated';
+//			$message = _x(
+//				'Updated %1$s: %2$s %3$s',
+//				'Plugin/theme update. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
+//				'mainwp_child_reports'
+//			);
+//            $logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action' );			
+//		} else {
+//			return false;
+//		}
+//
+//		$context = $type . 's';
+//
+//		foreach ( $logs as $log ) {
+//			$name        = isset( $log['name'] ) ? $log['name'] : null;
+//			$version     = isset( $log['version'] ) ? $log['version'] : null;
+//			$slug        = isset( $log['slug'] ) ? $log['slug'] : null;
+//			$old_version = isset( $log['old_version'] ) ? $log['old_version'] : null;
+//			$message     = isset( $log['message'] ) ? $log['message'] : null;
+//			$action      = isset( $log['action'] ) ? $log['action'] : null;
+//			$this->log(
+//				$message,
+//				compact( 'type', 'name', 'version', 'slug', 'success', 'error', 'old_version' ),
+//				null,
+//				$context,
+//				$action				
+//			);
+//		}
+//	}
 
 	
 }

@@ -1,5 +1,67 @@
 <?php
 /**
+ * Version 3.5.0
+ *
+ * To fix connector.
+ *
+ * @param string $db_version
+ * @param string $current_version
+ *
+ * @return string
+ */
+function wp_mainwp_stream_update_auto_350($db_version, $current_version ) {
+	
+	global $wpdb;
+	
+	$stream_entries = $wpdb->get_results( "SELECT * FROM {$wpdb->base_prefix}mainwp_stream" );
+	foreach ( $stream_entries as $entry ) {
+		$connector = $entry->connector;	
+		$context = $entry->context;	
+		$action = $entry->action;	
+		
+		if ( in_array( $connector, array('updraftplus_backups', 'backupbuddy_backups', 'backupwordpress_backups', 'backwpup_backups', 'wptimecapsule_backups') )) {			
+			$context = 'backups';
+			$action = rtrim($connector, 's');
+			$connector = 'mainwp_backups';
+		} 
+		else  if ($connector == 'mainwp_maintenance') 
+		{
+			$action = 'maintenance';
+			$context = 'mainwp_maintenance';						
+		}
+		else  if ($connector == 'mainwp_sucuri') 
+		{
+			$action = 'sucuri_scan';
+			$context = 'sucuri_scan';						
+		}
+		else  if ($connector == 'wordfence_scan') 
+		{
+			$action = 'wordfence_scan';
+			$context = 'wordfence_scan';						
+			$connector = 'mainwp_wordfence';
+		}		
+		else 
+		{
+			continue;
+		}
+		
+		$wpdb->update(
+			$wpdb->base_prefix . 'mainwp_stream', array(
+				'connector' => $connector,
+				'context'   => $context,
+				'action'    => $action,
+			), array(
+				'ID' => $entry->ID,
+			)
+		);
+		
+	}
+
+	return $current_version;
+	
+}
+
+/**
  * Version 3.0.8
  *
  * Force update for older versions to call \dbdelta in install() method to fix column widths.
@@ -39,7 +101,7 @@ function wp_mainwp_stream_update_302( $db_version, $current_version ) {
 					'ID' => $entry->ID,
 				)
 			);
-		} else {
+		} else {			
 			$wpdb->update(
 				$wpdb->base_prefix . 'mainwp_stream', array(
 					'connector' => strtolower( $entry->connector ),
@@ -63,7 +125,7 @@ function wp_mainwp_stream_update_302( $db_version, $current_version ) {
  *
  * @return string
  */
-function wp_mainwp_stream_update_auto_300( $db_version, $current_version ) {
+function wp_mainwp_stream_update_auto_300( $db_version, $current_version ) {	
 	global $wpdb;
 
 	// Get only the author_meta values that are double-serialized
@@ -71,11 +133,11 @@ function wp_mainwp_stream_update_auto_300( $db_version, $current_version ) {
 
 	$plugin = wp_mainwp_stream_get_instance();
 	$plugin->install->install( $current_version );
-
-	$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
-	$date->modify('-3 month');
-	$where = " AND `created` > STR_TO_DATE(" . $wpdb->prepare('%s', $date->format( 'Y-m-d H:i:s' )) . ", '%Y-%m-%d %H:%i:%s') ";
-	$orderby = ' ORDER BY ID DESC ';
+	
+	$date = new DateTime( '2019-8-31 23:59:59', $timezone = new DateTimeZone( 'UTC' ) ); // fixed value, around 3 months ago	
+		
+	$where = " AND `created` > STR_TO_DATE(" . $wpdb->prepare('%s', $date->format( 'Y-m-d H:i:s' )) . ", '%Y-%m-%d %H:%i:%s') ";	
+	$orderby = ' ORDER BY ID ASC '; // ASC importance
 	 
 	$starting_row   = 0;
 	$rows_per_round = 5000;	
@@ -87,7 +149,6 @@ function wp_mainwp_stream_update_auto_300( $db_version, $current_version ) {
 			$context = $wpdb->get_row(
 				$wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}mainwp_stream_context_tmp WHERE record_id = %s LIMIT 1", $entry->ID )
 			);
-
 			$new_entry = array(
 				'site_id'   => $entry->site_id,
 				'blog_id'   => $entry->blog_id,
@@ -107,14 +168,21 @@ function wp_mainwp_stream_update_auto_300( $db_version, $current_version ) {
 			
 			$wpdb->insert( $wpdb->base_prefix . 'mainwp_stream', $new_entry );			
 			
+			if ( $new_insert_id = $wpdb->insert_id ) {						
+				$wpdb->update(
+					$wpdb->base_prefix . 'mainwp_stream_meta', array(
+						'record_id' => $new_insert_id,						
+					), array(
+						'record_id' => $entry->ID,
+					)
+				);								
+			}
 		}
 		
 		$starting_row += $rows_per_round;
 
 		$stream_entries = $wpdb->get_results( "SELECT * FROM {$wpdb->base_prefix}mainwp_stream_tmp WHERE 1 = 1 " . $where . $orderby . $wpdb->prepare( "LIMIT %d, %d", $starting_row, $rows_per_round ) );
 	}
-
-	$wpdb->query( "DROP TABLE {$wpdb->base_prefix}mainwp_stream_tmp, {$wpdb->base_prefix}mainwp_stream_context_tmp" );
-
+	//$wpdb->query( "DROP TABLE {$wpdb->base_prefix}mainwp_stream_tmp, {$wpdb->base_prefix}mainwp_stream_context_tmp" );
 	return $current_version;
 }

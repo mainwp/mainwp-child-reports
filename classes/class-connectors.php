@@ -64,7 +64,7 @@ class Connectors {
 			'media',
 			'menus',
 			'posts',
-			'settings',
+			//'settings',
 			'taxonomies',
 			'users',
 			'widgets',

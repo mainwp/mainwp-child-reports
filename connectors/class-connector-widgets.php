@@ -26,7 +26,7 @@ class Connector_Widgets extends Connector {
 	 */
 	public $actions = array(
 		'update_option_sidebars_widgets',
-		'updated_option',
+		//'updated_option',
 	);
 
 	/**

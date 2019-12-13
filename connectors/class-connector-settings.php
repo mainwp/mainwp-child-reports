@@ -1,6 +1,6 @@
 <?php
 namespace WP_MainWP_Stream;
-
+// not used
 class Connector_Settings extends Connector {
 	/**
 	 * Prefix for the highlight URL hash
@@ -22,12 +22,12 @@ class Connector_Settings extends Connector {
 	 * @var array
 	 */
 	public $actions = array(
-		'whitelist_options',
-		'update_option',
+		//'whitelist_options',
+		//'update_option',
 		'update_site_option',
 		'update_option_permalink_structure',
-		'update_option_category_base',
-		'update_option_tag_base',
+		//'update_option_category_base',
+		//'update_option_tag_base',
 	);
 
 	/**
@@ -243,14 +243,14 @@ class Connector_Settings extends Connector {
 	 */
 	public function get_context_labels() {
 		$context_labels = array(
-			'settings'          => esc_html__( 'Settings', 'mainwp-child-reports' ),
+			//'settings'          => esc_html__( 'Settings', 'mainwp-child-reports' ),
 			'general'           => esc_html__( 'General', 'mainwp-child-reports' ),
 			'writing'           => esc_html__( 'Writing', 'mainwp-child-reports' ),
 			'reading'           => esc_html__( 'Reading', 'mainwp-child-reports' ),
 			'discussion'        => esc_html__( 'Discussion', 'mainwp-child-reports' ),
 			'media'             => esc_html__( 'Media', 'mainwp-child-reports' ),
 			'permalink'         => esc_html__( 'Permalinks', 'mainwp-child-reports' ),
-			'network'           => esc_html__( 'Network', 'mainwp-child-reports' ),
+			//'network'           => esc_html__( 'Network', 'mainwp-child-reports' ),
 			'wp_mainwp_stream'         => esc_html__( 'Reports', 'mainwp-child-reports' ),
 			'custom_background' => esc_html__( 'Custom Background', 'mainwp-child-reports' ),
 			'custom_header'     => esc_html__( 'Custom Header', 'mainwp-child-reports' ),

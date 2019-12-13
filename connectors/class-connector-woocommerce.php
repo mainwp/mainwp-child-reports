@@ -21,7 +21,7 @@ class Connector_Woocommerce extends Connector {
 	 */
 	public $actions = array(
 		'wp_mainwp_stream_record_array',
-		'updated_option',
+		//'updated_option',
 		'transition_post_status',
 		'deleted_post',
 		'woocommerce_order_status_changed',

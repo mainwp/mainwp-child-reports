@@ -81,22 +81,26 @@ class Query {
 
 		if ( ! empty( $args['date_from'] ) ) {
 			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_from'] . ' 00:00:00' ) ) );
-			$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) >= %s", $date );
+			//$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) >= %s", $date );
+			$where .= " AND ($wpdb->mainwp_stream.created >= STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
 		}
 
 		if ( ! empty( $args['date_to'] ) ) {
 			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_to'] . ' 23:59:59' ) ) );
-			$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) <= %s", $date );
+			//$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) <= %s", $date );
+			$where .= " AND ($wpdb->mainwp_stream.created <= STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
 		}
 
 		if ( ! empty( $args['date_after'] ) ) {
 			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_after'] ) ) );
-			$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) > %s", $date );
+			//$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) > %s", $date );
+			$where .= " AND ($wpdb->mainwp_stream.created > STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
 		}
 
 		if ( ! empty( $args['date_before'] ) ) {
 			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_before'] ) ) );
-			$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) < %s", $date );
+			//$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) < %s", $date );
+			$where .= " AND ($wpdb->mainwp_stream.created < STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
 		}
 		
 		
@@ -104,9 +108,11 @@ class Query {
 		if ( ! empty( $args['created'] ) ) {
 			$created = strtotime( $args['created'] );
 			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', $created + 5 ) );
-			$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) <= %s", $date );
+			//$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) <= %s", $date );
+			$where .= " AND ($wpdb->mainwp_stream.created <= STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
 			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', $created - 5 ) );
-			$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) >= %s", $date );
+			//$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) >= %s", $date );
+			$where .= " AND ($wpdb->mainwp_stream.created >= STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
 		}
 
 		/**
@@ -199,6 +205,12 @@ class Query {
 		 */
 		$order     = esc_sql( $args['order'] );
 		$orderby   = esc_sql( $args['orderby'] );
+		
+		// to fix order by created
+		if ($orderby == 'date')  { 
+			$orderby = 'created';
+		}
+			
 		$orderable = array( 'ID', 'site_id', 'blog_id', 'object_id', 'user_id', 'user_role', 'summary', 'created', 'connector', 'context', 'action' );
 
 		if ( in_array( $orderby, $orderable, true ) ) {
@@ -212,7 +224,7 @@ class Query {
 		}
 
 		$orderby = "ORDER BY {$orderby} {$order}";
-
+		
 		/**
 		 * PARSE FIELDS PARAMETER
 		 */
