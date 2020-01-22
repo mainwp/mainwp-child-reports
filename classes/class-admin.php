@@ -179,6 +179,14 @@ class Admin {
 		);
 		
 		// Reset Streams database.
+		add_action(
+			'wp_ajax_wp_mainwp_stream_try_repair', array(
+				$this,
+				'wp_ajax_try_repair',
+			)
+		);
+		
+		// Reset Streams database.
 //		add_action(
 //			'wp_ajax_wp_mainwp_stream_convert', array(
 //				$this,
@@ -708,6 +716,41 @@ class Admin {
 
 //		$wpdb->query( "DROP TABLE {$wpdb->base_prefix}mainwp_stream_tmp, {$wpdb->base_prefix}mainwp_stream_context_tmp" );
 		return $current_version;
+	}
+	
+	/**
+	 * Handle the reset AJAX request to reset logs.
+	 *
+	 * @return bool
+	 */
+	public function wp_ajax_try_repair() {
+		check_ajax_referer( 'mainwp_stream_nonce_repair', 'wp_mainwp_stream_nonce_try_repair' );
+
+		if ( ! current_user_can( $this->settings_cap ) ) {
+			wp_die(
+				esc_html__( "You don't have sufficient privileges to do this action.", 'mainwp-child-reports' )
+			);
+		}
+		include_once $this->plugin->locations['inc_dir'] . 'db-updates.php';
+
+		// force to repair
+		if ( function_exists( 'wp_mainwp_stream_update_auto_352')) {
+			
+			wp_mainwp_stream_update_auto_352( true, true );
+			
+		}
+		
+		wp_redirect(
+			add_query_arg(
+				array(
+					'page'    => is_network_admin() ? $this->network->network_settings_page_slug : $this->settings_page_slug,
+					'message' => 'data_repaired',
+					//'try_repair' => 'yes'
+				),
+				self_admin_url( $this->admin_parent_page )
+			)
+		);
+		exit;
 	}
 	
 	/**

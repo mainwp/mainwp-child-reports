@@ -40,11 +40,11 @@ class Connector_MainWP_Backups extends Connector {
 	public function get_action_labels() {
 		return array(
 			'mainwp_backup' => esc_html__( 'MainWP Backup', 'mainwp-child-reports' ),
-			'mainwp_reports_backupbuddy_backup' =>  esc_html__( 'BackupBuddy Backup', 'mainwp-child-reports' ),
-			'mainwp_reports_backupwordpress_backup' => esc_html__( 'BackupWordPress Backup', 'mainwp-child-reports' ),			
-			'mainwp_reports_backwpup_backup' => __( 'BackWPup Backup', 'mainwp-child-reports' ),
+			'backupbuddy_backup' =>  esc_html__( 'BackupBuddy Backup', 'mainwp-child-reports' ),
+			'backupwordpress_backup' => esc_html__( 'BackupWordPress Backup', 'mainwp-child-reports' ),			
+			'backwpup_backup' => __( 'BackWPup Backup', 'mainwp-child-reports' ),
 			'updraftplus_backup' => __( 'Updraftplus Backup', 'mainwp-child-reports' ),
-			'mainwp_reports_wptimecapsule_backup' => __( 'WP Time Capsule Backup', 'mainwp-child-reports' ),
+			'wptimecapsule_backup' => __( 'WP Time Capsule Backup', 'mainwp-child-reports' ),
 		);
 	}
 

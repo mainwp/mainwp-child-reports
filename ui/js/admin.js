@@ -155,6 +155,15 @@ jQuery(
 					}
 				}
 			);
+                    
+                        // Confirmation on some important actions
+			$( 'body' ).on(
+				'click', '#wp_mainwp_stream_advanced_try_repair', function( e ) {
+					if ( ! window.confirm( 'Are you sure?' ) ) {
+						e.preventDefault();
+					}
+				}
+			);
 
 			$( 'body' ).on(
 				'click', '#wp_mainwp_stream_advanced_reset_site_settings, #wp_mainwp_stream_network_advanced_reset_site_settings', function( e ) {

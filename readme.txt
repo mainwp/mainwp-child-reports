@@ -7,7 +7,7 @@ Plugin URI: https://mainwp.com
 Requires at least: 3.6
 Tested up to: 5.3.1
 Requires PHP: 5.6
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,12 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 2. The MainWP Child Reports Settings Screen
 
 == Changelog ==
+
+= 2.0.2 - 1-22-2020 =
+* Fixed: an issue with logging some backups
+* Fixed: an issue with logging Maintenance data
+* Fixed: an issue with logging security scan data
+* Fixed: an issue with displaying empty data
 
 = 2.0.1 - 12-13-2019 =
 * Fixed: data Child Reports conversion problem

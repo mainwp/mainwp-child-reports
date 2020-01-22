@@ -376,6 +376,26 @@ class Settings {
 				),
 			),
 		);
+		
+		//if ( isset( $_GET['try_repair'] ) && $_GET['try_repair'] == 'yes') {
+			$repair_data = array(
+				'name'    => 'try_repair',
+				'title'   => esc_html__( 'Repair Data', 'mainwp-child-reports' ),
+				'type'    => 'link',
+				'href'    => add_query_arg(
+					array(
+						'action'                => 'wp_mainwp_stream_try_repair',
+						'wp_mainwp_stream_nonce_try_repair' => wp_create_nonce( 'mainwp_stream_nonce_repair' )						
+					),
+					admin_url( 'admin-ajax.php' )
+				),
+				'class'   => 'warning',
+				'desc'    => '',
+				'default' => 0,
+				'sticky'  => 'bottom',
+			);
+			array_push( $fields['advanced']['fields'], $repair_data );
+		//}
 
 		// If Akismet is active, allow Admins to opt-in to Akismet tracking
 		if ( class_exists( 'Akismet' ) ) {			

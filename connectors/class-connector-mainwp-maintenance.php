@@ -16,7 +16,7 @@ class Connector_MainWP_Maintenance extends Connector {
 
 	public function get_action_labels() {
             return array(
-                'mainwp_reports_maintenance'    => __( 'Maintenance', 'default' ),			
+                'maintenance'    => __( 'Maintenance', 'default' ),			
             );
 	}
 

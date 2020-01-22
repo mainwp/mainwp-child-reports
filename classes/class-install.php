@@ -382,6 +382,7 @@ class Install {
 			'3.0.2', /* @version 3.0.2 Fix uppercase values in stream table, connector column */
 			'3.0.8', /* @version 3.0.8 Increase size of user role IDs, user_roll column */
 			'3.5.0', /* @version 3.5.0 Fix connector values */
+			'3.5.2', /* @version 3.5.2 Fix meta data */			
 		);
 
 		/**

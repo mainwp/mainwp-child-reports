@@ -1,5 +1,247 @@
 <?php
 /**
+ * Version 3.5.2
+ *
+ * To fix meta data.
+ *
+ * @param string $db_version
+ * @param string $current_version
+ *
+ * @return string
+ */
+function wp_mainwp_stream_update_auto_352( $db_version, $current_version ) {	
+	global $wpdb;	
+	
+	$first_correct = $wpdb->get_results(			
+			  " SELECT sm.record_id, sm.meta_id
+				FROM {$wpdb->prefix}mainwp_stream as s 
+				LEFT JOIN {$wpdb->prefix}mainwp_stream_meta as sm
+				ON s.ID = sm.record_id
+				where sm.meta_key = 'user_meta'
+				ORDER BY s.ID ASC LIMIT 1 "
+			);
+						
+	$first_correct_record_id = 0;	
+	if ( $first_correct ) {
+		$first_correct = current( $first_correct );
+		$first_correct_record_id = $first_correct->record_id;		
+	}
+		
+	if ( empty( $first_correct_record_id ) ) {
+		return; // this is correct conversion
+	}		
+	
+	// to get first correct meta id
+	$sql = $wpdb->prepare( 
+		"SELECT * FROM {$wpdb->base_prefix}mainwp_stream_meta 
+		WHERE record_id = %d ORDER BY meta_id ASC LIMIT 1", 
+		$first_correct_record_id 
+	);				
+	
+	$first_correct_meta_id = 0;
+	
+	$correct_meta = $wpdb->get_results( $sql );
+	if ( $correct_meta ) {
+		$correct_meta = current( $correct_meta );
+		$first_correct_meta_id = $correct_meta->meta_id;		
+	}		
+		
+	//$date = new DateTime( '2019-8-31 23:59:59', $timezone = new DateTimeZone( 'UTC' ) ); // fixed value, around 3 months ago			
+	//$where = " AND ( `created` > STR_TO_DATE(" . $wpdb->prepare('%s', $date->format( 'Y-m-d H:i:s' )) . ", '%Y-%m-%d %H:%i:%s') ) ";	
+	$where = " AND ID < " . intval( $first_correct_record_id );	
+	$orderby = ' ORDER BY ID DESC ';  // DESC importance
+	 
+	$starting_row   = 0;
+	$rows_per_round = 5000;	
+	
+	$stream_entries = $wpdb->get_results( "SELECT * FROM {$wpdb->base_prefix}mainwp_stream WHERE 1 = 1 " . 
+					$where . $orderby . 
+					$wpdb->prepare( " LIMIT %d, %d", $starting_row, $rows_per_round ) );
+	$stop = false;
+		
+	
+	$fix_what = array(		
+		'plugin_updated',
+		'plugin_activated_deactivated',
+		'theme_updated',
+		'theme_activated_deactivated',
+		'wordpress_update',		
+		'post_page',
+		'mainwp_backups',		
+		'wordfence_scan',
+		'sucuri_scan'
+	);
+	
+	
+	while ( ! empty( $stream_entries ) ) {
+		
+		foreach( $fix_what as $fix_value ) {			
+			$correct_meta_id = $first_correct_meta_id;		
+									
+			foreach ( $stream_entries as $entry ) {
+				
+				if ( $fix_value == 'plugin_updated' ) {
+					if ( $entry->connector != 'installer' || $entry->context != 'plugins' || $entry->action !== 'updated') {						
+						continue; // next entry
+					}
+				} else if ( $fix_value == 'plugin_activated_deactivated' ) {
+					if ( $entry->connector != 'installer' || $entry->context != 'plugins' || ( $entry->action !== 'activated' && $entry->action !== 'deactivated' ) ) {						
+						continue; // next entry
+					}
+				} else if ( $fix_value == 'theme_updated' ) {
+					if ( $entry->connector != 'installer' || $entry->context !== 'themes' || $entry->action !== 'updated' ) {						
+						continue; // next entry
+					}
+				} else if ( $fix_value == 'theme_activated_deactivated' ) {
+					if ( $entry->connector != 'installer' || $entry->context != 'themes' || ( $entry->action !== 'activated' && $entry->action !== 'deactivated' ) ) {						
+						continue; // next entry
+					}
+				} else if ($fix_value == 'wordpress_update') {
+					if ( $entry->connector != 'installer' || $entry->context !== 'wordpress' || $entry->action != 'updated' ) {						
+						continue; // next entry
+					}
+				} else if ($fix_value == 'post_page') {
+					if ( $entry->connector != 'posts' || ( $entry->context !== 'post' && $entry->context !== 'page' ) ) {						
+						continue; // next entry
+					}
+				} else if ($fix_value == 'mainwp_backups') {
+					if ( $entry->connector != 'mainwp_backups' || $entry->context != 'backups' ) {						
+						continue; // next entry
+					}
+				} else if ($fix_value == 'wordfence_scan') {
+					if ( $entry->context !== 'wordfence_scan' ) {						
+						continue; // next entry
+					}
+				} else if ($fix_value == 'sucuri_scan') {
+					if ( $entry->context !== 'sucuri_scan' ) {						
+						continue; // next entry
+					}
+				}
+				
+				$fix_next_type = false;
+				
+				// loop meta records
+				while ( true ) {					
+					
+					$fix_next_entry = false;
+					
+					$sql = $wpdb->prepare( 
+						"SELECT * FROM {$wpdb->base_prefix}mainwp_stream_meta 
+						WHERE meta_id < %d ORDER BY meta_id DESC LIMIT 20", // get 20 meta items to fix 
+						$correct_meta_id 
+					);			
+					
+					$incorrect_metas = $wpdb->get_results( $sql );
+					
+					if ( empty( $incorrect_metas ) ) {
+						
+						// valid meta, fix next type	
+						$fix_next_type = true;
+						break;
+					}
+
+					foreach( $incorrect_metas as $incorr) {		
+						// guess to fix record_id  
+						$update_it = false;						
+						if ( $fix_value == 'plugin_updated' ) {							
+							if ( $incorr->meta_key == 'type' && $incorr->meta_value === 'plugin') {
+								$update_it = true;
+							}
+						} else if ( $fix_value == 'plugin_activated_deactivated' ) {							
+							if ( $incorr->meta_key == 'type' && $incorr->meta_value === 'plugin') { 
+								$update_it = true;
+							}
+						} else if ( $fix_value == 'theme_updated' ) {							
+							if ( $incorr->meta_key == 'type' && $incorr->meta_value === 'theme' ) {
+								$update_it = true;
+							}
+						} else if ( $fix_value == 'theme_activated_deactivated' ) {							
+							if ( $incorr->meta_key == 'type' && $incorr->meta_value === 'theme') { 
+								$update_it = true;
+							}
+						} else if ($fix_value == 'wordpress_update') {
+							if ( $incorr->meta_key == 'auto_updated' ) {
+								$update_it = true;
+							}							
+						} else if ($fix_value == 'post_page') {
+							if ( $incorr->meta_key == 'singular_name' && ( $incorr->meta_value == 'page' || $incorr->meta_value == 'post' ) ) {
+								$update_it = true;
+							}							
+						} else if ($fix_value == 'mainwp_backups') {
+							if ( $incorr->meta_key == 'backup_time' ) {
+								$update_it = true;
+							}
+						} else if ($fix_value == 'wordfence_scan') {
+							if ( $incorr->meta_key == 'result' && strpos( $incorr->meta_value, 'SUM_FINAL' ) !== false ) {
+								$update_it = true;
+							}
+						} else if ($fix_value == 'sucuri_scan') {
+							if ( $incorr->meta_key == 'scan_status' ) {
+								$update_it = true;
+							}
+						}
+						
+						// it's ok
+						$correct_meta_id -= 1;  	
+						
+						if ( $update_it ) {			
+														
+							$sql = $wpdb->prepare( 
+								"SELECT * FROM {$wpdb->base_prefix}mainwp_stream_meta 
+								WHERE record_id = %d AND meta_id < %d ",  
+								$incorr->record_id, $incorr->meta_id + 10 // + 10 to sure it does not update fixed meta
+							);
+								
+							$fix_metas = $wpdb->get_results( $sql );		
+								
+							if ( $fix_metas ) {
+								// verify one more time
+								if ( $fix_value == 'plugin_activated_deactivated' || $fix_value == 'theme_activated_deactivated' ) {							
+									if ( count($fix_metas) > 3 )
+										continue;
+								}		
+								
+								if ( count($fix_metas) > 20 ) //not valid
+										continue;
+								
+								$fixed_ids = array();
+								foreach( $fix_metas as $item ) {
+									$fixed_ids[] = $item->meta_id;
+								}		
+								
+								if ($fixed_ids) {		
+									$wpdb->query( 'UPDATE ' . $wpdb->base_prefix . 'mainwp_stream_meta' . ' SET record_id=' .  $entry->ID  . ' WHERE meta_id IN (' . implode( ",", $fixed_ids) . ')');
+								}															
+							}
+								
+							// found the correct meta so go to fix next entry
+							$fix_next_entry = true;
+							break;
+						}
+					}		
+					
+					$wpdb->flush();
+					
+					if ( $fix_next_entry )
+						break;	
+					
+				}
+				
+				if ( $fix_next_type ) {
+					break; // to fix next type
+				}
+			}
+		}
+		
+		$starting_row += $rows_per_round;				
+		if ( !$stop )
+			$stream_entries = $wpdb->get_results( "SELECT * FROM {$wpdb->base_prefix}mainwp_stream WHERE 1 = 1 " . $where . $orderby . $wpdb->prepare( "LIMIT %d, %d", $starting_row, $rows_per_round ) );
+	}	
+	
+	return $current_version;	
+}
+
+/**
  * Version 3.5.0
  *
  * To fix connector.
@@ -149,6 +391,11 @@ function wp_mainwp_stream_update_auto_300( $db_version, $current_version ) {
 			$context = $wpdb->get_row(
 				$wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}mainwp_stream_context_tmp WHERE record_id = %s LIMIT 1", $entry->ID )
 			);
+			
+			if (empty($context)) {				
+				continue;
+			}
+			
 			$new_entry = array(
 				'site_id'   => $entry->site_id,
 				'blog_id'   => $entry->blog_id,
@@ -180,7 +427,7 @@ function wp_mainwp_stream_update_auto_300( $db_version, $current_version ) {
 		}
 		
 		$starting_row += $rows_per_round;
-
+		
 		$stream_entries = $wpdb->get_results( "SELECT * FROM {$wpdb->base_prefix}mainwp_stream_tmp WHERE 1 = 1 " . $where . $orderby . $wpdb->prepare( "LIMIT %d, %d", $starting_row, $rows_per_round ) );
 	}
 	//$wpdb->query( "DROP TABLE {$wpdb->base_prefix}mainwp_stream_tmp, {$wpdb->base_prefix}mainwp_stream_context_tmp" );

@@ -7,7 +7,7 @@ class Plugin {
 	 *
 	 * @const string
 	 */
-	const VERSION = '3.5.1';
+	const VERSION = '3.5.5';
 
 	/**
 	 * WP-CLI command
@@ -120,8 +120,6 @@ class Plugin {
 		// Load settings and connectors after widgets_init and before the default init priority
 		add_action( 'init', array( $this, 'init' ), 9 );
 
-		// Add frontend indicator
-		add_action( 'wp_head', array( $this, 'frontend_indicator' ) );
 
 		// Change DB driver after plugin loaded if any add-ons want to replace
 		add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ), 20 );
@@ -190,30 +188,6 @@ class Plugin {
 		$this->alerts      = new Alerts( $this );
 		$this->alerts_list = new Alerts_List( $this );
 
-	}
-
-	/**
-	 * Displays an HTML comment in the frontend head to indicate that Stream is activated,
-	 * and which version of Stream is currently in use.
-	 *
-	 * @action wp_head
-	 *
-	 * @return string|void An HTML comment, or nothing if the value is filtered out.
-	 */
-	public function frontend_indicator() {
-		$comment = sprintf( 'Reports WordPress user activity plugin v%s', esc_html( $this->get_version() ) ); // Localization not needed
-
-		/**
-		 * Filter allows the HTML output of the frontend indicator comment
-		 * to be altered or removed, if desired.
-		 *
-		 * @return string  The content of the HTML comment
-		 */
-		$comment = apply_filters( 'wp_mainwp_stream_frontend_indicator', $comment );
-
-		if ( ! empty( $comment ) ) {
-			echo sprintf( "<!-- %s -->\n", esc_html( $comment ) ); // xss ok
-		}
 	}
 
 	/**
