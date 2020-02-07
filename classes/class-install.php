@@ -165,7 +165,7 @@ class Install {
 			$table_search = $wpdb->get_var(
 				$wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name )
 			);
-			if ( $table_search !== $table_name ) {
+			if ( strcasecmp($table_search,$table_name ) != 0 ) {
 				$missing_tables[] = $table_name;
 			}
 		}

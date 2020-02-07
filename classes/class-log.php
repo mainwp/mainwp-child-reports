@@ -74,9 +74,10 @@ class Log {
 		$author           = new Author( $user_id );
 		$agent            = $author->get_current_agent();
 
+		$backup_logging = ( is_string( $connector ) && 'mainwp_backups' == $connector ) ? true : false;					
 		// WP Cron tracking requires opt-in and WP Cron to be enabled.
-		if ( ! $wp_cron_tracking && 'wp_cron' === $agent ) {
-			return false;
+		if ( ! $wp_cron_tracking && 'wp_cron' === $agent && ! $backup_logging ) {			 
+				return false;
 		}
 
 		$user = new \WP_User( $user_id );
