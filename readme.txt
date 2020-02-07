@@ -7,7 +7,7 @@ Plugin URI: https://mainwp.com
 Requires at least: 3.6
 Tested up to: 5.3.2
 Requires PHP: 5.6
-Stable tag: 2.0.2
+Stable tag: 2.0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,10 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 2. The MainWP Child Reports Settings Screen
 
 == Changelog ==
+
+= 2.0.3 - 2-7-2020 =
+* Fixed: an issue logging UpdraftPlus scheduled backups
+* Fixed: an issue with dismissing missing database tables warning
 
 = 2.0.2 - 1-22-2020 =
 * Fixed: an issue with logging some backups
