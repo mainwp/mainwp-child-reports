@@ -20,7 +20,8 @@ class Connector_MainWP_Backups extends Connector {
 		'mainwp_reports_backupwordpress_backup', 
 		'mainwp_reports_backwpup_backup',
 		'updraftplus_backup', // backup action from updraftplus
-		'mainwp_reports_wptimecapsule_backup'
+		'mainwp_reports_wptimecapsule_backup',
+        'wpvivid_backup'
 	);
 
 	/**
@@ -45,6 +46,7 @@ class Connector_MainWP_Backups extends Connector {
 			'backwpup_backup' => __( 'BackWPup Backup', 'mainwp-child-reports' ),
 			'updraftplus_backup' => __( 'Updraftplus Backup', 'mainwp-child-reports' ),
 			'wptimecapsule_backup' => __( 'WP Time Capsule Backup', 'mainwp-child-reports' ),
+            'wpvivid_backup' => __( 'WPvivid Backup', 'mainwp-child-reports' )
 		);
 	}
 
@@ -138,6 +140,16 @@ class Connector_MainWP_Backups extends Connector {
 			'wptimecapsule_backup'			
 		);
 	}
+
+    public function callback_wpvivid_backup($destination, $message, $status, $type, $backup_time){
+        $this->log(
+            $message,
+            compact( 'destination', 'status', 'type', 'backup_time' ),
+            0,
+            'backups',
+            'wpvivid_backup'
+        );
+    }
 }
 
 
