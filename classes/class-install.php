@@ -64,6 +64,7 @@ class Install {
 
 		// Install the plugin
 		add_action( 'wp_mainwp_stream_before_db_notices', array( $this, 'check' ) );
+		add_action( 'wp_mainwp_child_reposts_recreate_tables_if_not_exist', array( $this, 'recreate_tables_if_not_exist' ) );
 
 		register_activation_hook( $this->plugin->locations['plugin'], array( $this, 'check' ) );
 	}
@@ -127,6 +128,35 @@ class Install {
 		$this->update_db_option();
 	}
 
+	public function recreate_tables_if_not_exist() {
+		global $wpdb;
+		
+		check_ajax_referer( 'stream_nonce_reset', 'wp_mainwp_stream_nonce_reset' );
+		
+		$missing_tables = array();
+		foreach ( $this->plugin->db->get_table_names() as $table_name ) {
+			$table_search = $wpdb->get_var(
+				$wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name )
+			);
+			if ( strcasecmp($table_search,$table_name ) != 0 ) {
+				$missing_tables[] = $table_name;
+			}
+		}
+		
+		if ( $missing_tables ) {
+			$this->install( $this->plugin->get_version() );
+			
+			// for debugging only
+//			if( $wpdb->last_error !== '') :
+//				$str   = htmlspecialchars( $wpdb->last_result, ENT_QUOTES );
+//				$query = htmlspecialchars( $wpdb->last_query, ENT_QUOTES );
+//				error_log( $str );
+//				error_log( $query );
+//			endif;
+		}
+		
+	}
+	
 	/**
 	 * Verify that the required DB tables exists
 	 *

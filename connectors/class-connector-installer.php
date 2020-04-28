@@ -239,7 +239,8 @@ class Connector_Installer extends Connector {
 						)
 					);
 					$name        = $theme['Name'];
-					$old_version = $theme['Version'];
+					//$old_version = $theme['Version'];
+					$old_version = $upgrader->skin->theme_info->get('Version'); // to fix old version  //$theme['Version'];
 					$version     = $theme_data['Version'];
 
 					$logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action' );

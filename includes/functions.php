@@ -40,7 +40,7 @@ function wp_mainwp_stream_filter_var( $var, $filter = null, $options = array() )
  *
  * @return string an ISO 8601 extended formatted time
  */
-function wp_mainwp_stream_get_iso_8601_extended_date( $time = false, $offset = 0 ) {
+function wp_mainwp_stream_get_iso_8601_extended_date( $time = false, $offset = 0, $mysql_date_string = false ) {
 	if ( $time ) {
 		$microtime = (float) $time . '.0000';
 	} else {
@@ -52,7 +52,11 @@ function wp_mainwp_stream_get_iso_8601_extended_date( $time = false, $offset = 0
 
 	$timezone = new DateTimeZone( $offset_string );
 	$date     = new DateTime( date( 'Y-m-d H:i:s.' . $micro_seconds, $microtime ), $timezone );
-
+	
+	if ( $mysql_date_string ) {
+		return $date->format( 'Y-m-d H:i:s' );
+	}
+	
 	return sprintf(
 		'%s%03d%s',
 		$date->format( 'Y-m-d\TH:i:s.' ),

@@ -107,10 +107,12 @@ class Query {
 		// mainwp custom parameter
 		if ( ! empty( $args['created'] ) ) {
 			$created = strtotime( $args['created'] );
-			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', $created + 5 ) );
+			//$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', $created + 5 ) );
+			$date = wp_mainwp_stream_get_iso_8601_extended_date( $created + 5, 0, true ); 
 			//$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) <= %s", $date );
 			$where .= " AND ($wpdb->mainwp_stream.created <= STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
-			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', $created - 5 ) );
+			//$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', $created - 5 ) );
+			$date = wp_mainwp_stream_get_iso_8601_extended_date( $created - 5, 0, true ); 
 			//$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) >= %s", $date );
 			$where .= " AND ($wpdb->mainwp_stream.created >= STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
 		}

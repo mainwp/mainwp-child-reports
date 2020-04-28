@@ -24,7 +24,7 @@ class Connector_Posts extends Connector {
 	 *
 	 * @var bool
 	 */
-	public $register_frontend = false;
+	public $register_frontend = true; // to support rest api hooks
 
 	/**
 	 * Return translated connector label
@@ -165,6 +165,14 @@ class Connector_Posts extends Connector {
 			return;
 		} elseif ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
+		} elseif ( 'publish' === $new && 'draft' === $old ) {
+			// translators: Placeholders refer to a post title, and a post type singular name (e.g. "Hello World", "Post")
+			$summary = _x(
+				'"%1$s" %2$s created',
+				'1: Post title, 2: Post type singular name',
+				'mainwp-child-reports'
+			);
+			$action  = 'created';
 		} elseif ( 'draft' === $new && 'publish' === $old ) {
 			// translators: Placeholders refer to a post title, and a post type singular name (e.g. "Hello World", "Post")
 			$summary = _x(
@@ -247,9 +255,25 @@ class Connector_Posts extends Connector {
 		}
 
 		if ( 'auto-draft' === $old && 'auto-draft' !== $new ) {
-			$action = 'created';
-		}
-
+				$summary = _x(
+					'"%1$s" %2$s created',
+					'1: Post title, 2: Post type singular name',
+					'mainwp-child-reports'
+				);
+				$action = 'created';
+			}			
+		
+//		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {			
+//			if ( 'auto-draft' === $old && 'auto-draft' !== $new ) {
+//				$summary = _x(
+//					'"%1$s" %2$s created',
+//					'1: Post title, 2: Post type singular name',
+//					'mainwp-child-reports'
+//				);
+//				$action = 'created';
+//			}						
+//		}		
+		
 		if ( empty( $action ) ) {
 			$action = 'updated';
 		}

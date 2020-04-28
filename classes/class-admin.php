@@ -768,6 +768,8 @@ class Admin {
 		}
 
 		$this->erase_stream_records();
+		
+		do_action( 'wp_mainwp_child_reposts_recreate_tables_if_not_exist' );		
 
 		if ( defined( 'WP_MAINWP_STREAM_TESTS' ) && WP_MAINWP_STREAM_TESTS ) {
 			return true;

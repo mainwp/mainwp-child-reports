@@ -377,7 +377,7 @@ class Settings {
 			),
 		);
 		
-		//if ( isset( $_GET['try_repair'] ) && $_GET['try_repair'] == 'yes') {
+		if ( isset( $_GET['try_repair'] ) && $_GET['try_repair'] == 'yes') {
 			$repair_data = array(
 				'name'    => 'try_repair',
 				'title'   => esc_html__( 'Repair Data', 'mainwp-child-reports' ),
@@ -395,7 +395,7 @@ class Settings {
 				'sticky'  => 'bottom',
 			);
 			array_push( $fields['advanced']['fields'], $repair_data );
-		//}
+		}
 
 		// If Akismet is active, allow Admins to opt-in to Akismet tracking
 		if ( class_exists( 'Akismet' ) ) {			
