@@ -40,6 +40,7 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 * Fixed: an issue with logging themes updates
 * Fixed: an issue with logging created posts
 * Added: option to recreate the plugin database tables
+* Added: support for logging WPVivid backups
 
 = 2.0.3 - 2-7-2020 =
 * Fixed: an issue logging UpdraftPlus scheduled backups
