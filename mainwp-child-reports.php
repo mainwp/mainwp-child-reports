@@ -5,13 +5,13 @@
  * Description: The MainWP Child Report plugin tracks Child sites for the MainWP Client Reports Extension. The plugin is only useful if you are using MainWP and the Client Reports Extension.
  * Author: MainWP
  * Author URI: https://mainwp.com
- * Version: 2.0.3
+ * Version: 2.0.4
  */
 
  /*
-	* Credit to the Stream Plugin which the MainWP Child Reports plugin is built on.
-	*
-  * Plugin-Name: Stream
+  * Credit to the Stream Plugin which the MainWP Child Reports plugin is built on.
+  *
+  * Plugin Name: Stream
   * Plugin-URI: https://wp-stream.com/
   * Description: Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
   * Author: XWP
