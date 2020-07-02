@@ -1,6 +1,12 @@
 <?php
+/** MainWP Child Reports blogs connector. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Connector_Blogs.
+ * @package WP_MainWP_Stream
+ */
 class Connector_Blogs extends Connector {
 	/**
 	 * Connector slug
@@ -32,14 +38,14 @@ class Connector_Blogs extends Connector {
 	);
 
 	/**
-	 * Register connector in the WP Frontend
+	 * Register connector in the WP Frontend.
 	 *
 	 * @var bool
 	 */
 	public $register_frontend = false;
 
 	/**
-	 * Return translated connector label
+	 * Return translated connector label.
 	 *
 	 * @return string
 	 */
@@ -48,7 +54,7 @@ class Connector_Blogs extends Connector {
 	}
 
 	/**
-	 * Return translated action labels
+	 * Return translated action labels.
 	 *
 	 * @return array
 	 */
@@ -62,7 +68,7 @@ class Connector_Blogs extends Connector {
 	}
 
 	/**
-	 * Return translated context labels
+	 * Return translated context labels.
 	 *
 	 * @return array
 	 */
@@ -83,7 +89,7 @@ class Connector_Blogs extends Connector {
 	}
 
 	/**
-	 * Add action links to Stream drop row in admin list screen
+	 * Add action links to Stream drop row in admin list screen.
 	 *
 	 * @filter wp_mainwp_stream_action_links_{connector}
 	 *
@@ -118,7 +124,7 @@ class Connector_Blogs extends Connector {
 	}
 
 	/**
-	 * Blog created
+	 * Blog created.
 	 *
 	 * @action wpmu_new_blog
 	 *
@@ -144,7 +150,7 @@ class Connector_Blogs extends Connector {
 	}
 
 	/**
-	 * Blog registered
+	 * Blog registered.
 	 *
 	 * @action wpmu_activate_blog
 	 *
@@ -172,7 +178,7 @@ class Connector_Blogs extends Connector {
 	}
 
 	/**
-	 * User added to a blog
+	 * User added to a blog.
 	 *
 	 * @action add_user_to_blog
 	 *
@@ -189,7 +195,7 @@ class Connector_Blogs extends Connector {
 		}
 
 		$this->log(
-			// translators: Placeholders refer to a user's display name, a site name, and a user role (e.g. "Jane Doe", "FooBar Blog", "subscriber")
+			// translators: Placeholders refer to a user's display name, a site name, and a user role (e.g. "Jane Doe", "FooBar Blog", "subscriber").
 			_x(
 				'%1$s was added to the "%2$s" site with %3$s capabilities',
 				'1. User\'s name, 2. Site name, 3. Role',
@@ -207,7 +213,7 @@ class Connector_Blogs extends Connector {
 	}
 
 	/**
-	 * User removed from a blog
+	 * User removed from a blog.
 	 *
 	 * @action remove_user_from_blog
 	 *
@@ -240,7 +246,7 @@ class Connector_Blogs extends Connector {
 	}
 
 	/**
-	 * Blog marked as spam
+	 * Blog marked as spam.
 	 *
 	 * @action make_spam_blog
 	 *
@@ -251,7 +257,7 @@ class Connector_Blogs extends Connector {
 	}
 
 	/**
-	 * Blog not marked as spam
+	 * Blog not marked as spam.
 	 *
 	 * @action make_ham_blog
 	 *
@@ -262,7 +268,7 @@ class Connector_Blogs extends Connector {
 	}
 
 	/**
-	 * Blog marked as mature
+	 * Blog marked as mature.
 	 *
 	 * @action mature_blog
 	 *
@@ -273,7 +279,7 @@ class Connector_Blogs extends Connector {
 	}
 
 	/**
-	 * Blog not marked as mature
+	 * Blog not marked as mature.
 	 *
 	 * @action unmature_blog
 	 *
@@ -284,7 +290,7 @@ class Connector_Blogs extends Connector {
 	}
 
 	/**
-	 * Blog marked as archived
+	 * Blog marked as archived.
 	 *
 	 * @action archive_blog
 	 *
@@ -295,7 +301,7 @@ class Connector_Blogs extends Connector {
 	}
 
 	/**
-	 * Blog not marked as archived
+	 * Blog not marked as archived.
 	 *
 	 * @action unarchive_blog
 	 *
@@ -306,7 +312,7 @@ class Connector_Blogs extends Connector {
 	}
 
 	/**
-	 * Blog marked as deleted
+	 * Blog marked as deleted.
 	 *
 	 * @action make_delete_blog
 	 *
@@ -317,7 +323,7 @@ class Connector_Blogs extends Connector {
 	}
 
 	/**
-	 * Blog not marked as deleted
+	 * Blog not marked as deleted.
 	 *
 	 * @action undelete_blog
 	 *
@@ -328,7 +334,7 @@ class Connector_Blogs extends Connector {
 	}
 
 	/**
-	 * Blog marked as public or private
+	 * Blog marked as public or private.
 	 *
 	 * @action update_blog_public
 	 *
@@ -346,7 +352,7 @@ class Connector_Blogs extends Connector {
 	}
 
 	/**
-	 * Blog updated
+	 * Blog updated.
 	 *
 	 * @action update_blog_status
 	 *

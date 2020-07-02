@@ -1,6 +1,12 @@
 <?php
+/** MainWP Child Reports network. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Network.
+ * @package WP_MainWP_Stream
+ */
 class Network {
 	/**
 	 * Hold Plugin class

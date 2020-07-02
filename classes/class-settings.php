@@ -1,4 +1,5 @@
 <?php
+/** MainWP Child Report settings. */
 
 namespace WP_MainWP_Stream;
 
@@ -6,6 +7,10 @@ use \WP_Roles;
 use \WP_User;
 use \WP_User_Query;
 
+/**
+ * Class Settings.
+ * @package WP_MainWP_Stream
+ */
 class Settings {
 
 	/**
@@ -1170,7 +1175,8 @@ class Settings {
 	 * Get translations of serialized Stream settings
 	 *
 	 * @filter wp_mainwp_stream_serialized_labels
-	 *
+	 * @param array $labels Labels array.
+     *
 	 * @return array Multidimensional array of fields
 	 */
 	public function get_settings_translations( $labels ) {

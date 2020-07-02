@@ -1,6 +1,12 @@
 <?php
+/** MainWP Child Reports taxonomies connector. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Connector_Taxonomies.
+ * @package WP_MainWP_Stream
+ */
 class Connector_Taxonomies extends Connector {
 	/**
 	 * Connector slug
@@ -10,7 +16,7 @@ class Connector_Taxonomies extends Connector {
 	public $name = 'taxonomies';
 
 	/**
-	 * Actions registered for this connector
+	 * Actions registered for this connector.
 	 *
 	 * @var array
 	 */
@@ -22,28 +28,28 @@ class Connector_Taxonomies extends Connector {
 	);
 
 	/**
-	 * Cache term values before update, used by callback_edit_term/callback_edited_term
+	 * Cache term values before update, used by callback_edit_term/callback_edited_term.
 	 *
 	 * @var Object
 	 */
 	public $cached_term_before_update;
 
 	/**
-	 * Cache taxonomy labels
+	 * Cache taxonomy labels.
 	 *
 	 * @var array
 	 */
 	public $context_labels;
 
 	/**
-	 * Register connector in the WP Frontend
+	 * Register connector in the WP Frontend.
 	 *
 	 * @var bool
 	 */
 	public $register_frontend = false;
 
 	/**
-	 * Return translated connector label
+	 * Return translated connector label.
 	 *
 	 * @return string Translated connector label
 	 */
@@ -52,7 +58,7 @@ class Connector_Taxonomies extends Connector {
 	}
 
 	/**
-	 * Return translated action labels
+	 * Return translated action labels.
 	 *
 	 * @return array Action label translations
 	 */
@@ -65,7 +71,7 @@ class Connector_Taxonomies extends Connector {
 	}
 
 	/**
-	 * Return translated context labels
+	 * Return translated context labels.
 	 *
 	 * @return array Context label translations
 	 */
@@ -82,7 +88,7 @@ class Connector_Taxonomies extends Connector {
 	}
 
 	/**
-	 * Add action links to Stream drop row in admin list screen
+	 * Add action links to Stream drop row in admin list screen.
 	 *
 	 * @filter wp_mainwp_stream_action_links_{connector}
 	 *
@@ -114,7 +120,7 @@ class Connector_Taxonomies extends Connector {
 	}
 
 	/**
-	 * Catch registration of taxonomies after inital loading, so we can cache its labels
+	 * Catch registration of taxonomies after inital loading, so we can cache its labels.
 	 *
 	 * @action registered_taxonomy
 	 *
@@ -134,7 +140,7 @@ class Connector_Taxonomies extends Connector {
 	}
 
 	/**
-	 * Tracks creation of terms
+	 * Tracks creation of terms.
 	 *
 	 * @action created_term
 	 *
@@ -167,7 +173,7 @@ class Connector_Taxonomies extends Connector {
 	}
 
 	/**
-	 * Tracks deletion of taxonomy terms
+	 * Tracks deletion of taxonomy terms.
 	 *
 	 * @action delete_term
 	 *
@@ -200,7 +206,7 @@ class Connector_Taxonomies extends Connector {
 	}
 
 	/**
-	 * Tracks updates of taxonomy terms
+	 * Tracks updates of taxonomy terms.
 	 *
 	 * @action edit_term
 	 *
@@ -213,6 +219,13 @@ class Connector_Taxonomies extends Connector {
 		$this->cached_term_before_update = get_term( $term_id, $taxonomy );
 	}
 
+    /**
+     * Traks edited taxonomy terms.
+     *
+     * @param $term_id
+     * @param $tt_id
+     * @param $taxonomy
+     */
 	public function callback_edited_term( $term_id, $tt_id, $taxonomy ) {
 		if ( in_array( $taxonomy, $this->get_excluded_taxonomies(), true ) ) {
 			return;
@@ -243,7 +256,7 @@ class Connector_Taxonomies extends Connector {
 	}
 
 	/**
-	 * Constructs list of excluded taxonomies for the Taxonomies connector
+	 * Constructs list of excluded taxonomies for the Taxonomies connector.
 	 *
 	 * @return array List of excluded taxonomies
 	 */

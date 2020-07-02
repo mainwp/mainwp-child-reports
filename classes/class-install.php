@@ -1,6 +1,12 @@
 <?php
+/** MainWP Child Reports install. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Install.
+ * @package WP_MainWP_Stream
+ */
 class Install {
 	/**
 	 * Hold Plugin class

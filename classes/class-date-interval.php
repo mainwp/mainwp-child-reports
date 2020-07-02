@@ -1,4 +1,6 @@
 <?php
+/** MainWP Child Reports date intervals. */
+
 namespace WP_MainWP_Stream;
 
 // Load Carbon to Handle dates much easier
@@ -8,6 +10,10 @@ if ( ! class_exists( 'Carbon\Carbon' ) ) {
 
 use Carbon\Carbon;
 
+/**
+ * Class Date_Interval.
+ * @package WP_MainWP_Stream
+ */
 class Date_Interval {
 	/**
 	 * Contains an array of all available intervals
@@ -25,7 +31,9 @@ class Date_Interval {
 	}
 
 	/**
-	 * @return mixed
+     * Get predefined intervals.
+     *
+	 * @return mixed Predefined intervals.
 	 */
 	public function get_predefined_intervals() {
 		$timezone = get_option( 'timezone_string' );

@@ -1,6 +1,12 @@
 <?php
+/** MainWP Child Reports WPDB Driver. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class DB_Driver_WPDB.
+ * @package WP_MainWP_Stream
+ */
 class DB_Driver_WPDB implements DB_Driver {
 	/**
 	 * Holds Query class

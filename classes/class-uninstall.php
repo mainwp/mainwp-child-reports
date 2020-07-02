@@ -1,6 +1,12 @@
 <?php
+/** MainWP Child Reports uninstall. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Uninstall.
+ * @package WP_MainWP_Stream
+ */
 class Uninstall {
 	/**
 	 * Hold Plugin class
@@ -22,6 +28,10 @@ class Uninstall {
 	 */
 	public $user_meta;
 
+    /**
+     * Uninstall constructor.
+     * @param object $plugin Plugin class.
+     */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
 

@@ -1,6 +1,12 @@
 <?php
+/** MainWP Child Reports author. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Author.
+ * @package WP_MainWP_Stream
+ */
 class Author {
 	/**
 	 * @var int

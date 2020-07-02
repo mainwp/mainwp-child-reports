@@ -1,6 +1,11 @@
 <?php
+/** MainWP Child Reports database driver. */
 namespace WP_MainWP_Stream;
 
+/**
+ * Interface DB_Driver.
+ * @package WP_MainWP_Stream
+ */
 interface DB_Driver {
 	/**
 	 * Insert a record

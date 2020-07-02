@@ -1,7 +1,12 @@
 <?php
+/** MainWP Child Reports log. */
 
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Log.
+ * @package WP_MainWP_Stream
+ */
 class Log {
 
 	/**

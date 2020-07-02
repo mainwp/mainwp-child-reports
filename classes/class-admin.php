@@ -1,4 +1,5 @@
 <?php
+/** MainWP Child Reports Admin. */
 
 namespace WP_MainWP_Stream;
 
@@ -8,6 +9,10 @@ use DateInterval;
 use \WP_CLI;
 use \WP_Roles;
 
+/**
+ * Class Admin.
+ * @package WP_MainWP_Stream
+ */
 class Admin {
 
 	/**

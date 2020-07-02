@@ -1,6 +1,11 @@
 <?php
+/** MainWP Stream. */
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Connector_Editor
+ * @package WP_MainWP_Stream
+ */
 class Connector_Editor extends Connector {
 	/**
 	 * Connector slug
@@ -115,7 +120,7 @@ class Connector_Editor extends Connector {
 	 * @return string Translated string
 	 */
 	public function get_message() {
-		// translators: Placeholders refer to a file name, and a theme / plugin name (e.g. "index.php", "Stream")
+		// translators: Placeholders refer to a file name, and a theme / plugin name (e.g. "index.php", "Stream").
 		return _x(
 			'"%1$s" in "%2$s" updated',
 			'1: File name, 2: Theme/plugin name',
@@ -285,9 +290,17 @@ class Connector_Editor extends Connector {
 		return $output;
 	}
 
-	/**
-	 * @filter wp_redirect
-	 */
+    /**
+     * Log Changes.
+     *
+     * @filter wp_redirect
+     *
+     * @param string $location Log location.
+     * @return string $location Log location.
+     *
+     * @uses \WP_MainWP_Stream\Connector_Editor::get_context()
+     * @uses \WP_MainWP_Stream\Connector_Editor::get_message()
+     */
 	public function log_changes( $location ) {
 		if ( ! empty( $this->edited_file ) ) {
 			// TODO: phpcs fix

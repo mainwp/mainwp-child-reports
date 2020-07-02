@@ -1,6 +1,12 @@
 <?php
+/** MainWP Child Reports JSON exporter. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Exporter_JSON.
+ * @package WP_MainWP_Stream
+ */
 class Exporter_JSON extends Exporter {
 	/**
 	 * Exporter name

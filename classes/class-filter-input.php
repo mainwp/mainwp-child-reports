@@ -1,6 +1,11 @@
 <?php
+/** MainWP Child Reports filter input. */
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Filter_Input.
+ * @package WP_MainWP_Stream
+ */
 class Filter_Input {
 	public static $filter_callbacks = array(
 		FILTER_DEFAULT                => null,
@@ -24,6 +29,14 @@ class Filter_Input {
 		FILTER_UNSAFE_RAW             => null,
 	);
 
+    /**
+     * @param $type
+     * @param $variable_name
+     * @param null $filter
+     * @param array $options
+     * @return array|bool|mixed|null
+     * @throws \Exception
+     */
 	public static function super( $type, $variable_name, $filter = null, $options = array() ) {
 		$super = null;
 
@@ -57,6 +70,13 @@ class Filter_Input {
 		return $var;
 	}
 
+    /**
+     * @param $var
+     * @param null $filter
+     * @param array $options
+     * @return array|bool|mixed|null
+     * @throws \Exception
+     */
 	public static function filter( $var, $filter = null, $options = array() ) {
 		// Default filter is a sanitizer, not validator
 		$filter_type = 'sanitizer';
@@ -102,6 +122,10 @@ class Filter_Input {
 		return $var;
 	}
 
+    /**
+     * @param $var
+     * @return bool
+     */
 	public static function is_regex( $var ) {
 		// @codingStandardsIgnoreStart
 		$test = @preg_match( $var, '' );
@@ -110,6 +134,10 @@ class Filter_Input {
 		return false !== $test;
 	}
 
+    /**
+     * @param $var
+     * @return bool
+     */
 	public static function is_ip_address( $var ) {
 		return false !== \WP_Http::is_ip_address( $var );
 	}

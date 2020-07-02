@@ -1,6 +1,11 @@
 <?php
+/** MainWP Child Reports export. */
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Export.
+ * @package WP_MainWP_Stream
+ */
 class Export {
 	/**
 	 * Hold Plugin class
