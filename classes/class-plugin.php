@@ -8,75 +8,46 @@ namespace WP_MainWP_Stream;
  * @package WP_MainWP_Stream
  */
 class Plugin {
-	/**
-	 * Plugin version number
-	 *
-	 * @const string
-	 */
+
+	/** @const string Plugin version number. */
 	const VERSION = '3.5.5';
 
-	/**
-	 * WP-CLI command
-	 *
-	 * @const string
-	 */
+	/** @const string WP-CLI command. */
 	const WP_CLI_COMMAND = 'mainwp_stream';
 
-	/**
-	 * @var Admin
-	 */
+	/** @var \WP_MainWP_Stream\Admin Admin class. */
 	public $admin;
 
-	/**
-	 * @var Alerts
-	 */
+	/** @var \WP_MainWP_Stream\Alerts Alerts class. */
 	public $alerts;
 
-	/**
-	 * @var Alerts_List
-	 */
+	/** @var \WP_MainWP_Stream\Alerts_List Alerts_List class. */
 	public $alerts_list;
 
-	/**
-	 * @var Connectors
-	 */
+	/** @var \WP_MainWP_Stream\Connectors Connectors class. */
 	public $connectors;
 
-	/**
-	 * @var DB
-	 */
+	/** @var \WP_MainWP_Stream\DB DB Class. */
 	public $db;
 
-	/**
-	 * @var Log
-	 */
+	/** @var \WP_MainWP_Stream\Log Log Class. */
 	public $log;
 
-	/**
-	 * @var Settings
-	 */
+	/** @var \WP_MainWP_Stream\Settings Settings class. */
 	public $settings;
 
-	/**
-	 * @var Install
-	 */
+	/** @var \WP_MainWP_Stream\Install Install class. */
 	public $install;
 
-	/**
-	 * URLs and Paths used by the plugin
-	 *
-	 * @var array
-	 */
+	/** @var array URLs and Paths used by the plugin. */
 	public $locations = array();
 
 	
-	/**
-	 * @var Child_Helper
-	 */
+	/** @var \WP_MainWP_Stream\Child_Helper Child_Helper class. */
 	public $child_helper;
 		
 	/**
-	 * Class constructor
+	 * Class constructor.
 	 */
 	public function __construct() {
 		$locate = $this->locate_plugin();
@@ -91,10 +62,10 @@ class Plugin {
 
 		spl_autoload_register( array( $this, 'autoload' ) );
 
-		// Load helper functions
+		// Load helper functions.
 		require_once $this->locations['inc_dir'] . 'functions.php';
 
-		// Load DB helper interface/class
+		// Load DB helper interface/class.
 		$driver_class = apply_filters( 'wp_mainwp_stream_db_driver', '\WP_MainWP_Stream\DB_Driver_WPDB' );
 		$driver       = null;
 
@@ -117,20 +88,20 @@ class Plugin {
 			);
 		}
 
-		// Load languages
+		// Load languages.
 		add_action( 'plugins_loaded', array( $this, 'i18n' ) );
 
 		// Load logger class
 		$this->log = apply_filters( 'wp_mainwp_stream_log_handler', new Log( $this ) );
 
-		// Load settings and connectors after widgets_init and before the default init priority
+		// Load settings and connectors after widgets_init and before the default init priority.
 		add_action( 'init', array( $this, 'init' ), 9 );
 
 
-		// Change DB driver after plugin loaded if any add-ons want to replace
+		// Change DB driver after plugin loaded if any add-ons want to replace.
 		add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ), 20 );
 
-		// Load admin area classes
+		// Load admin area classes.
 		if ( is_admin() || ( defined( 'WP_MAINWP_STREAM_DEV_DEBUG' ) && WP_MAINWP_STREAM_DEV_DEBUG ) || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
 			$this->admin   = new Admin( $this );
 			$this->install = $driver->setup_storage( $this );
@@ -139,14 +110,14 @@ class Plugin {
 		}
 		$this->child_helper = new MainWP_Child_Report_Helper( $this );
 		
-		// Load WP-CLI command
+		// Load WP-CLI command.
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			\WP_CLI::add_command( self::WP_CLI_COMMAND, 'WP_MainWP_Stream\CLI' );
 		}
 	}
 
 	/**
-	 * Autoloader for classes
+	 * Autoloader for classes.
 	 *
 	 * @param string $class
 	 */
@@ -183,8 +154,8 @@ class Plugin {
 		load_plugin_textdomain( 'mainwp-child-reports', false, dirname( $this->locations['plugin'] ) . '/languages/' );
 	}
 
-	/*
-	 * Load Settings, Notifications, and Connectors
+	/**
+	 * Load Settings, Notifications, and Connectors.
 	 *
 	 * @action init
 	 */
@@ -223,7 +194,7 @@ class Plugin {
 	}
 
 	/**
-	 * Change plugin database driver in case driver plugin loaded after stream
+	 * Change plugin database driver in case driver plugin loaded after stream.
 	 */
 	public function plugins_loaded() {
 		// Load DB helper interface/class
