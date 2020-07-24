@@ -1,5 +1,6 @@
 <?php
 /** MainWP Child Reports filter input. */
+
 namespace WP_MainWP_Stream;
 
 /**
@@ -30,6 +31,8 @@ class Filter_Input {
 	);
 
     /**
+     * Input type checker.
+     *
      * @param $type
      * @param $variable_name
      * @param null $filter
@@ -71,6 +74,8 @@ class Filter_Input {
 	}
 
     /**
+     * Filter & sanitiser.
+     *
      * @param $var
      * @param null $filter
      * @param array $options
@@ -78,6 +83,7 @@ class Filter_Input {
      * @throws \Exception
      */
 	public static function filter( $var, $filter = null, $options = array() ) {
+
 		// Default filter is a sanitizer, not validator
 		$filter_type = 'sanitizer';
 
@@ -90,9 +96,11 @@ class Filter_Input {
 			$filter_callback = self::$filter_callbacks[ $filter ];
 			$result          = call_user_func( $filter_callback, $var );
 
-			// filter_var / filter_input treats validation/sanitization filters the same
-			// they both return output and change the var value, this shouldn't be the case here.
-			// We'll do a boolean check on validation function, and let sanitizers change the value
+            /**
+             * filter_var / filter_input treats validation/sanitization filters the same.
+             * They both return output and change the var value, this shouldn't be the case here.
+             * We'll do a boolean check on validation function, and let sanitizers change the value.
+             */
 			$filter_type = ( $filter < 500 ) ? 'validator' : 'sanitizer';
 			if ( 'validator' === $filter_type ) { // Validation functions
 				if ( ! $result ) {
@@ -103,7 +111,7 @@ class Filter_Input {
 			}
 		}
 
-		// Detect FILTER_REQUIRE_ARRAY flag
+		// Detect FILTER_REQUIRE_ARRAY flag.
 		if ( isset( $var ) && is_int( $options ) && FILTER_REQUIRE_ARRAY === $options ) {
 			if ( ! is_array( $var ) ) {
 				$var = ( 'validator' === $filter_type ) ? false : null;
@@ -123,8 +131,10 @@ class Filter_Input {
 	}
 
     /**
-     * @param $var
-     * @return bool
+     * Check if subject is equal to $var.
+     *
+     * @param string $var Pregmatch pattern.
+     * @return bool Return FALSE if $test equals false.
      */
 	public static function is_regex( $var ) {
 		// @codingStandardsIgnoreStart
