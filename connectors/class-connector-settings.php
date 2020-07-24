@@ -1,23 +1,32 @@
 <?php
+/** MainWP Connector Settings. */
+
 namespace WP_MainWP_Stream;
-// not used
+
+/**
+ * Class Connector_Settings.
+ * @package WP_MainWP_Stream
+ *
+ * @deprecated not used
+ */
 class Connector_Settings extends Connector {
+
 	/**
-	 * Prefix for the highlight URL hash
+	 * Prefix for the highlight URL hash.
 	 *
 	 * @const string
 	 */
 	const HIGHLIGHT_FIELD_URL_HASH_PREFIX = 'wp-mainwp-stream-highlight:';
 
 	/**
-	 * Connector slug
+	 * Connector slug.
 	 *
 	 * @var string
 	 */
 	public $name = 'settings';
 
 	/**
-	 * Actions registered for this connector
+	 * Actions registered for this connector.
 	 *
 	 * @var array
 	 */
@@ -31,14 +40,14 @@ class Connector_Settings extends Connector {
 	);
 
 	/**
-	 * Labels used for WordPress Settings
+	 * Labels used for WordPress Settings.
 	 *
 	 * @var array
 	 */
 	public $labels = array();
 
 	/**
-	 * Option names used in options-permalink.php
+	 * Option names used in options-permalink.php.
 	 *
 	 * @var array
 	 */
@@ -49,7 +58,7 @@ class Connector_Settings extends Connector {
 	);
 
 	/**
-	 * Option names used in network/settings.php
+	 * Option names used in network/settings.php.
 	 *
 	 * @var array
 	 */
@@ -82,14 +91,14 @@ class Connector_Settings extends Connector {
 	);
 
 	/**
-	 * Register connector in the WP Frontend
+	 * Register connector in the WP Frontend.
 	 *
 	 * @var bool
 	 */
 	public $register_frontend = false;
 
 	/**
-	 * Register all context hooks
+	 * Register all context hooks.
 	 *
 	 * @return void
 	 */
@@ -97,7 +106,7 @@ class Connector_Settings extends Connector {
 		parent::register();
 
 		$this->labels = array(
-			// General
+			// General.
 			'blogname'                      => esc_html__( 'Site Title', 'mainwp-child-reports' ),
 			'blogdescription'               => esc_html__( 'Tagline', 'mainwp-child-reports' ),
 			'gmt_offset'                    => esc_html__( 'Timezone', 'mainwp-child-reports' ),
@@ -111,7 +120,7 @@ class Connector_Settings extends Connector {
 			'date_format'                   => esc_html__( 'Date Format', 'mainwp-child-reports' ),
 			'time_format'                   => esc_html__( 'Time Format', 'mainwp-child-reports' ),
 			'start_of_week'                 => esc_html__( 'Week Starts On', 'mainwp-child-reports' ),
-			// Writing
+			// Writing.
 			'use_smilies'                   => esc_html__( 'Formatting', 'mainwp-child-reports' ),
 			'use_balanceTags'               => esc_html__( 'Formatting', 'mainwp-child-reports' ),
 			'default_category'              => esc_html__( 'Default Post Category', 'mainwp-child-reports' ),
@@ -122,7 +131,7 @@ class Connector_Settings extends Connector {
 			'default_email_category'        => esc_html__( 'Default Mail Category', 'mainwp-child-reports' ),
 			'default_link_category'         => esc_html__( 'Default Link Category', 'mainwp-child-reports' ),
 			'ping_sites'                    => esc_html__( 'Update Services', 'mainwp-child-reports' ),
-			// Reading
+			// Reading.
 			'show_on_front'                 => esc_html__( 'Front page displays', 'mainwp-child-reports' ),
 			'page_on_front'                 => esc_html__( 'Front page displays', 'mainwp-child-reports' ),
 			'page_for_posts'                => esc_html__( 'Front page displays', 'mainwp-child-reports' ),
@@ -130,7 +139,7 @@ class Connector_Settings extends Connector {
 			'posts_per_rss'                 => esc_html__( 'Syndication feeds show the most recent', 'mainwp-child-reports' ),
 			'rss_use_excerpt'               => esc_html__( 'For each article in a feed, show', 'mainwp-child-reports' ),
 			'blog_public'                   => esc_html__( 'Search Engine Visibility', 'mainwp-child-reports' ),
-			// Discussion
+			// Discussion.
 			'default_pingback_flag'         => esc_html__( 'Default article settings', 'mainwp-child-reports' ),
 			'default_ping_status'           => esc_html__( 'Default article settings', 'mainwp-child-reports' ),
 			'default_comment_status'        => esc_html__( 'Default article settings', 'mainwp-child-reports' ),
@@ -154,7 +163,7 @@ class Connector_Settings extends Connector {
 			'show_avatars'                  => esc_html__( 'Show Avatars', 'mainwp-child-reports' ),
 			'avatar_rating'                 => esc_html__( 'Maximum Rating', 'mainwp-child-reports' ),
 			'avatar_default'                => esc_html__( 'Default Avatar', 'mainwp-child-reports' ),
-			// Media
+			// Media.
 			'thumbnail_size_w'              => esc_html__( 'Thumbnail size', 'mainwp-child-reports' ),
 			'thumbnail_size_h'              => esc_html__( 'Thumbnail size', 'mainwp-child-reports' ),
 			'thumbnail_crop'                => esc_html__( 'Thumbnail size', 'mainwp-child-reports' ),
@@ -163,11 +172,11 @@ class Connector_Settings extends Connector {
 			'large_size_w'                  => esc_html__( 'Large size', 'mainwp-child-reports' ),
 			'large_size_h'                  => esc_html__( 'Large size', 'mainwp-child-reports' ),
 			'uploads_use_yearmonth_folders' => esc_html__( 'Uploading Files', 'mainwp-child-reports' ),
-			// Permalinks
+			// Permalinks.
 			'permalink_structure'           => esc_html__( 'Permalink Settings', 'mainwp-child-reports' ),
 			'category_base'                 => esc_html__( 'Category base', 'mainwp-child-reports' ),
 			'tag_base'                      => esc_html__( 'Tag base', 'mainwp-child-reports' ),
-			// Network
+			// Network.
 			'registrationnotification'      => esc_html__( 'Registration notification', 'mainwp-child-reports' ),
 			'registration'                  => esc_html__( 'Allow new registrations', 'mainwp-child-reports' ),
 			'add_new_users'                 => esc_html__( 'Add New Users', 'mainwp-child-reports' ),
@@ -191,11 +200,11 @@ class Connector_Settings extends Connector {
 			'WPLANG'                        => esc_html__( 'Network Language', 'mainwp-child-reports' ),
 			'blog_count'                    => esc_html__( 'Blog Count', 'mainwp-child-reports' ),
 			'user_count'                    => esc_html__( 'User Count', 'mainwp-child-reports' ),
-			// Other
+			// Other.
 			'wp_mainwp_stream_db'                  => esc_html__( 'Reports Database Version', 'mainwp-child-reports' ),
 		);
 
-		// These option labels are special and need to change based on multisite context
+		// These option labels are special and need to change based on multisite context.
 		if ( is_network_admin() ) {
 			$this->labels['admin_email']     = esc_html__( 'Network Admin Email', 'mainwp-child-reports' );
 			$this->labels['new_admin_email'] = esc_html__( 'Network Admin Email', 'mainwp-child-reports' );
@@ -207,6 +216,8 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
+     * Update theme modifications option.
+     *
 	 * @action update_option_theme_mods_{name}
 	 *
 	 * @param mixed $old_value
@@ -217,7 +228,7 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
-	 * Return translated context label
+	 * Return translated context label.
 	 *
 	 * @return string Translated context label
 	 */
@@ -226,7 +237,7 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
-	 * Return translated action labels
+	 * Return translated action labels.
 	 *
 	 * @return array Action label translations
 	 */
@@ -237,7 +248,7 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
-	 * Return translated context labels
+	 * Return translated context labels.
 	 *
 	 * @return array Context label translations
 	 */
@@ -270,7 +281,7 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
-	 * Return context by option name and key
+	 * Return context by option name and key.
 	 *
 	 * @param string $option_name
 	 * @param string $key
@@ -306,7 +317,7 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
-	 * Find out if the option key should be ignored and not logged
+	 * Find out if the option key should be ignored and not logged.
 	 *
 	 * @param string $option_name
 	 * @param string $key
@@ -329,7 +340,7 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
-	 * Find out if the option should be ignored and not logged
+	 * Find out if the option should be ignored and not logged.
 	 *
 	 * @param string $option_name
 	 *
@@ -354,7 +365,7 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
-	 * Find out if array keys in the option should be logged separately
+	 * Find out if array keys in the option should be logged separately.
 	 *
 	 * @param mixed $value
 	 *
@@ -388,7 +399,7 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
-	 * Enqueue jQuery Color plugin
+	 * Enqueue jQuery Color plugin.
 	 *
 	 * @action admin_enqueue_scripts
 	 * @return void
@@ -432,7 +443,7 @@ class Connector_Settings extends Connector {
 		);
 
 		/**
-		 * Filter allows for insertion of serialized labels
+		 * Filter allows for insertion of serialized labels.
 		 *
 		 * @param  array  $lables  Serialized labels
 		 * @return array  Updated array of serialzed labels
@@ -447,7 +458,7 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
-	 * Add action links to Stream drop row in admin list screen
+	 * Add action links to Stream drop row in admin list screen.
 	 *
 	 * @filter wp_mainwp_stream_action_links_{connector}
 	 *
@@ -588,13 +599,13 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
-	 * Trigger this connector from WP CLI or the Customizer, only for known Settings
+	 * Trigger this connector from WP CLI or the Customizer, only for known Settings.
 	 *
 	 * @action update_option
 	 *
 	 * @param string $option
+     * @param mixed $value
 	 * @param mixed $old_value
-	 * @param mixed $value
 	 */
 	public function callback_update_option( $option, $value, $old_value ) {
 		if ( ( defined( '\WP_CLI' ) && \WP_CLI || did_action( 'customize_save' ) ) && array_key_exists( $option, $this->labels ) ) {
@@ -603,7 +614,7 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
-	 * Trigger this connector core tracker, only on options.php page
+	 * Trigger this connector core tracker, only on options.php page.
 	 *
 	 * @action whitelist_options
 	 *
@@ -618,7 +629,7 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
-	 * Trigger this connector core tracker, only on options-permalink.php page
+	 * Trigger this connector core tracker, only on options-permalink.php page.
 	 *
 	 * @action update_option_permalink_structure
 	 *
@@ -631,20 +642,20 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
-	 * Trigger this connector core tracker, only on network/settings.php page
+	 * Trigger this connector core tracker, only on network/settings.php page.
 	 *
 	 * @action update_site_option
 	 *
 	 * @param string $option
+     * @param mixed $value
 	 * @param mixed $old_value
-	 * @param mixed $value
 	 */
 	public function callback_update_site_option( $option, $value, $old_value ) {
 		$this->callback_updated_option( $option, $value, $old_value );
 	}
 
 	/**
-	 * Trigger this connector core tracker, only on options-permalink.php page
+	 * Trigger this connector core tracker, only on options-permalink.php page.
 	 *
 	 * @action update_option_category_base
 	 *
@@ -656,7 +667,7 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
-	 * Trigger this connector core tracker, only on options-permalink.php page
+	 * Trigger this connector core tracker, only on options-permalink.php page.
 	 *
 	 * @action update_option_tag_base
 	 *
@@ -668,7 +679,7 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
-	 * Track updated settings
+	 * Track updated settings.
 	 *
 	 * @action updated_option
 	 *
@@ -813,7 +824,7 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
-	 * Find out if array keys in the option should be logged separately
+	 * Find out if array keys in the option should be logged separately.
 	 *
 	 * @deprecated 3.0.6
 	 * @deprecated Use is_option_group()
@@ -831,7 +842,7 @@ class Connector_Settings extends Connector {
 	}
 
 	/**
-	 * Sanitize values, so that we don't store complex data, such as arrays or objects
+	 * Sanitize values, so that we don't store complex data, such as arrays or objects.
 	 *
 	 * @param mixed $value
 	 * @return string
