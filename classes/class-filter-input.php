@@ -145,8 +145,11 @@ class Filter_Input {
 	}
 
     /**
-     * @param $var
-     * @return bool
+     * Check for IP address.
+     *
+     * @param string $var String to check for IP address.
+     *
+     * @return bool Return FASLE if not an IP address.
      */
 	public static function is_ip_address( $var ) {
 		return false !== \WP_Http::is_ip_address( $var );
