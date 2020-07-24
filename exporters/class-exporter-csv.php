@@ -1,27 +1,25 @@
 <?php
+/** MainWP Child Reports CSV exporter. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Exporter_CSV
+ * @package WP_MainWP_Stream
+ */
 class Exporter_CSV extends Exporter {
-	/**
-	 * Exporter name
-	 *
-	 * @var string
-	 */
+
+	/** @var string Exporter name. */
 	public $name = 'CSV';
 
-	/**
-	 * Exporter slug
-	 *
-	 * @var string
-	 */
+	/**  @var string Exporter slug. */
 	public $slug = 'csv';
 
 	/**
-	 * Outputs CSV data for download
+	 * Outputs CSV data for download.
 	 *
 	 * @param array $data Array of data to output.
 	 * @param array $columns Column names included in data set.
-	 * @return void
 	 */
 	public function output_file( $data, $columns ) {
 		if ( ! defined( 'WP_MAINWP_STREAM_TESTS' ) || ( defined( 'WP_MAINWP_STREAM_TESTS' ) && ! WP_MAINWP_STREAM_TESTS ) ) {

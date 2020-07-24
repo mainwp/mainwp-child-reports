@@ -1,6 +1,12 @@
 <?php
+/** MainWP Child Reports plugin. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Plugin.
+ * @package WP_MainWP_Stream
+ */
 class Plugin {
 	/**
 	 * Plugin version number

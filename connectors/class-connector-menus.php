@@ -1,16 +1,22 @@
 <?php
+/** MainWP Child Reports Menus Connector. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Connector_Menus.
+ * @package WP_MainWP_Stream
+ */
 class Connector_Menus extends Connector {
 	/**
-	 * Connector slug
+	 * Connector slug.
 	 *
 	 * @var string
 	 */
 	public $name = 'menus';
 
 	/**
-	 * Actions registered for this connector
+	 * Actions registered for this connector.
 	 *
 	 * @var array
 	 */
@@ -21,7 +27,7 @@ class Connector_Menus extends Connector {
 	);
 
 	/**
-	 * Register connector in the WP Frontend
+	 * Register connector in the WP Frontend.
 	 *
 	 * @var bool
 	 */
@@ -37,7 +43,7 @@ class Connector_Menus extends Connector {
 	}
 
 	/**
-	 * Return translated action labels
+	 * Return translated action labels.
 	 *
 	 * @return array Action label translations
 	 */
@@ -52,7 +58,7 @@ class Connector_Menus extends Connector {
 	}
 
 	/**
-	 * Return translated context labels
+	 * Return translated context labels.
 	 *
 	 * @return array Context label translations
 	 */
@@ -72,6 +78,9 @@ class Connector_Menus extends Connector {
 		return $labels;
 	}
 
+    /**
+     * Register MainWP Child Reports stylesheet.
+     */
 	public function register() {
 		parent::register();
 
@@ -79,7 +88,7 @@ class Connector_Menus extends Connector {
 	}
 
 	/**
-	 * Add action links to Stream drop row in admin list screen
+	 * Add action links to Stream drop row in admin list screen.
 	 *
 	 * @filter wp_mainwp_stream_action_links_{connector}
 	 *
@@ -102,7 +111,7 @@ class Connector_Menus extends Connector {
 	}
 
 	/**
-	 * Tracks creation of menus
+	 * Tracks creation of menus.
 	 *
 	 * @action wp_create_nav_menu
 	 *
@@ -123,7 +132,7 @@ class Connector_Menus extends Connector {
 	}
 
 	/**
-	 * Tracks menu updates
+	 * Tracks menu updates.
 	 *
 	 * @action wp_update_nav_menu
 	 *
@@ -148,7 +157,7 @@ class Connector_Menus extends Connector {
 	}
 
 	/**
-	 * Tracks menu deletion
+	 * Tracks menu deletion.
 	 *
 	 * @action delete_nav_menu
 	 *
@@ -173,7 +182,7 @@ class Connector_Menus extends Connector {
 	}
 
 	/**
-	 * Track assignment to menu locations
+	 * Track assignment to menu locations.
 	 *
 	 * @action update_option_theme_mods_{$stylesheet}
 	 *

@@ -1,6 +1,12 @@
 <?php
+/** MainWP Child Reports connector. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Connector.
+ * @package WP_MainWP_Stream
+ */
 abstract class Connector {
 	/**
 	 * Connector slug

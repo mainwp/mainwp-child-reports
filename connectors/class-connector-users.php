@@ -1,6 +1,12 @@
 <?php
+/** MainWP Child Reports Users Connector. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Connector_Users.
+ * @package WP_MainWP_Stream
+ */
 class Connector_Users extends Connector {
 
 	/**
@@ -276,8 +282,9 @@ class Connector_Users extends Connector {
 	 * @param int $expire
 	 * @param int $expiration
 	 * @param int $user_id
+     *
+     * @derecated DISABLED
 	 */
-	// DISABLED
 	public function callback_set_logged_in_cookie( $logged_in_cookie, $expire, $expiration, $user_id ) {
 		unset( $logged_in_cookie );
 		unset( $expire );
@@ -301,8 +308,9 @@ class Connector_Users extends Connector {
 	 * Log user logout
 	 *
 	 * @action clear_auth_cookie
+     *
+     * @deprecated DISABLED
 	 */
-	// DISABLED
 	public function callback_clear_auth_cookie() {
 		$user = wp_get_current_user();
 

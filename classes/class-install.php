@@ -1,58 +1,42 @@
 <?php
+/** MainWP Child Reports install. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Install.
+ * @package WP_MainWP_Stream
+ */
 class Install {
-	/**
-	 * Hold Plugin class
-	 * @var Plugin
-	 */
+
+	/** @var Plugin Hold Plugin class. */
 	public $plugin;
 
-	/**
-	 * Option key to store database version
-	 *
-	 * @var string
-	 */
+	/** @var string Option key to store database version. */
 	public $option_key = 'wp_mainwp_stream_db';
 
-	/**
-	 * Holds version of database at last update
-	 *
-	 * @var string
-	 */
+	/** @var string Holds version of database at last update */
 	public $db_version;
 
-	/**
-	 * URL to the Stream Admin settings page.
-	 *
-	 * @var string
-	 */
+	/** @var string URL to the Stream Admin settings page. */
 	public $stream_url;
 
-	/**
-	 * Array of version numbers that require database update
-	 *
-	 * @var array
-	 */
+	/** @var array Array of version numbers that require database update. */
 	public $update_versions;
 
-	/**
-	 * Holds status of whether it's safe to run Stream or not
-	 *
-	 * @var bool
-	 */
+	/** @var bool Holds status of whether it's safe to run Stream or not. */
 	public $update_required = false;
 
-	/**
-	 * Holds status of whether the database update worked
-	 *
-	 * @var bool
-	 */
+	/** @var bool Holds status of whether the database update worked */
 	public $success_db;
 
-	/**
-	 * Class constructor
-	 */
+    /**
+     * Install constructor.
+     *
+     * @param object $plugin Plugin class.
+     *
+     * @uses \WP_MainWP_Stream\Install::get_db_version()
+     */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
 
@@ -74,8 +58,14 @@ class Install {
 	 * If database update required admin notice will be given
 	 * on the plugin update screen
 	 *
-	 * @return void
-	 */
+	 * @return
+     *
+     * @uses \WP_MainWP_Stream\Install::$plugin::get_version()
+     * @uses \WP_MainWP_Stream\Install::get_old_child_report_db_version()
+     * @uses \WP_MainWP_Stream\Install::update()
+     * @uses \WP_MainWP_Stream\Install::db_update_versions()
+     * @uses \WP_MainWP_Stream\Install::update_db_option()
+     */
 	public function check() {
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 			return;
@@ -128,7 +118,17 @@ class Install {
 		$this->update_db_option();
 	}
 
+    /**
+     * Recreate database tables if they do not already exist.
+     *
+     * @uses \WP_MainWP_Stream\Install::$plugin::db::get_table_names()
+     * @uses \WP_MainWP_Stream\Install::$plugin::get_version()
+     * @uses $wpdb::get_var()
+     * @uses $wpdb::prepare()
+     */
 	public function recreate_tables_if_not_exist() {
+
+	    /** @global object $wpdb WordPress Database. */
 		global $wpdb;
 		
 		check_ajax_referer( 'stream_nonce_reset', 'wp_mainwp_stream_nonce_reset' );
@@ -146,7 +146,7 @@ class Install {
 		if ( $missing_tables ) {
 			$this->install( $this->plugin->get_version() );
 			
-			// for debugging only
+//			 for debugging only.
 //			if( $wpdb->last_error !== '') :
 //				$str   = htmlspecialchars( $wpdb->last_result, ENT_QUOTES );
 //				$query = htmlspecialchars( $wpdb->last_query, ENT_QUOTES );
@@ -159,16 +159,20 @@ class Install {
 	
 	/**
 	 * Verify that the required DB tables exists
-	 *
-	 * @return void
+     *
+     * @uses \WP_MainWP_Stream\Install::$plugin::db::get_table_names()
+     * @uses \WP_MainWP_Stream\Install::$plugin::admin::notice()
+     * @uses $wpdb::get_var()
+     * @uses $wpdb::prepare()
 	 */
 	public function verify_db() {
+
 		/**
 		 * Filter will halt install() if set to true
 		 *
-		 * @param bool
+		 * @param bool Whether or not to halt installation. Default: FALSE.
 		 *
-		 * @return bool
+		 * @return bool Return TRUE or FALSE.
 		 */
 		if ( apply_filters( 'wp_mainwp_stream_no_tables', false ) ) {
 			return;
@@ -183,12 +187,13 @@ class Install {
 		 */
 		do_action( 'wp_mainwp_stream_before_db_notices' );
 
+		/** @global object $wpdb WordPress Database. */
 		global $wpdb;
 
 		$database_message  = '';
 		$uninstall_message = '';
 
-		// Check if all needed DB is present
+		// Check if all needed DB is present.
 		$missing_tables = array();
 
 		foreach ( $this->plugin->db->get_table_names() as $table_name ) {
@@ -277,8 +282,12 @@ class Install {
 			update_option( $this->option_key . '_registered_connectors', $current_versions );
 		}
 	}
-	
-	
+
+    /**
+     * Get Child Reports old database version.
+     *
+     * @return string $version MainWP Child Reports old database version.
+     */
 	public static function get_old_child_report_db_version() {
 
 		$version = get_site_option( 'mainwp_child_reports_db' );
@@ -287,14 +296,20 @@ class Install {
 	}
 
 	/**
-	 * @return string
+     * Get MainWP Child Reports Database version.
+     *
+	 * @return string MainWP child Reports database version.
 	 */
 	public function get_db_version() {
 		return get_site_option( $this->option_key );
 	}
 
 	/**
+     * Update MaiNWP Child Reports database version.
+     *
 	 * @return void
+     *
+     * @uses \WP_MainWP_Stream\Install::$plugin::get_version()
 	 */
 	public function update_db_option() {
 		if ( $this->success_db ) {
@@ -316,11 +331,14 @@ class Install {
 	}
 
 	/**
-	 * Added to the admin_notices hook when file plugin version is higher than database plugin version
+	 * Added to the admin_notices hook when plugin file version is higher than database plugin version.
 	 *
 	 * @action admin_notices
 	 *
 	 * @return void
+     *
+     * @uses \WP_MainWP_Stream\Install::prompt_update()
+     * @uses \WP_MainWP_Stream\Install::prompt_update_status()
 	 */
 	public function update_notice_hook() {
 		if ( ! current_user_can( $this->plugin->admin->view_cap ) ) {
@@ -344,7 +362,7 @@ class Install {
 	}
 
 	/**
-	 * Action hook callback function
+	 * Action hook callback function.
 	 *
 	 * Adds the user controlled database upgrade routine to the plugins updated page.
 	 * When database update is complete page will refresh with dismissible message to user.
@@ -371,6 +389,9 @@ class Install {
 	 * updates the stream_db version number in the database and outputs a success and continue message
 	 *
 	 * @return void
+     *
+     * @uses \WP_MainWP_Stream\Install::update_db_option()
+     * @uses \WP_MainWP_Stream\Install::$plugin::get_version()
 	 */
 	public function prompt_update_status() {
 		check_admin_referer( 'wp_mainwp_stream_update_db' );
@@ -397,14 +418,14 @@ class Install {
 	}
 
 	/**
-	 * Array of database versions that require and updates
+	 * Array of database versions that require and updates.
 	 *
 	 * To add your own stream extension database update routine
-	 * use the filter and return the version that requires an update
+	 * use the filter and return the version that requires an update.
 	 * You must also make the callback function available in the global namespace on plugins loaded
-	 * use the wp_mainwp_stream_update_{version_number} version number must be a string of characters that represent the version with no periods
+	 * use the wp_mainwp_stream_update_{version_number} version number must be a string of characters that represent the version with no periods.
 	 *
-	 * @return array
+	 * @return array Return Database update versions array.
 	 */
 	public function db_update_versions() {
 		$db_update_versions = array(
@@ -418,21 +439,23 @@ class Install {
 		/**
 		 * Filter to alter the DB update versions array
 		 *
-		 * @param array $db_update_versions
+		 * @param array $db_update_versions Updated database versions.
 		 *
-		 * @return array
+		 * @return array Return updated database versions.
 		 */
 		return apply_filters( 'wp_mainwp_stream_db_update_versions', $db_update_versions );
 	}
 
 	/**
-	 * Database user controlled update routine
+	 * Database user controlled update routine.
 	 *
-	 * @param int   $db_version
-	 * @param int   $current_version
-	 * @param array $update_args
+	 * @param int   $db_version New database version.
+	 * @param int   $current_version Current database version .
+	 * @param array $update_args Update arguments.
 	 *
-	 * @return mixed Version number on success, true on no update needed, mysql error message on error
+	 * @return mixed Version number on success, true on no update needed, mysql error message on error.
+     *
+     * @uses \WP_MainWP_Stream\Install::db_update_versions()
 	 */
 	public function update( $db_version, $current_version, $update_args ) {
 		$versions = $this->db_update_versions();
@@ -458,13 +481,18 @@ class Install {
 	}
 
 	/**
-	 * Initial database install routine
+	 * Initial database install routine.
 	 *
-	 * @param string $current_version
+	 * @param string $current_version Current version.
 	 *
-	 * @return string
+	 * @return string $current_version Current version.
+     *
+     * @uses \WP_MainWP_Stream\Install::plugin::get_version()
+     * @uses \dbDelta()
 	 */
 	public function install( $current_version ) {
+
+		/** @global object $wpdb WordPress Database. */
 		global $wpdb;
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';

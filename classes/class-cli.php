@@ -7,6 +7,10 @@
 
 namespace WP_MainWP_Stream;
 
+/**
+ * Class CLI.
+ * @package WP_MainWP_Stream
+ */
 class CLI extends \WP_CLI_Command {
 
 	/**
@@ -88,6 +92,11 @@ class CLI extends \WP_CLI_Command {
 	 * @see WP_MainWP_Stream_Query
 	 * @see https://github.com/wp-stream/stream/wiki/WP-CLI-Command
 	 * @see https://github.com/wp-stream/stream/wiki/Query-Reference
+     *
+     * @param array $args Query arguments.
+     * @param array $assoc_args Association arguments.
+     *
+     * @uses \WP_MainWP_Stream\CLI::connection()
 	 */
 	public function query( $args, $assoc_args ) {
 		unset( $args );

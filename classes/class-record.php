@@ -1,6 +1,12 @@
 <?php
+/** MainWP Child Reports record. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Record.
+ * @package WP_MainWP_Stream
+ */
 class Record {
 	public $ID;
 	public $created;

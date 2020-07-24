@@ -1,6 +1,11 @@
 <?php
+/** MainWP Child Reports posts connector. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class . @package WP_MainWP_Stream
+ */
 class Connector_Posts extends Connector {
 	/**
 	 * Connector slug
@@ -322,7 +327,7 @@ class Connector_Posts extends Connector {
 	 *
 	 * @action deleted_post
 	 *
-	 * $param integer $post_id
+	 * @param integer $post_id Post ID.
 	 */
 	public function callback_deleted_post( $post_id ) {
 		$post = get_post( $post_id );

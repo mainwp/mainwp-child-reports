@@ -1,6 +1,12 @@
 <?php
+/** MainWP Child Reports comments connector. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Connector_Comments.
+ * @package WP_MainWP_Stream
+ */
 class Connector_Comments extends Connector {
 	/**
 	 * Connector slug

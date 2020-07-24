@@ -1,7 +1,12 @@
 <?php
+/** MainWP CHild Reports preview list table. */
 
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Preview_List_Table.
+ * @package WP_MainWP_Stream
+ */
 class Preview_List_Table extends List_Table {
 
 	/**
