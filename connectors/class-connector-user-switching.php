@@ -1,5 +1,6 @@
 <?php
 /** MainWP Child Reports User Switching Connector. */
+
 namespace WP_MainWP_Stream;
 
 /**
