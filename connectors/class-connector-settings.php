@@ -7,7 +7,7 @@ namespace WP_MainWP_Stream;
  * Class Connector_Settings.
  * @package WP_MainWP_Stream
  *
- * @deprecated not used
+ *
  */
 class Connector_Settings extends Connector {
 
