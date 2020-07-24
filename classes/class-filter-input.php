@@ -8,9 +8,11 @@ namespace WP_MainWP_Stream;
  * @package WP_MainWP_Stream
  */
 class Filter_Input {
+
+    /** @var array $filter_callbacks Array of filter callbacks. */
 	public static $filter_callbacks = array(
 		FILTER_DEFAULT                => null,
-		// Validate
+		// Validate.
 		FILTER_VALIDATE_BOOLEAN       => 'is_bool',
 		FILTER_VALIDATE_EMAIL         => 'is_email',
 		FILTER_VALIDATE_FLOAT         => 'is_float',
@@ -18,7 +20,7 @@ class Filter_Input {
 		FILTER_VALIDATE_IP            => array( __CLASS__, 'is_ip_address' ),
 		FILTER_VALIDATE_REGEXP        => array( __CLASS__, 'is_regex' ),
 		FILTER_VALIDATE_URL           => 'wp_http_validate_url',
-		// Sanitize
+		// Sanitize.
 		FILTER_SANITIZE_EMAIL         => 'sanitize_email',
 		FILTER_SANITIZE_ENCODED       => 'esc_url_raw',
 		FILTER_SANITIZE_NUMBER_FLOAT  => 'floatval',
@@ -26,7 +28,7 @@ class Filter_Input {
 		FILTER_SANITIZE_SPECIAL_CHARS => 'htmlspecialchars',
 		FILTER_SANITIZE_STRING        => 'sanitize_text_field',
 		FILTER_SANITIZE_URL           => 'esc_url_raw',
-		// Other
+		// Other.
 		FILTER_UNSAFE_RAW             => null,
 	);
 
