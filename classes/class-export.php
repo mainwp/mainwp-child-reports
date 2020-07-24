@@ -76,14 +76,18 @@ class Export {
 	}
 
 	/**
-	 * Add Export options to record actions menu
-	 *
-	 * @return array
+	 * Add Export options to record actions menu.
+     *
+	 * @param array $action_menu_items Action menu items.
+     *
+	 * @return array $action_menu_items Return Action Menu Items.
+     *
+     * @uses \WP_MainWP_Stream\Author::get_exporters()
 	 */
 	public function actions_menu_export_items( $action_menu_items ) {
 		foreach ( $this->get_exporters() as $exporter ) {
 			$action = 'export-' . $exporter->slug;
-			// translators: Placeholder refers to an export format (e.g. "CSV")
+			// translators: Placeholder refers to an export format (e.g. "CSV").
 			$action_menu_items[ $action ] = sprintf( __( 'Export as %s', 'mainwp-child-reports' ), $exporter->name );
 		}
 
