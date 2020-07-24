@@ -8,19 +8,14 @@ namespace WP_MainWP_Stream;
  * @package WP_MainWP_Stream
  */
 class Author {
-	/**
-	 * @var int
-	 */
+
+	/** @var int User ID. */
 	public $id;
 
-	/**
-	 * @var array
-	 */
+	/** @var array User meta data. */
 	public $meta = array();
 
-	/**
-	 * @var \WP_User
-	 */
+	/** @var \WP_User WordPress User. */
 	protected $user;
 
 	/**
@@ -39,13 +34,19 @@ class Author {
 	}
 
 	/**
-	 * Get various user meta data
+	 * Get various user meta data.
 	 *
 	 * @param string $name
 	 *
-	 * @throws \Exception
+	 * @throws \Exception Error message.
 	 *
-	 * @return string
+	 * @return string $name 
+     *
+     * @uses \WP_MainWP_Stream\Author::get_display_name()
+     * @uses \WP_MainWP_Stream\Author::get_avatar_img()
+     * @uses \WP_MainWP_Stream\Author::get_avatar_src()
+     * @uses \WP_MainWP_Stream\Author::get_role()
+     * @uses \WP_MainWP_Stream\Author::get_agent()
 	 */
 	public function __get( $name ) {
 		if ( 'display_name' === $name ) {
@@ -66,7 +67,11 @@ class Author {
 	}
 
 	/**
-	 * @return string
+     * Get author's display name.
+     *
+	 * @return string Return author name.
+     *
+     * @uses \WP_MainWP_Stream\Author::get_display_name()
 	 */
 	public function __toString() {
 		return $this->get_display_name();
@@ -75,7 +80,7 @@ class Author {
 	/**
 	 * Get the display name of the user
 	 *
-	 * @return string
+	 * @return string Return User Login or Display Names.
 	 */
 	public function get_display_name() {
 		if ( 0 === $this->id ) {
