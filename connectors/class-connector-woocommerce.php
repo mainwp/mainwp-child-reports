@@ -1,4 +1,5 @@
 <?php
+/**  */
 namespace WP_MainWP_Stream;
 
 class Connector_Woocommerce extends Connector {
