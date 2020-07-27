@@ -1,5 +1,6 @@
 <?php
 /** MainWp Child Reports BBPress Connector. */
+
 namespace WP_MainWP_Stream;
 
 /**

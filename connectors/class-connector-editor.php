@@ -1,5 +1,6 @@
 <?php
-/** MainWP Stream. */
+/** MainWP Editor Connector. */
+
 namespace WP_MainWP_Stream;
 
 /**

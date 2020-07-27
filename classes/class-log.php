@@ -48,6 +48,7 @@ class Log {
 	 * @param string    $context Context of the event.
 	 * @param string    $action Action of the event.
 	 * @param int       $user_id User responsible for the event.
+     * @param int       $created_timestamp  1|0 Whether or not the timestamp was created.
 	 *
 	 * @return bool|WP_Error True if updated, otherwise false|WP_Error
      *
