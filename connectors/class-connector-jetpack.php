@@ -1,26 +1,20 @@
 <?php
+/** Jetpack Connector. */
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Connector_Jetpack
+ * @package WP_MainWP_Stream
+ */
 class Connector_Jetpack extends Connector {
-	/**
-	 * Connector slug
-	 *
-	 * @var string
-	 */
+
+	/** @var string Connector slug. */
 	public $name = 'jetpack';
 
-	/**
-	 * Holds tracked plugin minimum version required
-	 *
-	 * @const string
-	 */
+	/** @const string Holds tracked plugin minimum version required. */
 	const PLUGIN_MIN_VERSION = '3.0.2';
 
-	/**
-	 * Actions registered for this connector
-	 *
-	 * @var array
-	 */
+	/** @var array Actions registered for this connector. */
 	public $actions = array(
 		'jetpack_log_entry',
 		'sharing_get_services_state',
@@ -33,31 +27,19 @@ class Connector_Jetpack extends Connector {
 		'wp_ajax_jetpack_post_by_email_disable',
 	);
 
-	/**
-	 * Register connector in the WP Frontend
-	 *
-	 * @var bool
-	 */
+	/** @var bool Register connector in the WP Frontend. */
 	public $register_frontend = false;
 
-	/**
-	 * Tracked option keys
-	 *
-	 * @var array
-	 */
+	/** @var array Tracked option keys. */
 	public $options = array();
 
-	/**
-	 * Tracking registered Settings, with overridden data
-	 *
-	 * @var array
-	 */
+	/** @var array Tracking registered Settings, with overridden data */
 	public $options_override = array();
 
 	/**
-	 * Check if plugin dependencies are satisfied and add an admin notice if not
+	 * Check if plugin dependencies are satisfied and add an admin notice if not.
 	 *
-	 * @return bool
+	 * @return bool Return TRUE|FALSE.
 	 */
 	public function is_dependency_satisfied() {
 		if ( class_exists( 'Jetpack' ) && defined( 'JETPACK__VERSION' ) && version_compare( JETPACK__VERSION, self::PLUGIN_MIN_VERSION, '>=' ) ) {
@@ -68,18 +50,18 @@ class Connector_Jetpack extends Connector {
 	}
 
 	/**
-	 * Return translated connector label
+	 * Return translated connector label.
 	 *
-	 * @return string Translated connector label
+	 * @return string Translated connector label.
 	 */
 	public function get_label() {
 		return esc_html_x( 'Jetpack', 'jetpack', 'mainwp-child-reports' );
 	}
 
 	/**
-	 * Return translated action labels
-	 *
-	 * @return array Action label translations
+	 * Return translated action labels.
+	 *.
+	 * @return array Action label translations.
 	 */
 	public function get_action_labels() {
 		return array(
@@ -96,9 +78,9 @@ class Connector_Jetpack extends Connector {
 	}
 
 	/**
-	 * Return translated context labels
+	 * Return translated context labels.
 	 *
-	 * @return array Context label translations
+	 * @return array Context label translations.
 	 */
 	public function get_context_labels() {
 		return array(
@@ -129,14 +111,14 @@ class Connector_Jetpack extends Connector {
 	}
 
 	/**
-	 * Add action links to Stream drop row in admin list screen
+	 * Add action links to Stream drop row in admin list screen.
 	 *
-	 * @filter wp_mainwp_stream_action_links_{connector}
+	 * @filter wp_mainwp_stream_action_links_{connector}.
 	 *
-	 * @param array $links   Previous links registered
-	 * @param object $record Stream record
+	 * @param array $links   Previous links registered.
+	 * @param object $record Stream record.
 	 *
-	 * @return array Action links
+	 * @return array Action links.
 	 */
 	public function action_links( $links, $record ) {
 		// @todo provide proper action links
@@ -187,7 +169,10 @@ class Connector_Jetpack extends Connector {
 		return $links;
 	}
 
-	public function register() {
+    /**
+     * Register with parent class.
+     */
+    public function register() {
 		parent::register();
 
 		add_filter( 'wp_mainwp_stream_log_data', array( $this, 'log_override' ) );
@@ -310,13 +295,14 @@ class Connector_Jetpack extends Connector {
 	}
 
 	/**
-	 * Track Jetpack log entries
+	 * Track Jetpack log entries.
+     *
 	 * Includes:
 	 * - Activation/Deactivation of modules
 	 * - Registration/Disconnection of blogs
 	 * - Authorization/unlinking of users
 	 *
-	 * @param array $entry
+	 * @param array $entry Jetpack log entry.
 	 */
 	public function callback_jetpack_log_entry( array $entry ) {
 		if ( isset( $entry['code'] ) ) {
@@ -416,9 +402,9 @@ class Connector_Jetpack extends Connector {
 	}
 
 	/**
-	 * Track visible/enabled sharing services ( buttons )
+	 * Track visible/enabled sharing services ( buttons ).
 	 *
-	 * @param string $state
+	 * @param string $state Services state.
 	 */
 	public function callback_sharing_get_services_state( $state ) {
 		$this->log(
@@ -430,20 +416,38 @@ class Connector_Jetpack extends Connector {
 		);
 	}
 
-	public function callback_update_option( $option, $old, $new ) {
+    /**
+     * Check update option callback.
+     *
+     * @param string $option Update option to update.
+     * @param string $old Old option value.
+     * @param string $new New option value.
+     */
+    public function callback_update_option( $option, $old, $new ) {
 		$this->check( $option, $old, $new );
 	}
 
-	public function callback_add_option( $option, $val ) {
+    /**
+     * Add option callback.
+     *
+     * @param string $option Option to add.
+     * @param string $val option value.
+     */
+    public function callback_add_option( $option, $val ) {
 		$this->check( $option, null, $val );
 	}
 
-	public function callback_delete_option( $option ) {
+    /**
+     * Delete option callback.
+     *
+     * @param string $option Option to delete.
+     */
+    public function callback_delete_option( $option ) {
 		$this->check( $option, null, null );
 	}
 
 	/**
-	 * Track Monitor module notification status
+	 * Track Monitor module notification status.
 	 */
 	public function callback_jetpack_module_configuration_load_monitor() {
 		$active = wp_mainwp_stream_filter_input( INPUT_POST, 'receive_jetpack_monitor_notification' );
@@ -467,19 +471,33 @@ class Connector_Jetpack extends Connector {
 		);
 	}
 
-	public function callback_wp_ajax_jetpack_post_by_email_enable() {
+    /**
+     * Jetpack post by email enabled calback.
+     */
+    public function callback_wp_ajax_jetpack_post_by_email_enable() {
 		$this->track_post_by_email( true );
 	}
 
-	public function callback_wp_ajax_jetpack_post_by_email_regenerate() {
+    /**
+     * Jetpack post by email regeneration callback.
+     */
+    public function callback_wp_ajax_jetpack_post_by_email_regenerate() {
 		$this->track_post_by_email( null );
 	}
 
-	public function callback_wp_ajax_jetpack_post_by_email_disable() {
+    /**
+     * Jetpack post by email disabled callback.
+     */
+    public function callback_wp_ajax_jetpack_post_by_email_disable() {
 		$this->track_post_by_email( false );
 	}
 
-	public function track_post_by_email( $status ) {
+    /**
+     * Track post by email status.
+     *
+     * @param string $status Email status.
+     */
+    public function track_post_by_email( $status ) {
 		if ( true === $status ) {
 			$action = esc_html__( 'enabled', 'mainwp-child-reports' );
 		} elseif ( false === $status ) {
@@ -491,7 +509,7 @@ class Connector_Jetpack extends Connector {
 		$user = wp_get_current_user();
 
 		$this->log(
-			// translators: Placeholders refer to a user display name, and a status (e.g. "Jane Doe", "enabled")
+			// translators: Placeholders refer to a user display name, and a status (e.g. "Jane Doe", "enabled").
 			__( '%1$s %2$s Post by Email', 'mainwp-child-reports' ),
 			array(
 				'user_displayname' => $user->display_name,
@@ -504,7 +522,14 @@ class Connector_Jetpack extends Connector {
 		);
 	}
 
-	public function check( $option, $old_value, $new_value ) {
+    /**
+     * Check if option already exists.
+     *
+     * @param string $option Option to check.
+     * @param string $old_value Old option value.
+     * @param string $new_value New option value.
+     */
+    public function check( $option, $old_value, $new_value ) {
 		if ( ! array_key_exists( $option, $this->options ) ) {
 			return;
 		}
@@ -526,7 +551,13 @@ class Connector_Jetpack extends Connector {
 		}
 	}
 
-	public function check_jetpack_options( $old_value, $new_value ) {
+    /**
+     * Check Jetpack options.
+     *
+     * @param string $old_value Old option value.
+     * @param string $new_value New option value.
+     */
+    public function check_jetpack_options($old_value, $new_value ) {
 		$options = array();
 
 		if ( ! is_array( $old_value ) || ! is_array( $new_value ) ) {
@@ -544,7 +575,7 @@ class Connector_Jetpack extends Connector {
 				continue;
 			}
 
-			if ( 0 === $option_value ) { // Skip updated array with updated members, we'll be logging those instead
+			if ( 0 === $option_value ) { // Skip updated array with updated members, we'll be logging those instead.
 				continue;
 			}
 
@@ -564,7 +595,15 @@ class Connector_Jetpack extends Connector {
 		}
 	}
 
-	public function check_hide_gplus( $old_value, $new_value ) {
+    /**
+     * Check hide Google Plus profile.
+     *
+     * @param string $old_value Old option value.
+     * @param string $new_value New option value.
+     *
+     * @return bool Return FALSE on failure.
+     */
+    public function check_hide_gplus( $old_value, $new_value ) {
 		$status = ! is_null( $new_value );
 
 		if ( $status && $old_value ) {
@@ -572,7 +611,7 @@ class Connector_Jetpack extends Connector {
 		}
 
 		$this->log(
-			// translators: Placeholder refers to a status (e.g. "enabled")
+			// translators: Placeholder refers to a status (e.g. "enabled").
 			__( 'G+ profile display %s', 'mainwp-child-reports' ),
 			array(
 				'action' => $status ? esc_html__( 'enabled', 'mainwp-child-reports' ) : esc_html__( 'disabled', 'mainwp-child-reports' ),
@@ -583,7 +622,13 @@ class Connector_Jetpack extends Connector {
 		);
 	}
 
-	public function check_gplus_authors( $old_value, $new_value ) {
+    /**
+     * Check Google Plus Authors.
+     *
+     * @param string $old_value Old option value.
+     * @param string $new_value New option value.
+     */
+    public function check_gplus_authors($old_value, $new_value ) {
 		unset( $old_value );
 
 		$user      = wp_get_current_user();
@@ -603,7 +648,13 @@ class Connector_Jetpack extends Connector {
 		);
 	}
 
-	public function check_sharedaddy_disable_resources( $old_value, $new_value ) {
+    /**
+     * Check ShareDaddy disable resources.
+     *
+     * @param string $old_value Old option value.
+     * @param string $new_value New option value.
+     */
+    public function check_sharedaddy_disable_resources($old_value, $new_value ) {
 		if ( $old_value === $new_value ) {
 			return;
 		}
@@ -621,18 +672,18 @@ class Connector_Jetpack extends Connector {
 	}
 
 	/**
-	 * Override connector log for our own Settings / Actions
+	 * Override connector log for our own Settings / Actions.
 	 *
-	 * @param array $data
+	 * @param array $data Log data.
 	 *
-	 * @return array|bool
+	 * @return array|bool Updated Log data on success, of FALSE on failure.
 	 */
 	public function log_override( $data ) {
 		if ( ! is_array( $data ) ) {
 			return $data;
 		}
 
-		// Handling our Settings
+		// Handling our Settings.
 		if ( 'settings' === $data['connector'] && isset( $this->options_override[ $data['args']['option'] ] ) ) {
 			if ( isset( $data['args']['option_key'] ) ) {
 				$overrides = $this->options_override[ $data['args']['option'] ][ $data['args']['option_key'] ];
@@ -663,15 +714,22 @@ class Connector_Jetpack extends Connector {
 		return $data;
 	}
 
-	private function get_settings_def( $key, $value = null ) {
-		// Sharing
+    /**
+     * Get settings deffin
+     * @param string $key Options Key.
+     * @param string $value Options value.
+     *
+     * @return array|bool Return success array, or FALSE on failure.
+     */
+    private function get_settings_def($key, $value = null ) {
+		// Sharing.
 		if ( 0 === strpos( $key, 'publicize_connections::' ) ) {
 			global $publicize_ui;
 
 			$name = str_replace( 'publicize_connections::', '', $key );
 
 			return array(
-				// translators: Placeholders refer to a service, and a status (e.g. "Facebook", "added")
+				// translators: Placeholders refer to a service, and a status (e.g. "Facebook", "added").
 				'message' => esc_html__( '%1$s connection %2$s', 'mainwp-child-reports' ),
 				'meta'    => array(
 					'connection' => $publicize_ui->publicize->get_service_label( $name ),
@@ -696,7 +754,7 @@ class Connector_Jetpack extends Connector {
 			}
 
 			return array(
-				// translators: Placeholder refers to a setting name (e.g. "Language")
+				// translators: Placeholder refers to a setting name (e.g. "Language").
 				'message' => esc_html__( '"%s" setting updated', 'mainwp-child-reports' ),
 				'meta'    => array(
 					'option_name' => $options[ $name ],
