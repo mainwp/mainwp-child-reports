@@ -1,27 +1,20 @@
 <?php
+/** Yoast SEO Connector. */
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Connector_WordPress_SEO
+ * @package WP_MainWP_Stream
+ */
 class Connector_WordPress_SEO extends Connector {
 
-	/**
-	 * Connector slug
-	 *
-	 * @var string
-	 */
+	/** @var string Connector slug. */
 	public $name = 'wordpressseo';
 
-	/**
-	 * Holds tracked plugin minimum version required
-	 *
-	 * @const string
-	 */
+	/** @const string Holds tracked plugin minimum version required. */
 	const PLUGIN_MIN_VERSION = '1.5.3.3';
 
-	/**
-	 * Actions registered for this connector
-	 *
-	 * @var array
-	 */
+	/** @var  Actions registered for this connector. */
 	public $actions = array(
 		'wpseo_handle_import',
 		'wpseo_import',
@@ -31,15 +24,11 @@ class Connector_WordPress_SEO extends Connector {
 		'deleted_post_meta',
 	);
 
-	/**
-	 * Tracking registered Settings, with overridden data
-	 *
-	 * @var array
-	 */
+	/** @var array Tracking registered Settings, with overridden data */
 	public $option_groups = array();
 
 	/**
-	 * Check if plugin dependencies are satisfied and add an admin notice if not
+	 * Check if plugin dependencies are satisfied and add an admin notice if not.
 	 *
 	 * @return bool
 	 */
@@ -52,18 +41,18 @@ class Connector_WordPress_SEO extends Connector {
 	}
 
 	/**
-	 * Return translated connector label
+	 * Return translated connector label.
 	 *
-	 * @return string Translated connector label
+	 * @return string Translated connector label.
 	 */
 	public function get_label() {
 		return esc_html_x( 'WordPress SEO', 'wordpress-seo', 'mainwp-child-reports' );
 	}
 
 	/**
-	 * Return translated action labels
+	 * Return translated action labels.
 	 *
-	 * @return array Action label translations
+	 * @return array Action label translations.
 	 */
 	public function get_action_labels() {
 		return array(
@@ -77,9 +66,9 @@ class Connector_WordPress_SEO extends Connector {
 	}
 
 	/**
-	 * Return translated context labels
+	 * Return translated context labels.
 	 *
-	 * @return array Context label translations
+	 * @return array Context label translations.
 	 */
 	public function get_context_labels() {
 		return array(
@@ -100,14 +89,14 @@ class Connector_WordPress_SEO extends Connector {
 	}
 
 	/**
-	 * Add action links to Stream drop row in admin list screen
+	 * Add action links to Stream drop row in admin list screen.
 	 *
-	 * @filter wp_mainwp_stream_action_links_{connector}
+	 * @filter wp_mainwp_stream_action_links_{connector}.
 	 *
-	 * @param array  $links  Previous links registered
-	 * @param Record $record Stream record
+	 * @param array  $links  Previous links registered.
+	 * @param Record $record Stream record.
 	 *
-	 * @return array Action links
+	 * @return array Action links.
 	 */
 	public function action_links( $links, $record ) {
 		// Options
@@ -182,6 +171,9 @@ class Connector_WordPress_SEO extends Connector {
 		return $links;
 	}
 
+    /**
+     * Register with parent class.
+     */
 	public function register() {
 		if ( is_network_admin() && ! is_plugin_active_for_network( 'wordpress-seo/wordpress-seo-main.php' ) ) {
 			return;
@@ -200,6 +192,11 @@ class Connector_WordPress_SEO extends Connector {
 		add_filter( 'wp_mainwp_stream_log_data', array( $this, 'log_override' ) );
 	}
 
+    /**
+     * Enqueue admin scripts.
+     *
+     * @param string $hook Page hook.
+     */
 	public function admin_enqueue_scripts( $hook ) {
 		if ( 0 === strpos( $hook, 'seo_page_' ) ) {
 			$stream = wp_mainwp_stream_get_instance();
@@ -209,7 +206,7 @@ class Connector_WordPress_SEO extends Connector {
 	}
 
 	/**
-	 * Track importing settings from other plugins
+	 * Track importing settings from other plugins.
 	 */
 	public function callback_wpseo_handle_import() {
 		$imports = array(
@@ -245,7 +242,10 @@ class Connector_WordPress_SEO extends Connector {
 		}
 	}
 
-	public function callback_wpseo_import() {
+    /**
+     * Yoast SEO import callback.
+     */
+    public function callback_wpseo_import() {
 		$opts = wp_mainwp_stream_filter_input( INPUT_POST, 'wpseo' );
 
 		if ( wp_mainwp_stream_filter_input( INPUT_POST, 'wpseo_export' ) ) {
@@ -279,7 +279,10 @@ class Connector_WordPress_SEO extends Connector {
 		}
 	}
 
-	public function callback_seo_page_wpseo_files() {
+    /**
+     * Yoast SEO files page callback.
+     */
+    public function callback_seo_page_wpseo_files() {
 		if ( wp_mainwp_stream_filter_input( INPUT_POST, 'create_robots' ) ) {
 			$message = esc_html__( 'Tried creating robots.txt file', 'mainwp-child-reports' );
 		} elseif ( wp_mainwp_stream_filter_input( INPUT_POST, 'submitrobots' ) ) {
@@ -299,20 +302,53 @@ class Connector_WordPress_SEO extends Connector {
 		}
 	}
 
-	public function callback_added_post_meta( $meta_id, $object_id, $meta_key, $meta_value ) {
-		unset( $meta_id );
-		$this->meta( $object_id, $meta_key, $meta_value );
-	}
-	public function callback_updated_post_meta( $meta_id, $object_id, $meta_key, $meta_value ) {
-		unset( $meta_id );
-		$this->meta( $object_id, $meta_key, $meta_value );
-	}
-	public function callback_deleted_post_meta( $meta_id, $object_id, $meta_key, $meta_value ) {
+    /**
+     * Record Yoast SEO added post meta log.
+     *
+     * @param string $meta_id Meta ID.
+     * @param string $object_id Object ID.
+     * @param string $meta_key Meta Key.
+     * @param string $meta_value Meta value.
+     */
+    public function callback_added_post_meta($meta_id, $object_id, $meta_key, $meta_value ) {
 		unset( $meta_id );
 		$this->meta( $object_id, $meta_key, $meta_value );
 	}
 
-	private function meta( $object_id, $meta_key, $meta_value ) {
+    /**
+     * Record Yoast SEO update post meta log.
+     *
+     * @param string $meta_id Meta ID.
+     * @param string $object_id Object ID.
+     * @param string $meta_key Meta Key.
+     * @param string $meta_value Meta value.
+     */
+    public function callback_updated_post_meta($meta_id, $object_id, $meta_key, $meta_value ) {
+		unset( $meta_id );
+		$this->meta( $object_id, $meta_key, $meta_value );
+	}
+
+    /**
+     * Record Yoast SEO delete posts meta log.
+     *
+     * @param string $meta_id Meta ID.
+     * @param string $object_id Object ID.
+     * @param string $meta_key Meta Key.
+     * @param string $meta_value Meta value.
+     */
+    public function callback_deleted_post_meta($meta_id, $object_id, $meta_key, $meta_value ) {
+		unset( $meta_id );
+		$this->meta( $object_id, $meta_key, $meta_value );
+	}
+
+    /**
+     * Record Yoast SEO meta log.
+     *
+     * @param string $object_id Object ID.
+     * @param string $meta_key Meta Key.
+     * @param string $meta_value Meta value.
+     */
+    private function meta($object_id, $meta_key, $meta_value ) {
 		$prefix = \WPSEO_Meta::$meta_prefix;
 
 		\WPSEO_Metabox::translate_meta_boxes();
@@ -357,9 +393,9 @@ class Connector_WordPress_SEO extends Connector {
 	}
 
 	/**
-	 * Override connector log for our own Settings / Actions
+	 * Override connector log for our own Settings / Actions.
 	 *
-	 * @param array $data
+	 * @param array $data Log data.
 	 *
 	 * @return array|bool
 	 */
@@ -368,6 +404,7 @@ class Connector_WordPress_SEO extends Connector {
 			return $data;
 		}
 
+		/** @global object $pagenow Pagenow object. */
 		global $pagenow;
 
 		if ( 'options.php' === $pagenow && 'settings' === $data['connector'] && wp_mainwp_stream_filter_input( INPUT_POST, '_wp_http_referer' ) ) {
@@ -398,7 +435,13 @@ class Connector_WordPress_SEO extends Connector {
 		return $data;
 	}
 
-	private function settings_labels( $option ) {
+    /**
+     * Set settings labels.
+     *
+     * @param $option
+     * @return array|bool|mixed Return labels array on success, FALSE on failure, error message on failure.
+     */
+    private function settings_labels( $option ) {
 		$labels = array(
 			// wp-content/plugins/wordpress-seo/admin/pages/dashboard.php:
 			'yoast_tracking'                         => esc_html_x( "Allow tracking of this WordPress install's anonymous data.", 'wordpress-seo', 'mainwp-child-reports' ), # type = checkbox

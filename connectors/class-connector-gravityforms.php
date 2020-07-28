@@ -1,26 +1,21 @@
 <?php
+/** GravityForms Connector. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Connector_GravityForms
+ * @package WP_MainWP_Stream
+ */
 class Connector_GravityForms extends Connector {
-	/**
-	 * Connector slug
-	 *
-	 * @var string
-	 */
+
+	/** @var string Connector slug. */
 	public $name = 'gravityforms';
 
-	/**
-	 * Holds tracked plugin minimum version required
-	 *
-	 * @const string
-	 */
+	/** @const string Holds tracked plugin minimum version required. */
 	const PLUGIN_MIN_VERSION = '1.9.14';
 
-	/**
-	 * Actions registered for this connector
-	 *
-	 * @var array
-	 */
+	/** @var array Actions registered for this connector. */
 	public $actions = array(
 		'gform_after_save_form',
 		'gform_pre_confirmation_save',
@@ -50,24 +45,16 @@ class Connector_GravityForms extends Connector {
 		'delete_site_option',
 	);
 
-	/**
-	 * Tracked option keys
-	 *
-	 * @var array
-	 */
+	/** @var array Tracked option keys. */
 	public $options = array();
 
-	/**
-	 * Tracking registered Settings, with overridden data
-	 *
-	 * @var array
-	 */
+	/** @var array Tracking registered Settings, with overridden data. */
 	public $options_override = array();
 
 	/**
 	 * Check if plugin dependencies are satisfied and add an admin notice if not
 	 *
-	 * @return bool
+	 * @return bool Return TRUE|FALSE.
 	 */
 	public function is_dependency_satisfied() {
 		if ( class_exists( 'GFForms' ) && version_compare( \GFCommon::$version, self::PLUGIN_MIN_VERSION, '>=' ) ) {
@@ -78,18 +65,18 @@ class Connector_GravityForms extends Connector {
 	}
 
 	/**
-	 * Return translated connector label
+	 * Return translated connector label.
 	 *
-	 * @return string Translated connector label
+	 * @return string Translated connector label.
 	 */
 	public function get_label() {
 		return esc_html_x( 'Gravity Forms', 'gravityforms', 'mainwp-child-reports' );
 	}
 
 	/**
-	 * Return translated action labels
+	 * Return translated action labels.
 	 *
-	 * @return array Action label translations
+	 * @return array Action label translations.
 	 */
 	public function get_action_labels() {
 		return array(
@@ -111,9 +98,9 @@ class Connector_GravityForms extends Connector {
 	}
 
 	/**
-	 * Return translated context labels
+	 * Return translated context labels.
 	 *
-	 * @return array Context label translations
+	 * @return array Context label translations.
 	 */
 	public function get_context_labels() {
 		return array(
@@ -126,14 +113,14 @@ class Connector_GravityForms extends Connector {
 	}
 
 	/**
-	 * Add action links to Stream drop row in admin list screen
+	 * Add action links to Stream drop row in admin list screen.
 	 *
-	 * @filter wp_mainwp_stream_action_links_{connector}
+	 * @filter wp_mainwp_stream_action_links_{connector}.
 	 *
-	 * @param  array  $links     Previous links registered
-	 * @param  object $record    Stream record
+	 * @param  array  $links     Previous links registered.
+	 * @param  object $record    Stream record.
 	 *
-	 * @return array             Action links
+	 * @return array             Action links.
 	 */
 	public function action_links( $links, $record ) {
 		if ( 'forms' === $record->context ) {
@@ -176,7 +163,10 @@ class Connector_GravityForms extends Connector {
 		return $links;
 	}
 
-	public function register() {
+    /**
+     * Register with parent class.
+     */
+    public function register() {
 		parent::register();
 
 		$this->options = array(
@@ -203,10 +193,10 @@ class Connector_GravityForms extends Connector {
 	}
 
 	/**
-	 * Track Create/Update actions on Forms
+	 * Track Create/Update actions on Forms.
 	 *
-	 * @param array $form
-	 * @param bool $is_new
+	 * @param array $form Forms array.
+	 * @param bool $is_new Check if is new action.
 	 * @return void
 	 */
 	public function callback_gform_after_save_form( $form, $is_new ) {
@@ -215,7 +205,7 @@ class Connector_GravityForms extends Connector {
 
 		$this->log(
 			sprintf(
-				// translators: Placeholders refer to a form title, and a status (e.g. "Contact Form", "created")
+				// translators: Placeholders refer to a form title, and a status (e.g. "Contact Form", "created").
 				__( '"%1$s" form %2$s', 'mainwp-child-reports' ),
 				$title,
 				$is_new ? esc_html__( 'created', 'mainwp-child-reports' ) : esc_html__( 'updated', 'mainwp-child-reports' )
@@ -232,12 +222,12 @@ class Connector_GravityForms extends Connector {
 	}
 
 	/**
-	 * Track saving form confirmations
+	 * Track saving form confirmations.
 	 *
-	 * @param array $confirmation
-	 * @param array $form
-	 * @param bool $is_new
-	 * @return array
+	 * @param array $confirmation Confirmations array.
+	 * @param array $form Forms array.
+	 * @param bool $is_new Check if new submission.
+	 * @return array Return response array.
 	 */
 	public function callback_gform_pre_confirmation_save( $confirmation, $form, $is_new = true ) {
 		if ( ! isset( $is_new ) ) {
@@ -265,12 +255,12 @@ class Connector_GravityForms extends Connector {
 	}
 
 	/**
-	 * Track saving form notifications
+	 * Track saving form notifications.
 	 *
-	 * @param array $notification
-	 * @param array $form
-	 * @param bool $is_new
-	 * @return array
+	 * @param array $notification Notifications array.
+	 * @param array $form Form array.
+	 * @param bool $is_new Check if new form post.
+	 * @return array Return response array.
 	 */
 	public function callback_gform_pre_notification_save( $notification, $form, $is_new = true ) {
 		if ( ! isset( $is_new ) ) {
@@ -298,16 +288,16 @@ class Connector_GravityForms extends Connector {
 	}
 
 	/**
-	 * Track deletion of notifications
+	 * Track deletion of notifications.
 	 *
-	 * @param array $notification
-	 * @param array $form
+	 * @param array $notification Notifications array.
+	 * @param array $form Forms array.
 	 * @return void
 	 */
 	public function callback_gform_pre_notification_deleted( $notification, $form ) {
 		$this->log(
 			sprintf(
-				// translators: Placeholders refer to a notification name, and a form title (e.g. "Email", "Contact Form")
+				// translators: Placeholders refer to a notification name, and a form title (e.g. "Email", "Contact Form").
 				__( '"%1$s" notification deleted from "%2$s"', 'mainwp-child-reports' ),
 				$notification['name'],
 				$form['title']
@@ -323,10 +313,10 @@ class Connector_GravityForms extends Connector {
 	}
 
 	/**
-	 * Track deletion of confirmations
+	 * Track deletion of confirmations.
 	 *
-	 * @param array $confirmation
-	 * @param array $form
+	 * @param array $confirmation Confirmation array.
+	 * @param array $form Form array.
 	 * @return void
 	 */
 	public function callback_gform_pre_confirmation_deleted( $confirmation, $form ) {
@@ -348,17 +338,17 @@ class Connector_GravityForms extends Connector {
 	}
 
 	/**
-	 * Track status change of confirmations
+	 * Track status change of confirmations.
 	 *
-	 * @param array $confirmation
-	 * @param array $form
-	 * @param bool $is_active
+	 * @param array $confirmation Confirmation array.
+	 * @param array $form Forms array.
+	 * @param bool $is_active Check if is active.
 	 * @return void
 	 */
 	public function callback_gform_confirmation_status( $confirmation, $form, $is_active ) {
 		$this->log(
 			sprintf(
-				// translators: Placeholders refer to a confirmation name, a status, and a form title (e.g. "Email", "activated", "Contact Form")
+				// translators: Placeholders refer to a confirmation name, a status, and a form title (e.g. "Email", "activated", "Contact Form").
 				__( '"%1$s" confirmation %2$s from "%3$s"', 'mainwp-child-reports' ),
 				$confirmation['name'],
 				$is_active ? esc_html__( 'activated', 'mainwp-child-reports' ) : esc_html__( 'deactivated', 'mainwp-child-reports' ),
@@ -376,17 +366,17 @@ class Connector_GravityForms extends Connector {
 	}
 
 	/**
-	 * Track status change of notifications
+	 * Track status change of notifications.
 	 *
-	 * @param array $notification
-	 * @param array $form
-	 * @param bool $is_active
+	 * @param array $notification Notifications array.
+	 * @param array $form Forms array.
+	 * @param bool $is_active Check if active.
 	 * @return void
 	 */
 	public function callback_gform_notification_status( $notification, $form, $is_active ) {
 		$this->log(
 			sprintf(
-				// translators: Placeholders refer to a notification name, a status, and a form title (e.g. "Email", "activated", "Contact Form")
+				// translators: Placeholders refer to a notification name, a status, and a form title (e.g. "Email", "activated", "Contact Form").
 				__( '"%1$s" notification %2$s from "%3$s"', 'mainwp-child-reports' ),
 				$notification['name'],
 				$is_active ? esc_html__( 'activated', 'mainwp-child-reports' ) : esc_html__( 'deactivated', 'mainwp-child-reports' ),
@@ -403,31 +393,74 @@ class Connector_GravityForms extends Connector {
 		);
 	}
 
-	public function callback_update_option( $option, $old, $new ) {
+    /**
+     * Update option contact callback.
+     *
+     * @param string $option Option to update.
+     * @param string $old Old value.
+     * @param string $new New value.
+     */
+    public function callback_update_option( $option, $old, $new ) {
 		$this->check( $option, $old, $new );
 	}
 
-	public function callback_add_option( $option, $val ) {
+    /**
+     * Add option callback.
+     *
+     * @param string $option Option to update.
+     * @param string $val Option value.
+     */
+    public function callback_add_option( $option, $val ) {
 		$this->check( $option, null, $val );
 	}
 
-	public function callback_delete_option( $option ) {
+    /**
+     * Delete option callback.
+     *
+     * @param $option Option to delete.
+     */
+    public function callback_delete_option( $option ) {
 		$this->check( $option, null, null );
 	}
 
-	public function callback_update_site_option( $option, $old, $new ) {
+    /**
+     * Update site option callback.
+     *
+     * @param string $option Option to update.
+     * @param string $old Old value.
+     * @param string $new New value.
+     */
+    public function callback_update_site_option( $option, $old, $new ) {
 		$this->check( $option, $old, $new );
 	}
 
-	public function callback_add_site_option( $option, $val ) {
+    /**
+     * Add site option callback.
+     *
+     * @param string $option Option to update.
+     * @param string $val Option value.
+     */
+    public function callback_add_site_option( $option, $val ) {
 		$this->check( $option, null, $val );
 	}
 
-	public function callback_delete_site_option( $option ) {
+    /**
+     * Delete site option callback.
+     *
+     * @param string $option Option to update.
+     */
+    public function callback_delete_site_option( $option ) {
 		$this->check( $option, null, null );
 	}
 
-	public function check( $option, $old_value, $new_value ) {
+    /**
+     *  Check if option exists.
+     *
+     * @param string $option Option to update.
+     * @param string $old_value Old value.
+     * @param string $new_value New value.
+     */
+    public function check( $option, $old_value, $new_value ) {
 		if ( ! array_key_exists( $option, $this->options ) ) {
 			return;
 		}
@@ -450,13 +483,19 @@ class Connector_GravityForms extends Connector {
 		}
 	}
 
-	public function check_rg_gforms_key( $old_value, $new_value ) {
+    /**
+     * Check Register GravityForms key.
+     *
+     * @param string $old_value Old value.
+     * @param string $new_value New value.
+     */
+    public function check_rg_gforms_key($old_value, $new_value ) {
 		$is_update = ( $new_value && strlen( $new_value ) );
 		$option    = 'rg_gforms_key';
 
 		$this->log(
 			sprintf(
-				// translators: Placeholder refers to a status (e.g. "updated")
+				// translators: Placeholder refers to a status (e.g. "updated").
 				__( 'Gravity Forms license key %s', 'mainwp-child-reports' ),
 				$is_update ? esc_html__( 'updated', 'mainwp-child-reports' ) : esc_html__( 'deleted', 'mainwp-child-reports' )
 			),
@@ -467,10 +506,18 @@ class Connector_GravityForms extends Connector {
 		);
 	}
 
-	public function callback_gform_post_export_entries( $form, $start_date, $end_date, $fields ) {
+    /**
+     * GravityForms post export entries callback.
+     *
+     * @param array $form Form data array.
+     * @param int $start_date Start date.
+     * @param int $end_date End date.
+     * @param array $fields Form fields array.
+     */
+    public function callback_gform_post_export_entries( $form, $start_date, $end_date, $fields ) {
 		unset( $fields );
 		$this->log(
-			// translators: Placeholder refers to a form title (e.g. "Contact Form")
+			// translators: Placeholder refers to a form title (e.g. "Contact Form").
 			__( '"%s" form entries exported', 'mainwp-child-reports' ),
 			array(
 				'form_title' => $form['title'],
@@ -484,13 +531,18 @@ class Connector_GravityForms extends Connector {
 		);
 	}
 
-	public function callback_gform_forms_post_import( $forms ) {
+    /**
+     * GravityForms post import callback.
+     *
+     * @param $forms Forms array.
+     */
+    public function callback_gform_forms_post_import( $forms ) {
 		$forms_total  = count( $forms );
 		$forms_ids    = wp_list_pluck( $forms, 'id' );
 		$forms_titles = wp_list_pluck( $forms, 'title' );
 
 		$this->log(
-			// translators: Placeholder refers to a number of forms (e.g. "42")
+			// translators: Placeholder refers to a number of forms (e.g. "42").
 			_n( '%d form imported', '%d forms imported', $forms_total, 'mainwp-child-reports' ),
 			array(
 				'count'  => $forms_total,
@@ -503,11 +555,19 @@ class Connector_GravityForms extends Connector {
 		);
 	}
 
-	public function callback_gform_export_separator( $dummy, $form_id ) {
+    /**
+     * GravityForms export separator callback.
+     *
+     * @param $dummy
+     * @param $form_id Form ID.
+     *
+     * @return mixed
+     */
+    public function callback_gform_export_separator( $dummy, $form_id ) {
 		$form = $this->get_form( $form_id );
 
 		$this->log(
-			// translators: Placeholder refers to a form title (e.g. "Contact Form")
+			// translators: Placeholder refers to a form title (e.g. "Contact Form").
 			__( '"%s" form exported', 'mainwp-child-reports' ),
 			array(
 				'form_title' => $form['title'],
@@ -521,12 +581,19 @@ class Connector_GravityForms extends Connector {
 		return $dummy;
 	}
 
-	public function callback_gform_export_options( $dummy, $forms ) {
+    /**
+     * GravityForms export options callback.
+     *
+     * @param $dummy
+     * @param $forms Forms array.
+     * @return mixed
+     */
+    public function callback_gform_export_options( $dummy, $forms ) {
 		$ids    = wp_list_pluck( $forms, 'id' );
 		$titles = wp_list_pluck( $forms, 'title' );
 
 		$this->log(
-			// translators: Placeholder refers to a number of forms (e.g. "42")
+			// translators: Placeholder refers to a number of forms (e.g. "42").
 			_n( 'Export process started for %d form', 'Export process started for %d forms', count( $forms ), 'mainwp-child-reports' ),
 			array(
 				'count'  => count( $forms ),
@@ -541,12 +608,17 @@ class Connector_GravityForms extends Connector {
 		return $dummy;
 	}
 
-	public function callback_gform_delete_lead( $lead_id ) {
+    /**
+     * GravityForms delete leads callback.
+     *
+     * @param $lead_id Lead ID.
+     */
+    public function callback_gform_delete_lead( $lead_id ) {
 		$lead = $this->get_lead( $lead_id );
 		$form = $this->get_form( $lead['form_id'] );
 
 		$this->log(
-			// translators: Placeholders refer to an ID, and a form title (e.g. "42", "Contact Form")
+			// translators: Placeholders refer to an ID, and a form title (e.g. "42", "Contact Form").
 			__( 'Lead #%1$d from "%2$s" deleted', 'mainwp-child-reports' ),
 			array(
 				'lead_id'    => $lead_id,
@@ -559,7 +631,17 @@ class Connector_GravityForms extends Connector {
 		);
 	}
 
-	public function callback_gform_post_note_added( $note_id, $lead_id, $user_id, $user_name, $note, $note_type ) {
+    /**
+     * GravityForms post note added callback.
+     *
+     * @param string $note_id Note ID.
+     * @param string $lead_id Lead ID.
+     * @param string $user_id User ID.
+     * @param string $user_name User Name.
+     * @param string $note Note.
+     * @param string $note_type Note type.
+     */
+    public function callback_gform_post_note_added( $note_id, $lead_id, $user_id, $user_name, $note, $note_type ) {
 		unset( $user_id );
 		unset( $user_name );
 		unset( $note );
@@ -569,7 +651,7 @@ class Connector_GravityForms extends Connector {
 		$form = $this->get_form( $lead['form_id'] );
 
 		$this->log(
-			// translators: Placeholders refer to an ID, another ID, and a form title (e.g. "42", "7", "Contact Form")
+			// translators: Placeholders refer to an ID, another ID, and a form title (e.g. "42", "7", "Contact Form").
 			__( 'Note #%1$d added to lead #%2$d on "%3$s" form', 'mainwp-child-reports' ),
 			array(
 				'note_id'    => $note_id,
@@ -583,7 +665,13 @@ class Connector_GravityForms extends Connector {
 		);
 	}
 
-	public function callback_gform_pre_note_deleted( $note_id, $lead_id ) {
+    /**
+     * GravityForms pre note deleted callback.
+     *
+     * @param string $note_id Note ID.
+     * @param string $lead_id Lead ID.
+     */
+    public function callback_gform_pre_note_deleted($note_id, $lead_id ) {
 		$lead = $this->get_lead( $lead_id );
 		$form = $this->get_form( $lead['form_id'] );
 
@@ -602,7 +690,14 @@ class Connector_GravityForms extends Connector {
 		);
 	}
 
-	public function callback_gform_update_status( $lead_id, $status, $prev = '' ) {
+    /**
+     * GravityForm update status callback.
+     *
+     * @param string $lead_id Lead ID.
+     * @param string $status Update status.
+     * @param string $prev Trashed status.
+     */
+    public function callback_gform_update_status( $lead_id, $status, $prev = '' ) {
 		$lead = $this->get_lead( $lead_id );
 		$form = $this->get_form( $lead['form_id'] );
 
@@ -623,7 +718,7 @@ class Connector_GravityForms extends Connector {
 
 		$this->log(
 			sprintf(
-				// translators: Placeholders refer to an ID, a status, and a form title (e.g. "42", "activated", "Contact Form")
+				// translators: Placeholders refer to an ID, a status, and a form title (e.g. "42", "activated", "Contact Form").
 				__( 'Lead #%1$d %2$s on "%3$s" form', 'mainwp-child-reports' ),
 				$lead_id,
 				$actions[ $status ],
@@ -643,10 +738,10 @@ class Connector_GravityForms extends Connector {
 	}
 
 	/**
-	 * Callback fired when an entry is read/unread
+	 * Callback fired when an entry is read/unread.
 	 *
-	 * @param  int $lead_id
-	 * @param  int $status
+	 * @param  int $lead_id Lead ID.
+	 * @param  int $status Read / unread status.
 	 * @return void
 	 */
 	public function callback_gform_update_is_read( $lead_id, $status ) {
@@ -656,7 +751,7 @@ class Connector_GravityForms extends Connector {
 
 		$this->log(
 			sprintf(
-				// translators: Placeholders refer to an ID, a status, and a form title (e.g. "42", "unread", "Contact Form")
+				// translators: Placeholders refer to an ID, a status, and a form title (e.g. "42", "unread", "Contact Form").
 				__( 'Entry #%1$d marked as %2$s on form #%3$d ("%4$s")', 'mainwp-child-reports' ),
 				$lead_id,
 				$status,
@@ -678,8 +773,8 @@ class Connector_GravityForms extends Connector {
 	/**
 	 * Callback fired when an entry is starred/unstarred
 	 *
-	 * @param  int $lead_id
-	 * @param  int $status
+	 * @param  int $lead_id Leads ID.
+	 * @param  int $status Stared / unstared status.
 	 * @return void
 	 */
 	public function callback_gform_update_is_starred( $lead_id, $status ) {
@@ -690,7 +785,7 @@ class Connector_GravityForms extends Connector {
 
 		$this->log(
 			sprintf(
-				// translators: Placeholders refer to an ID, a status, and a form title (e.g. "42", "starred", "Contact Form")
+				// translators: Placeholders refer to an ID, a status, and a form title (e.g. "42", "starred", "Contact Form").
 				__( 'Entry #%1$d %2$s on form #%3$d ("%4$s")', 'mainwp-child-reports' ),
 				$lead_id,
 				$status,
@@ -710,9 +805,9 @@ class Connector_GravityForms extends Connector {
 	}
 
 	/**
-	 * Callback fired when a form is deleted
+	 * Callback fired when a form is deleted.
 	 *
-	 * @param  int $form_id Form ID
+	 * @param  int $form_id Form ID.
 	 * @return void
 	 */
 	public function callback_gform_before_delete_form( $form_id ) {
@@ -720,9 +815,9 @@ class Connector_GravityForms extends Connector {
 	}
 
 	/**
-	 * Callback fired when a form is trashed
+	 * Callback fired when a form is trashed.
 	 *
-	 * @param  int $form_id Form ID
+	 * @param  int $form_id Form ID.
 	 * @return void
 	 */
 	public function callback_gform_post_form_trashed( $form_id ) {
@@ -730,9 +825,9 @@ class Connector_GravityForms extends Connector {
 	}
 
 	/**
-	 * Callback fired when a form is restored
+	 * Callback fired when a form is restored.
 	 *
-	 * @param  int $form_id Form ID
+	 * @param  int $form_id Form ID.
 	 * @return void
 	 */
 	public function callback_gform_post_form_restored( $form_id ) {
@@ -740,9 +835,9 @@ class Connector_GravityForms extends Connector {
 	}
 
 	/**
-	 * Callback fired when a form is activated
+	 * Callback fired when a form is activated.
 	 *
-	 * @param  int $form_id Form ID
+	 * @param  int $form_id Form ID.
 	 * @return void
 	 */
 	public function callback_gform_post_form_activated( $form_id ) {
@@ -750,9 +845,9 @@ class Connector_GravityForms extends Connector {
 	}
 
 	/**
-	 * Callback fired when a form is deactivated
+	 * Callback fired when a form is deactivated.
 	 *
-	 * @param  int $form_id Form ID
+	 * @param  int $form_id Form ID.
 	 * @return void
 	 */
 	public function callback_gform_post_form_deactivated( $form_id ) {
@@ -760,9 +855,9 @@ class Connector_GravityForms extends Connector {
 	}
 
 	/**
-	 * Callback fired when a form is duplicated
+	 * Callback fired when a form is duplicated.
 	 *
-	 * @param  int $form_id Form ID
+	 * @param  int $form_id Form ID.
 	 * @return void
 	 */
 	public function callback_gform_post_form_duplicated( $form_id ) {
@@ -770,9 +865,9 @@ class Connector_GravityForms extends Connector {
 	}
 
 	/**
-	 * Callback fired when a form's views are reset
+	 * Callback fired when a form's views are reset.
 	 *
-	 * @param  int $form_id Form ID
+	 * @param  int $form_id Form ID.
 	 * @return void
 	 */
 	public function callback_gform_post_form_views_deleted( $form_id ) {
@@ -780,10 +875,10 @@ class Connector_GravityForms extends Connector {
 	}
 
 	/**
-	 * Track status change of forms
+	 * Track status change of forms.
 	 *
-	 * @param int $form_id
-	 * @param string $action
+	 * @param int $form_id Form ID.
+	 * @param string $action Form action.
 	 * @return void
 	 */
 	public function log_form_action( $form_id, $action ) {
@@ -823,20 +918,20 @@ class Connector_GravityForms extends Connector {
 	}
 
 	/**
-	 * Helper function to get a single entry
+	 * Helper function to get a single entry.
 	 *
-	 * @param  int $lead_id Lead ID
-	 * @return array
+	 * @param  int $lead_id Lead ID.
+	 * @return array Return Lead array.
 	 */
 	private function get_lead( $lead_id ) {
 		return \GFFormsModel::get_lead( $lead_id );
 	}
 
 	/**
-	 * Helper function to get a single form
+	 * Helper function to get a single form.
 	 *
-	 * @param  int $form_id Form ID
-	 * @return array
+	 * @param  int $form_id Form ID.
+	 * @return array Return form meta array.
 	 */
 	private function get_form( $form_id ) {
 		return \GFFormsModel::get_form_meta( $form_id );

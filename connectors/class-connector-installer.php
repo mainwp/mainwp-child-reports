@@ -1,20 +1,18 @@
 <?php
+/** Installer Connector. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Connector_Installer
+ * @package WP_MainWP_Stream
+ */
 class Connector_Installer extends Connector {
 
-	/**
-	 * Connector slug
-	 *
-	 * @var string
-	 */
+	/** @var string Connector slug. */
 	public $name = 'installer';
 
-	/**
-	 * Actions registered for this connector
-	 *
-	 * @var array
-	 */
+	/** @var array Actions registered for this connector. */
 	public $actions = array(
 		'upgrader_pre_install', // use to the current version of all plugins, before they are upgraded ( Net-Concept - Xavier NUEL )
 		'upgrader_process_complete', // plugins::installed | themes::installed
@@ -31,28 +29,25 @@ class Connector_Installer extends Connector {
         //'mainwp_child_upgradePluginTheme'
 	);
 
-	public $old_plugins = array();
+    /** @var array Old plugins array. */
+    public $old_plugins = array();
 	
-	/**
-	 * Register connector in the WP Frontend
-	 *
-	 * @var bool
-	 */
+	/** @var bool Register connector in the WP Frontend. */
 	public $register_frontend = false;
 
 	/**
-	 * Return translated connector label
+	 * Return translated connector label.
 	 *
-	 * @return string Translated connector label
+	 * @return string Translated connector label.
 	 */
 	public function get_label() {
 		return esc_html__( 'Installer', 'mainwp-child-reports' );
 	}
 
 	/**
-	 * Return translated action labels
+	 * Return translated action labels.
 	 *
-	 * @return array Action label translations
+	 * @return array Action label translations.
 	 */
 	public function get_action_labels() {
 		return array(
@@ -65,9 +60,9 @@ class Connector_Installer extends Connector {
 	}
 
 	/**
-	 * Return translated context labels
+	 * Return translated context labels.
 	 *
-	 * @return array Context label translations
+	 * @return array Context label translations.
 	 */
 	public function get_context_labels() {
 		return array(
@@ -78,14 +73,14 @@ class Connector_Installer extends Connector {
 	}
 
 	/**
-	 * Add action links to Stream drop row in admin list screen
+	 * Add action links to Stream drop row in admin list screen.
 	 *
-	 * @filter wp_mainwp_stream_action_links_{connector}
+	 * @filter wp_mainwp_stream_action_links_{connector}.
 	 *
-	 * @param  array  $links     Previous links registered
-	 * @param  object $record    Stream record
+	 * @param  array  $links     Previous links registered.
+	 * @param  object $record    Stream record.
 	 *
-	 * @return array             Action links
+	 * @return array             Action links.
 	 */
 	public function action_links( $links, $record ) {
 		if ( 'WordPress' === $record->context && 'updated' === $record->action ) {
@@ -104,9 +99,9 @@ class Connector_Installer extends Connector {
 	}
 
 	/**
-	 * Wrapper method for calling get_plugins()
+	 * Wrapper method for calling get_plugins().
 	 *
-	 * @return array
+	 * @return array Installed plugins.
 	 */
 	public function get_plugins() {
 		if ( ! function_exists( 'get_plugins' ) ) {
@@ -117,14 +112,14 @@ class Connector_Installer extends Connector {
 	}
 
 	/**
-	 * Log plugin installations
+	 * Log plugin installations.
 	 *
-	 * @action transition_post_status
+	 * @action transition_post_status.
 	 *
-	 * @param \WP_Upgrader $upgrader
-	 * @param array $extra
+	 * @param \WP_Upgrader $upgrader WP_Upgrader class object.
+	 * @param array $extra Extra attributes array.
 	 *
-	 * @return bool
+	 * @return bool Return TRUE|FALSE.
 	 */
 	public function callback_upgrader_process_complete( $upgrader, $extra ) {
 		$logs    = array();
@@ -137,7 +132,7 @@ class Connector_Installer extends Connector {
 			list( $error ) = reset( $errors );
 		}
 
-		// This would have failed down the road anyway
+		// This would have failed down the road anyway.
 		if ( ! isset( $extra['type'] ) ) {
 			return false;
 		}
@@ -176,7 +171,7 @@ class Connector_Installer extends Connector {
 			}
 
 			$action = 'installed';
-			// translators: Placeholders refer to a plugin/theme type, a plugin/theme name, and a plugin/theme version (e.g. "plugin", "Stream", "4.2")
+			// translators: Placeholders refer to a plugin/theme type, a plugin/theme name, and a plugin/theme version (e.g. "plugin", "Stream", "4.2").
 			$message = _x(
 				'Installed %1$s: %2$s %3$s',
 				'Plugin/theme installation. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
@@ -186,7 +181,7 @@ class Connector_Installer extends Connector {
 			$logs[] = compact( 'slug', 'name', 'version', 'message', 'action' );
 		} elseif ( 'update' === $action ) {
 			$action = 'updated';
-			// translators: Placeholders refer to a plugin/theme type, a plugin/theme name, and a plugin/theme version (e.g. "plugin", "Stream", "4.2")
+			// translators: Placeholders refer to a plugin/theme type, a plugin/theme name, and a plugin/theme version (e.g. "plugin", "Stream", "4.2").
 			$message = _x(
 				'Updated %1$s: %2$s %3$s',
 				'Plugin/theme update. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
@@ -208,7 +203,7 @@ class Connector_Installer extends Connector {
 					$version     = $plugin_data['Version'];
 					//$old_version = $_plugins[ $slug ]['Version'];
 					
-					//( Net-Concept - Xavier NUEL ) : get old versions
+					//( Net-Concept - Xavier NUEL ) : get old versions.
 					if (isset($this->old_plugins[$slug])) {
 						$old_version = $this->old_plugins[$slug]['Version'];
 					} else {
@@ -272,7 +267,13 @@ class Connector_Installer extends Connector {
 		return true;
 	}
 
-	public function callback_activate_plugin( $slug, $network_wide ) {
+    /**
+     * Activate plugin callback.
+     *
+     * @param string $slug Plugin slug.
+     * @param $network_wide Check if network wide.
+     */
+    public function callback_activate_plugin($slug, $network_wide ) {
 		$_plugins     = $this->get_plugins();
 		$name         = $_plugins[ $slug ]['Name'];
 		$network_wide = $network_wide ? esc_html__( 'network wide', 'mainwp-child-reports' ) : null;
@@ -294,7 +295,12 @@ class Connector_Installer extends Connector {
 		);
 	}
 
-	public function callback_deactivate_plugin( $slug, $network_wide ) {
+    /** Decativate plugin callback.
+     *
+     * @param string $slug Plugin slug.
+     * @param $network_wide Check if network wide.
+     */
+    public function callback_deactivate_plugin($slug, $network_wide ) {
 		$_plugins     = $this->get_plugins();		
 		$name         = $_plugins[ $slug ]['Name'];
 		$network_wide = $network_wide ? esc_html__( 'network wide', 'mainwp-child-reports' ) : null;
@@ -313,10 +319,16 @@ class Connector_Installer extends Connector {
 		);
 	}
 
-	public function callback_switch_theme( $name, $theme ) {
+    /**
+     * Switch theme callback.
+     *
+     * @param string $name Theme name.
+     * @param string $theme Theme slug.
+     */
+    public function callback_switch_theme($name, $theme ) {
 		unset( $theme );
 		$this->log(
-			// translators: Placeholder refers to a theme name (e.g. "Twenty Seventeen")
+			// translators: Placeholder refers to a theme name (e.g. "Twenty Seventeen").
 			__( '"%s" theme activated', 'mainwp-child-reports' ),
 			compact( 'name' ),
 			null,
@@ -326,6 +338,8 @@ class Connector_Installer extends Connector {
 	}
 
 	/**
+     * Update theme & transient delete callback.
+     *
 	 * @todo Core needs a delete_theme hook
 	 */
 	public function callback_delete_site_transient_update_themes() {
@@ -347,7 +361,7 @@ class Connector_Installer extends Connector {
 		// @todo Can we get the name of the theme? Or has it already been eliminated
 
 		$this->log(
-			// translators: Placeholder refers to a theme name (e.g. "Twenty Seventeen")
+			// translators: Placeholder refers to a theme name (e.g. "Twenty Seventeen").
 			__( '"%s" theme deleted', 'mainwp-child-reports' ),
 			compact( 'name' ),
 			null,
@@ -357,6 +371,8 @@ class Connector_Installer extends Connector {
 	}
 
 	/**
+     * Uninstall plugins callback.
+     *
 	 * @todo Core needs an uninstall_plugin hook
 	 * @todo This does not work in WP-CLI
 	 */
@@ -388,9 +404,12 @@ class Connector_Installer extends Connector {
 	}
 
 	/**
+     * Pre set site transient update plugins callback.
+     *
 	 * @param mixed $value
 	 *
 	 * @return mixed
+     *
 	 * @todo Core needs a delete_plugin hook
 	 * @todo This does not work in WP-CLI
 	 */
@@ -405,7 +424,7 @@ class Connector_Installer extends Connector {
 			$network_wide = $data['Network'] ? esc_html__( 'network wide', 'mainwp-child-reports' ) : '';
 
 			$this->log(
-				// translators: Placeholder refers to a plugin name (e.g. "Stream")
+				// translators: Placeholder refers to a plugin name (e.g. "Stream").
 				__( '"%s" plugin deleted', 'mainwp-child-reports' ),
 				compact( 'name', 'plugin', 'network_wide' ),
 				null,
@@ -419,7 +438,17 @@ class Connector_Installer extends Connector {
 		return $value;
 	}
 
-	public function callback__core_updated_successfully( $new_version ) {
+    /**
+     * Core updated successfully callback.
+     *
+     * @param $new_version New WordPress verison.
+     */
+    public function callback__core_updated_successfully($new_version ) {
+
+        /**
+         * @global string $pagenow Current page.
+         * @global string $wp_version WordPress version.
+         */
 		global $pagenow, $wp_version;
 
 		$old_version  = $wp_version;
@@ -441,8 +470,14 @@ class Connector_Installer extends Connector {
 			'updated'
 		);
 	}
-	
-	public function callback_mainwp_child_installPluginTheme( $args ) {
+
+    /**
+     * Child Site install Plugin or theme callback.
+     *
+     * @param array $args Success message.
+     * @return bool|void Return FALSE on failure.
+     */
+    public function callback_mainwp_child_installPluginTheme( $args ) {
 		
 		$logs = array();
 		$success = isset($args['success']) ? $args['success'] : 0;
@@ -509,10 +544,15 @@ class Connector_Installer extends Connector {
 				$action				
 			);
 		}
-	}       
-        
-        
-	public function callback_mainwp_child_plugin_action( $args ) {	
+	}
+
+
+    /**
+     * MainWP Plugin Action callback.
+     *
+     * @param $args Action arguments.
+     */
+    public function callback_mainwp_child_plugin_action( $args ) {
 		if (!is_array($args) || !isset($args['action']))
 			return;            
             $action = $args['action'];
@@ -528,7 +568,12 @@ class Connector_Installer extends Connector {
                 );
             }
 	}
-        
+
+    /**
+     * MainWP Child Theme action callback.
+     *
+     * @param string $args MainWP Child Theme action.
+     */
     public function callback_mainwp_child_theme_action($args) {
             if (!is_array($args) || !isset($args['action']))
                 return;
@@ -545,8 +590,12 @@ class Connector_Installer extends Connector {
             }
 	}
  
-	// ( Net-Concept - Xavier NUEL ) : save all plugins versions before upgrade
-	public function callback_upgrader_pre_install() {        
+	// ( Net-Concept - Xavier NUEL ) : save all plugins versions before upgrade.
+
+    /**
+     * Upgrader pre-instaler callback.
+     */
+    public function callback_upgrader_pre_install() {
 		$this->old_plugins = $this->get_plugins();        
 	}
 	
