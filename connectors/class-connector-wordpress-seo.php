@@ -52,18 +52,18 @@ class Connector_WordPress_SEO extends Connector {
 	}
 
 	/**
-	 * Return translated connector label
+	 * Return translated connector label.
 	 *
-	 * @return string Translated connector label
+	 * @return string Translated connector label.
 	 */
 	public function get_label() {
 		return esc_html_x( 'WordPress SEO', 'wordpress-seo', 'mainwp-child-reports' );
 	}
 
 	/**
-	 * Return translated action labels
+	 * Return translated action labels.
 	 *
-	 * @return array Action label translations
+	 * @return array Action label translations.
 	 */
 	public function get_action_labels() {
 		return array(
