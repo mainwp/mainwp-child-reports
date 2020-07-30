@@ -1,6 +1,12 @@
 <?php
+/** MainWP Child Reports live update. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Live_Update.
+ * @package WP_MainWP_Stream
+ */
 class Live_Update {
 	/**
 	 * Hold Plugin class

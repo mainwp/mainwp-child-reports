@@ -1,6 +1,12 @@
 <?php
+/** MainWP Child Reports Database. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class DB.
+ * @package WP_MainWP_Stream
+ */
 class DB {
 	/**
 	 * Hold the Driver class

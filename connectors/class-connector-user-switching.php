@@ -1,6 +1,12 @@
 <?php
+/** MainWP Child Reports User Switching Connector. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Connector_User_Switching.
+ * @package WP_MainWP_Stream
+ */
 class Connector_User_Switching extends Connector {
 
 	/**

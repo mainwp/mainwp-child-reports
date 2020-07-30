@@ -1,4 +1,5 @@
 <?php
+/** MainWP Child Reports default functions. */
 /**
  * Gets a specific external variable by name and optionally filters it.
  *
@@ -37,8 +38,10 @@ function wp_mainwp_stream_filter_var( $var, $filter = null, $options = array() )
  *
  * @param int|bool $time Seconds since unix epoc
  * @param int $offset Hour offset
+ * @param bool $mysql_date_string Whether to use mysql date string.
  *
  * @return string an ISO 8601 extended formatted time
+ * @throws Exception Error message.
  */
 function wp_mainwp_stream_get_iso_8601_extended_date( $time = false, $offset = 0, $mysql_date_string = false ) {
 	if ( $time ) {
@@ -48,25 +51,20 @@ function wp_mainwp_stream_get_iso_8601_extended_date( $time = false, $offset = 0
 	}
 
 	$micro_seconds = sprintf( '%06d', ( $microtime - floor( $microtime ) ) * 1000000 );
-	$offset_string = sprintf( 'Etc/GMT%s%s', $offset < 0 ? '+' : '-', abs( $offset ) );
+	$offset_string = sprintf( 'Etc/GMT%s%d', $offset < 0 ? '+' : '-', abs( $offset ) );
 
 	$timezone = new DateTimeZone( $offset_string );
-	$date     = new DateTime( date( 'Y-m-d H:i:s.' . $micro_seconds, $microtime ), $timezone );
-	
+	$date     = new DateTime( gmdate( 'Y-m-d H:i:s.' . $micro_seconds, $microtime ), $timezone );
+
 	if ( $mysql_date_string ) {
 		return $date->format( 'Y-m-d H:i:s' );
 	}
-	
-	return sprintf(
-		'%s%03d%s',
-		$date->format( 'Y-m-d\TH:i:s.' ),
-		floor( $date->format( 'u' ) / 1000 ),
-		$date->format( 'O' )
-	);
+
+	return $date->format( 'Y-m-d\TH:i:sO' );
 }
 
 /**
- * Encode to JSON in a way that is also backwards compatible
+ * Encode to JSON in a way that is also backwards compatible.
  *
  * @param mixed $data
  * @param int $options (optional)
@@ -91,7 +89,7 @@ function wp_mainwp_stream_json_encode( $data, $options = 0, $depth = 512 ) {
 }
 
 /**
- * Return an array of sites for a network in a way that is also backwards compatible
+ * Return an array of sites for a network in a way that is also backwards compatible.
  *
  * @param string|array $args
  *

@@ -1,6 +1,12 @@
 <?php
+/** MainWP Child Reports form generator. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Form_Generator.
+ * @package WP_MainWP_Stream
+ */
 class Form_Generator {
 
 	/**

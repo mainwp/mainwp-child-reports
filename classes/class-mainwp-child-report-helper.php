@@ -1,6 +1,12 @@
 <?php
+/** MainWP CHild Reports helper. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class MainWP_Child_Report_Helper.
+ * @package WP_MainWP_Stream
+ */
 class MainWP_Child_Report_Helper {
 	
 	public static $instance;	

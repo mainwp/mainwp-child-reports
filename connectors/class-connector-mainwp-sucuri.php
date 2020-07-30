@@ -1,6 +1,12 @@
 <?php
+/** MainWP Sucuri Connector. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Connector_MainWP_Sucuri
+ * @package WP_MainWP_Stream
+ */
 class Connector_MainWP_Sucuri extends Connector {
 
 	/**
@@ -50,7 +56,10 @@ class Connector_MainWP_Sucuri extends Connector {
 		);
 	}
 
-	public function register() {
+    /**
+     * Register connector with parent class.
+     */
+    public function register() {
 		parent::register();
 	}
 	
@@ -60,15 +69,23 @@ class Connector_MainWP_Sucuri extends Connector {
 	 * @filter wp_stream_action_links_{connector}
 	 *
 	 * @param  array $links Previous links registered
-	 * @param  int $record Stream record
+	 * @param  int $record  Stream record
 	 *
-	 * @return array             Action links
+	 * @return array        Action links
 	 */
 	public function action_links( $links, $record ) {
 		return $links;
 	}
 
-	public function callback_mainwp_reports_sucuri_scan( $data, $scan_status, $scan_data, $scan_time = 0) {
+    /**
+     * Callback for MainWP reports Sucuri Scan.
+     *
+     * @param array $data         Scan Results array.
+     * @param string $scan_status Status of current scan.
+     * @param array $scan_data    Scan data.
+     * @param int $scan_time      The current time of scan.
+     */
+    public function callback_mainwp_reports_sucuri_scan($data, $scan_status, $scan_data, $scan_time = 0) {
 		
 		$message = '';
 		if ( 'success' === $scan_status ) {

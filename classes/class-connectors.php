@@ -1,6 +1,12 @@
 <?php
+/** MainWP Child Reports connectors. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Connectors.
+ * @package WP_MainWP_Stream
+ */
 class Connectors {
 	/**
 	 * Hold Plugin class

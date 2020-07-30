@@ -1,7 +1,14 @@
 <?php
+/** MainWp Child Reports BBPress Connector. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Connector_BbPress.
+ * @package WP_MainWP_Stream
+ */
 class Connector_BbPress extends Connector {
+
 	/**
 	 * Connector slug
 	 *
@@ -10,14 +17,14 @@ class Connector_BbPress extends Connector {
 	public $name = 'bbpress';
 
 	/**
-	 * Holds tracked plugin minimum version required
+	 * Holds tracked plugin minimum version required.
 	 *
 	 * @const string
 	 */
 	const PLUGIN_MIN_VERSION = '2.5.4';
 
 	/**
-	 * Actions registered for this connector
+	 * Actions registered for this connector.
 	 *
 	 * @var array
 	 */
@@ -26,7 +33,7 @@ class Connector_BbPress extends Connector {
 	);
 
 	/**
-	 * Tracked option keys
+	 * Tracked option keys.
 	 *
 	 * @var array
 	 */
@@ -35,23 +42,29 @@ class Connector_BbPress extends Connector {
 	);
 
 	/**
-	 * Flag to stop logging update logic twice
+	 * Flag to stop logging update logic twice.
 	 *
 	 * @var bool
 	 */
 	public $is_update = false;
 
 	/**
+     * Flag for deleted activity.
+     *
 	 * @var bool
 	 */
 	public $_deleted_activity = false;
 
 	/**
+     * Delete activity arguments.
+     *
 	 * @var array
 	 */
 	public $_delete_activity_args = array();
 
 	/**
+     * Ignore bulk deletion activity.
+     *
 	 * @var bool
 	 */
 	public $ignore_activity_bulk_deletion = false;
@@ -140,6 +153,9 @@ class Connector_BbPress extends Connector {
 		return $links;
 	}
 
+    /**
+     * Register log data.
+     */
 	public function register() {
 		parent::register();
 

@@ -1,4 +1,5 @@
 <?php
+/** MainWP BuddyPress Connector. */
 
 namespace WP_MainWP_Stream;
 

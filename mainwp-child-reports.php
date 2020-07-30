@@ -1,5 +1,7 @@
 <?php
-/*
+/**
+ * MainWP Child Reports.
+ *
  * Plugin Name: MainWP Child Reports
  * Plugin URI: https://mainwp.com/
  * Description: The MainWP Child Report plugin tracks Child sites for the MainWP Client Reports Extension. The plugin is only useful if you are using MainWP and the Client Reports Extension.
@@ -8,7 +10,7 @@
  * Version: 2.0.4
  */
 
- /*
+ /**
   * Credit to the Stream Plugin which the MainWP Child Reports plugin is built on.
   *
   * Plugin Name: Stream

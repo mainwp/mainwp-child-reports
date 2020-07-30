@@ -1,6 +1,12 @@
 <?php
+/** MainWP Child Reports query. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Query.
+ * @package WP_MainWP_Stream
+ */
 class Query {
 	/**
 	 * Hold the number of records found

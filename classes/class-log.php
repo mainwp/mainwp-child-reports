@@ -1,29 +1,21 @@
 <?php
+/** MainWP Child Reports log. */
 
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Log.
+ * @package WP_MainWP_Stream
+ */
 class Log {
 
-	/**
-	 * Hold Plugin class
-	 *
-	 * @var Plugin
-	 */
+	/** @var Plugin Hold Plugin class */
 	public $plugin;
 
-	/**
-	 * Hold Current visitors IP Address.
-	 *
-	 * @var string
-	 */
+	/** @var string Hold Current visitors IP Address. */
 	private $ip_address;
 
-
-	/**
-	 * Previous Stream record ID, used for chaining same-session records
-	 *
-	 * @var int
-	 */
+	/** @var int Previous Stream record ID, used for chaining same-session records. */
 	private $prev_record;
 
 	/**
@@ -47,7 +39,7 @@ class Log {
 	}
 
 	/**
-	 * Log handler
+	 * Log handler.
 	 *
 	 * @param Connector $connector Connector responsible for logging the event.
 	 * @param string    $message sprintf-ready error message string.
@@ -56,11 +48,21 @@ class Log {
 	 * @param string    $context Context of the event.
 	 * @param string    $action Action of the event.
 	 * @param int       $user_id User responsible for the event.
+     * @param int       $created_timestamp  1|0 Whether or not the timestamp was created.
 	 *
-	 * @return mixed True if updated, otherwise false|WP_Error
+	 * @return bool|WP_Error True if updated, otherwise false|WP_Error
+     *
+     * @uses \WP_MainWP_Stream\Author::get_current_agent()
+     * @uses \WP_MainWP_Stream\Author::get_display_name()
+     * @uses \WP_MainWP_Stream\Author::get_role()
+     * @uses \WP_MainWP_Stream\Log::is_record_excluded()
+     * @uses $wp_roles::is_role()
+     * @uses \WP_MainWP_Stream\Log::$plugin::db::insert()
 	 */
 	public function log( $connector, $message, $args, $object_id, $context, $action, $user_id = null, $created_timestamp = 0 ) {
-		global $wp_roles;
+
+	    /** @global object $wp_roles Wordpress user roles object.  */
+	    global $wp_roles;
 
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
@@ -114,7 +116,7 @@ class Log {
 		$stream_meta['user_meta'] = $user_meta;
 
 		// Get the current time in milliseconds.
-		$iso_8601_extended_date = wp_mainwp_stream_get_iso_8601_extended_date( $created_timestamp ); // $created_timestamp = 0 is current time
+		$created_mysql = wp_mainwp_stream_get_iso_8601_extended_date( $created_timestamp, 0, true ); // $created_timestamp = 0 is current time
 
 		if ( ! empty( $user->roles ) ) {
 			$roles = array_values( $user->roles );
@@ -131,7 +133,7 @@ class Log {
 			'blog_id'   => (int) apply_filters( 'wp_mainwp_stream_blog_id_logged', get_current_blog_id() ),
 			'user_id'   => (int) $user_id,
 			'user_role' => (string) $role,
-			'created'   => (string) $iso_8601_extended_date,
+			'created'   => (string) $created_mysql,
 			'summary'   => (string) vsprintf( $message, $args ),
 			'connector' => (string) $connector,
 			'context'   => (string) $context,
@@ -143,8 +145,7 @@ class Log {
 		if ( 0 === $recordarr['object_id'] ) {
 			unset( $recordarr['object_id'] );
 		}
-				
-		
+
 		$result = $this->plugin->db->insert( $recordarr );
 
 		// This is helpful in development environments:
@@ -154,7 +155,7 @@ class Log {
 	}
 
 	/**
-	 * This function is use to check whether or not a record should be excluded from the log.
+	 * This function is used to check whether or not a record should be excluded from the log.
 	 *
 	 * @param string   $connector Name of the connector being logged.
 	 * @param string   $context Name of the context being logged.
@@ -162,7 +163,7 @@ class Log {
 	 * @param \WP_User $user The user being logged.
 	 * @param string   $ip IP address being logged.
 	 *
-	 * @return bool
+	 * @return bool TRUE|FALSE.
 	 */
 	public function is_record_excluded( $connector, $context, $action, $user = null, $ip = null ) {
 		if ( is_null( $user ) ) {
@@ -260,19 +261,19 @@ class Log {
 		 * If true, the record is not logged.
 		 *
 		 * @param array $exclude_record Whether the record should excluded.
-		 * @param array $recordarr The record to log.
+		 * @param array $record The record to log.
 		 *
-		 * @return bool
+		 * @return bool TRUE|FALSE.
 		 */
 		return apply_filters( 'wp_mainwp_stream_is_record_excluded', $exclude_record, $record );
 	}
 
 	/**
-	 * Helper function to send a full backtrace of calls to the PHP error log for debugging
+	 * Helper function to send a full backtrace of calls to the PHP error log for debugging.
 	 *
 	 * @param array $recordarr Record argument array.
 	 *
-	 * @return string
+	 * @return string $output MainWP Pro Reports backtrace.
 	 */
 	public function debug_backtrace( $recordarr ) {
 		if ( version_compare( PHP_VERSION, '5.3.6', '<' ) ) {

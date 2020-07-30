@@ -1,15 +1,21 @@
 <?php
 /**
- * Version 3.5.2
+ * MainWP WP Stream Database Update Version 3.5.2
  *
  * To fix meta data.
- *
- * @param string $db_version
- * @param string $current_version
- *
- * @return string
  */
-function wp_mainwp_stream_update_auto_352( $db_version, $current_version ) {	
+
+/**
+ * MainWP WP Stream Database Update Version 3.5.2
+ *
+ * @param string $db_version New Database version.
+ * @param string $current_version Current Database version.
+ *
+ * @return string $current_version Current WP Stream Database version.
+ */
+function wp_mainwp_stream_update_auto_352( $db_version, $current_version ) {
+
+    /** @global object $wpdb WordPress Database objcet. */
 	global $wpdb;	
 	
 	$first_correct = $wpdb->get_results(			
@@ -31,7 +37,7 @@ function wp_mainwp_stream_update_auto_352( $db_version, $current_version ) {
 		return; // this is correct conversion
 	}		
 	
-	// to get first correct meta id
+	// First get correct meta id.
 	$sql = $wpdb->prepare( 
 		"SELECT * FROM {$wpdb->base_prefix}mainwp_stream_meta 
 		WHERE record_id = %d ORDER BY meta_id ASC LIMIT 1", 
@@ -55,11 +61,9 @@ function wp_mainwp_stream_update_auto_352( $db_version, $current_version ) {
 	$rows_per_round = 5000;	
 	
 	$stream_entries = $wpdb->get_results( "SELECT * FROM {$wpdb->base_prefix}mainwp_stream WHERE 1 = 1 " . 
-					$where . $orderby . 
-					$wpdb->prepare( " LIMIT %d, %d", $starting_row, $rows_per_round ) );
+    $where . $orderby . $wpdb->prepare( " LIMIT %d, %d", $starting_row, $rows_per_round ) );
 	$stop = false;
-		
-	
+
 	$fix_what = array(		
 		'plugin_updated',
 		'plugin_activated_deactivated',
@@ -71,8 +75,7 @@ function wp_mainwp_stream_update_auto_352( $db_version, $current_version ) {
 		'wordfence_scan',
 		'sucuri_scan'
 	);
-	
-	
+
 	while ( ! empty( $stream_entries ) ) {
 		
 		foreach( $fix_what as $fix_value ) {			

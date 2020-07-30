@@ -1,7 +1,12 @@
 <?php
+/** MainWP Child Reports list table. */
 
 namespace WP_MainWP_Stream;
 
+/**
+ * Class List_Table.
+ * @package WP_MainWP_Stream
+ */
 class List_Table extends \WP_List_Table {
 
 	/**

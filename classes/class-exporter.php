@@ -1,6 +1,12 @@
 <?php
+/** MainWP Child Reports Exporter. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Exporter.
+ * @package WP_MainWP_Stream
+ */
 abstract class Exporter {
 	/**
 	 * Exporter name

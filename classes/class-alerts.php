@@ -1,52 +1,49 @@
 <?php
 /**
- * Alerts feature class.
- *
- * @package WP_MainWP_Stream
+ * MainWP Child Reports Alerts feature class.
  */
 
 namespace WP_MainWP_Stream;
 
 /**
- * Class Alerts
- *
+ * Class Alerts.
  * @package WP_MainWP_Stream
  */
 class Alerts {
 
 	/**
-	 * Alerts post type slug
+	 * Alerts post type slug.
 	 */
 	const POST_TYPE = 'wp_mainwp_alerts';
 
 	/**
-	 * Triggered Alerts meta key for Records
+	 * Triggered Alerts meta key for Records.
 	 */
 	const ALERTS_TRIGGERED_META_KEY = 'wp_mainwp_alerts_triggered';
 
 	/**
-	 * Hold Plugin class
+	 * Hold Plugin class.
 	 *
 	 * @var Plugin
 	 */
 	public $plugin;
 
 	/**
-	 * Post meta prefix
+	 * Post meta prefix.
 	 *
 	 * @var string
 	 */
 	public $meta_prefix = 'wp_mainwp_stream';
 
 	/**
-	 * Alert Types
+	 * Alert Types.
 	 *
 	 * @var array
 	 */
 	public $alert_types = array();
 
 	/**
-	 * Alert Triggers
+	 * Alert Triggers.
 	 *
 	 * @var array
 	 */
@@ -109,7 +106,7 @@ class Alerts {
 	}
 
 	/**
-	 * Load alert_type classes
+	 * Load alert_type classes.
 	 *
 	 * @return void
 	 */
@@ -155,7 +152,7 @@ class Alerts {
 	}
 
 	/**
-	 * Load alert_type classes
+	 * Load alert_type classes.
 	 *
 	 * @return void
 	 */
@@ -199,7 +196,7 @@ class Alerts {
 	}
 
 	/**
-	 * Checks whether a Alert Type class is valid
+	 * Checks whether a Alert Type class is valid.
 	 *
 	 * @param Alert_Type $alert_type The class to check.
 	 *
@@ -218,7 +215,7 @@ class Alerts {
 	}
 
 	/**
-	 * Checks whether a Alert Trigger class is valid
+	 * Checks whether a Alert Trigger class is valid.
 	 *
 	 * @param Alert_Trigger $alert_trigger The class to check.
 	 *
@@ -267,7 +264,7 @@ class Alerts {
 	}
 
 	/**
-	 * Register scripts for page load
+	 * Register scripts for page load.
 	 *
 	 * @action admin_enqueue_scripts
 	 *
@@ -297,7 +294,7 @@ class Alerts {
 	}
 
 	/**
-	 * Register custom post type
+	 * Register custom post type.
 	 *
 	 * @action init
 	 *
@@ -369,7 +366,7 @@ class Alerts {
 	}
 
 	/**
-	 * Return alert object of the given ID
+	 * Return alert object of the given ID.
 	 *
 	 * @param string $post_id Post ID for the alert.
 	 *
@@ -401,13 +398,14 @@ class Alerts {
 	}
 
 	/**
-	 * Add custom post type to menu
+	 * Add custom post type to menu.
 	 *
 	 * @action admin_menu
 	 *
 	 * @return void
+     *
+     * @deprecated DISABLED
 	 */
-	// DISABLED
 	public function register_menu() {
 		add_submenu_page(
 			$this->plugin->admin->records_page_slug,
@@ -471,7 +469,7 @@ class Alerts {
 	}
 
 	/**
-	 * Display Alert Type Meta Box
+	 * Display Alert Type Meta Box.
 	 *
 	 * @param \WP_Post|array $post Post object for current alert.
 	 *
@@ -510,7 +508,7 @@ class Alerts {
 	}
 
 	/**
-	 * Returns settings form HTML for AJAX use
+	 * Returns settings form HTML for AJAX use.
 	 *
 	 * @action wp_ajax_load_alerts_settings
 	 *
@@ -554,7 +552,7 @@ class Alerts {
 	}
 
 	/**
-	 * Display Trigger Meta Box
+	 * Display Trigger Meta Box.
 	 *
 	 * @param \WP_Post|array $post Post object for current alert.
 	 *
@@ -575,7 +573,7 @@ class Alerts {
 	}
 
 	/**
-	 * Display Submit Box
+	 * Display Submit Box.
 	 *
 	 * @param \WP_Post $post Post object for current alert.
 	 *
@@ -635,7 +633,7 @@ class Alerts {
 	}
 
 	/**
-	 * Display Status Box
+	 * Display Status Box.
 	 *
 	 * @return void
 	 */
@@ -661,7 +659,7 @@ class Alerts {
 	}
 
 	/**
-	 * Return all notification values
+	 * Return all notification values.
 	 *
 	 * @return array
 	 */
@@ -696,7 +694,7 @@ class Alerts {
 	}
 
 	/**
-	 * Save a new alert
+	 * Save a new alert.
 	 */
 	public function save_new_alert() {
 		check_ajax_referer( 'save_alert', 'wp_mainwp_alerts_nonce' );
@@ -764,7 +762,7 @@ class Alerts {
 	}
 
 	/**
-	 *
+	 * Get new alert triggers notifications.
 	 */
 	public function get_new_alert_triggers_notifications() {
 		ob_start();
@@ -790,7 +788,7 @@ class Alerts {
 	}
 
 	/**
-	 * Add action links to Stream drop row in admin list screen
+	 * Add action links to Stream drop row in admin list screen.
 	 *
 	 * @filter wp_mainwp_stream_action_links_{connector}
 	 *

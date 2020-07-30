@@ -1,23 +1,31 @@
 <?php
+/** MainWP ACF Connector. */
+
 namespace WP_MainWP_Stream;
 
+
+/**
+ * Class Connector_ACF
+ * @package WP_MainWP_Stream
+ */
 class Connector_ACF extends Connector {
+
 	/**
-	 * Connector slug
+	 * Connector slug.
 	 *
 	 * @var string
 	 */
 	public $name = 'acf';
 
 	/**
-	 * Holds tracked plugin minimum version required
+	 * Holds tracked plugin minimum version required.
 	 *
 	 * @const string
 	 */
 	const PLUGIN_MIN_VERSION = '4.3.8';
 
 	/**
-	 * Actions registered for this connector
+	 * Actions registered for this connector.
 	 *
 	 * @var array
 	 */
@@ -35,14 +43,14 @@ class Connector_ACF extends Connector {
 	);
 
 	/**
-	 * Cached location rules, used in shutdown callback to verify changes in meta
+	 * Cached location rules, used in shutdown callback to verify changes in meta.
 	 *
 	 * @var array
 	 */
 	public $cached_location_rules = array();
 
 	/**
-	 * Cached field values updates, used by shutdown callback to verify actual changes
+	 * Cached field values updates, used by shutdown callback to verify actual changes.
 	 *
 	 * @var array
 	 */
@@ -50,7 +58,7 @@ class Connector_ACF extends Connector {
 
 
 	/**
-	 * Check if plugin dependencies are satisfied and add an admin notice if not
+	 * Check if plugin dependencies are satisfied and add an admin notice if not.
 	 *
 	 * @return bool
 	 */
@@ -66,7 +74,7 @@ class Connector_ACF extends Connector {
 	}
 
 	/**
-	 * Return translated connector label
+	 * Return translated connector label.
 	 *
 	 * @return string Translated connector label
 	 */
@@ -75,7 +83,7 @@ class Connector_ACF extends Connector {
 	}
 
 	/**
-	 * Return translated action labels
+	 * Return translated action labels.
 	 *
 	 * @return array Action label translations
 	 */
@@ -89,7 +97,7 @@ class Connector_ACF extends Connector {
 	}
 
 	/**
-	 * Return translated context labels
+	 * Return translated context labels.
 	 *
 	 * @return array Context label translations
 	 */
@@ -104,13 +112,13 @@ class Connector_ACF extends Connector {
 	}
 
 	/**
-	 * Register the connector
+	 * Register the connector.
 	 */
 	public function register() {
 		add_filter( 'wp_mainwp_stream_log_data', array( $this, 'log_override' ) );
 
 		/**
-		 * Allow devs to disable logging values of rendered forms
+		 * Allow devs to disable logging values of rendered forms.
 		 *
 		 * @return bool
 		 */
@@ -122,7 +130,7 @@ class Connector_ACF extends Connector {
 	}
 
 	/**
-	 * Add action links to Stream drop row in admin list screen
+	 * Add action links to Stream drop row in admin list screen.
 	 *
 	 * @filter wp_mainwp_stream_action_links_{connector}
 	 *
@@ -139,7 +147,7 @@ class Connector_ACF extends Connector {
 	}
 
 	/**
-	 * Track addition of post meta
+	 * Track addition of post meta.
 	 *
 	 * @action added_post_meta
 	 */
@@ -148,7 +156,7 @@ class Connector_ACF extends Connector {
 	}
 
 	/**
-	 * Track updating post meta
+	 * Track updating post meta.
 	 *
 	 * @action updated_post_meta
 	 */
@@ -157,7 +165,7 @@ class Connector_ACF extends Connector {
 	}
 
 	/**
-	 * Track deletion of post meta
+	 * Track deletion of post meta.
 	 *
 	 * Note: Using delete_post_meta instead of deleted_post_meta to be able to
 	 * capture old field value
@@ -169,7 +177,7 @@ class Connector_ACF extends Connector {
 	}
 
 	/**
-	 * Track addition of user meta
+	 * Track addition of user meta.
 	 *
 	 * @action added_user_meta
 	 */
@@ -178,7 +186,7 @@ class Connector_ACF extends Connector {
 	}
 
 	/**
-	 * Track updating user meta
+	 * Track updating user meta.
 	 *
 	 * @action updated_user_meta
 	 */
@@ -187,7 +195,7 @@ class Connector_ACF extends Connector {
 	}
 
 	/**
-	 * Track deletion of user meta
+	 * Track deletion of user meta.
 	 *
 	 * Note: Using delete_user_meta instead of deleted_user_meta to be able to
 	 * capture old field value
@@ -199,7 +207,7 @@ class Connector_ACF extends Connector {
 	}
 
 	/**
-	 * Track addition of post/user meta
+	 * Track addition of post/user meta.
 	 *
 	 * @param string $type       Type of object, post or user
 	 * @param string $action     Added, updated, deleted
@@ -337,7 +345,7 @@ class Connector_ACF extends Connector {
 	}
 
 	/**
-	 * Track changes to ACF values within rendered post meta forms
+	 * Track changes to ACF values within rendered post meta forms.
 	 *
 	 * @param string $type       Type of object, post or user
 	 * @param string $action     Added, updated, deleted
@@ -423,7 +431,7 @@ class Connector_ACF extends Connector {
 	}
 
 	/**
-	 * Track changes to rules, complements post-meta updates
+	 * Track changes to rules, complements post-meta updates.
 	 *
 	 * @action shutdown
 	 */
@@ -459,7 +467,7 @@ class Connector_ACF extends Connector {
 	}
 
 	/**
-	 * Override connector log for our own Settings / Actions
+	 * Override connector log for our own Settings / Actions.
 	 *
 	 * @param array $data
 	 *
@@ -481,7 +489,7 @@ class Connector_ACF extends Connector {
 
 	/**
 	 * Track changes to custom field values updates, saves filtered values to be
-	 * processed by callback_updated_post_meta
+	 * processed by callback_updated_post_meta.
 	 *
 	 * @param string $value
 	 * @param int $post_id
@@ -525,7 +533,7 @@ class Connector_ACF extends Connector {
 	}
 
 	/**
-	 * Track addition of new options
+	 * Track addition of new options.
 	 *
 	 * @param string $key   Option name
 	 * @param string $value Option value
@@ -535,7 +543,7 @@ class Connector_ACF extends Connector {
 	}
 
 	/**
-	 * Track addition of new options
+	 * Track addition of new options.
 	 *
 	 * @param $key
 	 * @param $old
@@ -547,7 +555,7 @@ class Connector_ACF extends Connector {
 	}
 
 	/**
-	 * Track addition of new options
+	 * Track addition of new options.
 	 *
 	 * @param $key
 	 */
@@ -556,7 +564,7 @@ class Connector_ACF extends Connector {
 	}
 
 	/**
-	 * Determines the type of option that is saved
+	 * Determines the type of option that is saved.
 	 *
 	 * @param $key
 	 * @return string

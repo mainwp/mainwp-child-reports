@@ -1,6 +1,12 @@
 <?php
+/** MainWP Child Reports widget connector. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Connector_Widgets.
+ * @package WP_MainWP_Stream
+ */
 class Connector_Widgets extends Connector {
 
 	/**
@@ -151,8 +157,10 @@ class Connector_Widgets extends Connector {
 	}
 
 	/**
-	 * @param array $old
-	 * @param array $new
+     * Sidebar widget changes handler.
+     *
+	 * @param array $old Old version array.
+	 * @param array $new New version array
 	 */
 	protected function handle_sidebars_widgets_changes( $old, $new ) {
 		unset( $old['array_version'] );
@@ -715,9 +723,11 @@ class Connector_Widgets extends Connector {
 	}
 
 	/**
-	 * @param string $widget_id
+     * Get widget title.
+     *
+	 * @param string $widget_id Widget ID.
 	 *
-	 * @return string
+	 * @return string Return widgt title.
 	 */
 	public function get_widget_title( $widget_id ) {
 		$instance = $this->get_widget_instance( $widget_id );
@@ -725,9 +735,11 @@ class Connector_Widgets extends Connector {
 	}
 
 	/**
-	 * @param string $widget_id
+     * Get widget name.
+     *
+     * @param string $widget_id Widget ID.
 	 *
-	 * @return string|null
+	 * @return string|null Return widget name or Null on failure.
 	 */
 	public function get_widget_name( $widget_id ) {
 		$widget_obj = $this->get_widget_object( $widget_id );
@@ -735,9 +747,11 @@ class Connector_Widgets extends Connector {
 	}
 
 	/**
-	 * @param $widget_id
+     * Parse widget ID.
+     *
+     * @param string $widget_id Widget ID.
 	 *
-	 * @return array|null
+	 * @return array|null Return widget identification array.
 	 */
 	public function parse_widget_id( $widget_id ) {
 		if ( preg_match( '/^(.+)-(\d+)$/', $widget_id, $matches ) ) {
@@ -751,9 +765,11 @@ class Connector_Widgets extends Connector {
 	}
 
 	/**
-	 * @param string $widget_id
+     * Get WP Widget object.
+     *
+     * @param string $widget_id Widget ID.
 	 *
-	 * @return \WP_Widget|null
+	 * @return \WP_Widget|null Return \WP_Widget or Null on failure.
 	 */
 	public function get_widget_object( $widget_id ) {
 		global $wp_widget_factory;
@@ -779,11 +795,11 @@ class Connector_Widgets extends Connector {
 	}
 
 	/**
-	 * Returns widget instance settings
+	 * Returns widget instance settings.
 	 *
-	 * @param string $widget_id Widget ID, ex: pages-1
+	 * @param string $widget_id Widget ID, ex: pages-1.
 	 *
-	 * @return array|null Widget instance
+	 * @return array|null Widget instance.
 	 */
 	public function get_widget_instance( $widget_id ) {
 		$instance         = null;
@@ -812,7 +828,7 @@ class Connector_Widgets extends Connector {
 	/**
 	 * Get global sidebars widgets
 	 *
-	 * @return array
+	 * @return array Return sidebar widgets array.
 	 */
 	public function get_sidebars_widgets() {
 		/**

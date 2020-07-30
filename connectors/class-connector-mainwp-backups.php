@@ -1,19 +1,18 @@
 <?php
+/** MainWP Backups Connector. */
+
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Connector_MainWP_Backups
+ * @package WP_MainWP_Stream
+ */
 class Connector_MainWP_Backups extends Connector {
-	/**
-	 * Connector slug
-	 *
-	 * @var string
-	 */
+
+	/** @var string Connector slug. */
 	public $name = 'mainwp_backups';
 
-	/**
-	 * Actions registered for this connector
-	 *
-	 * @var array
-	 */
+	/** @var array Actions registered for this connector. */
 	public $actions = array(
 		'mainwp_backup',
 		'mainwp_reports_backupbuddy_backup',     
@@ -25,18 +24,18 @@ class Connector_MainWP_Backups extends Connector {
 	);
 
 	/**
-	 * Return translated connector label
+	 * Return translated connector label.
 	 *
-	 * @return string Translated connector label
+	 * @return string Translated connector label.
 	 */
 	public function get_label() {
 		return __( 'MainWP Backups', 'default' );
 	}
 
 	/**
-	 * Return translated action labels
+	 * Return translated action labels.
 	 *
-	 * @return array Action label translations
+	 * @return array Action label translations.
 	 */
 	public function get_action_labels() {
 		return array(
@@ -51,36 +50,48 @@ class Connector_MainWP_Backups extends Connector {
 	}
 
 	/**
-	 * Return translated context labels
+	 * Return translated context labels.
 	 *
-	 * @return array Context label translations
+	 * @return array Context label translations.
 	 */
 	public function get_context_labels() {
 		return array(
 			'backups' => __( 'Backups', 'mainwp-child-reports' ),			
 		);
 	}
-	
-	public function register() {
+
+    /**
+     * Register with parent class.
+     */
+    public function register() {
 		parent::register();
 	}
 	
 
 	/**
-	 * Add action links to Stream drop row in admin list screen
+	 * Add action links to Stream drop row in admin list screen.
 	 *
 	 * @filter wp_stream_action_links_{connector}
 	 *
-	 * @param  array $links Previous links registered
-	 * @param  int $record Stream record
+	 * @param  array $links Previous links registered.
+	 * @param  int $record Stream record.
 	 *
-	 * @return array             Action links
+	 * @return array             Action links.
 	 */
 	public function action_links( $links, $record ) {
 		return $links;
 	}
 
-	public function callback_mainwp_backup( $destination, $message, $size, $status, $type ) {
+    /**
+     * Rord MainWP Backup log.
+     *
+     * @param string $destination Backup destination.
+     * @param string $message Log message.
+     * @param string $size Size of backup.
+     * @param string $status Backup status.
+     * @param sting $type Type of backup.
+     */
+    public function callback_mainwp_backup($destination, $message, $size, $status, $type ) {
 		$this->log(
 			$message,
 			compact( 'destination', 'status', 'type', 'size' ),
@@ -89,8 +100,15 @@ class Connector_MainWP_Backups extends Connector {
 			'mainwp_backup'			
 		);
 	}
-	
-	public function callback_mainwp_reports_backupbuddy_backup( $message, $type , $backup_time = 0) {                                                             		
+
+    /**
+     * Record MainWP BackupBuddy backup log.
+     *
+     * @param $message Log message.
+     * @param sting $type Type of backup.
+     * @param int $backup_time Backup time.
+     */
+    public function callback_mainwp_reports_backupbuddy_backup($message, $type , $backup_time = 0) {
 		$this->log(
 			$message,
 			compact('type', 'backup_time'),
@@ -98,9 +116,18 @@ class Connector_MainWP_Backups extends Connector {
 			'backups',
 			'backupbuddy_backup'			
 		);
-	}   
-	
-	public function callback_mainwp_reports_backupwordpress_backup($destination, $message, $status, $type, $backup_time = 0) {                                                             
+	}
+
+    /**
+     * Record MainWP BackupWordpress backup log.
+     *
+     * @param string $destination Backup destination.
+     * @param string $message Log message.
+     * @param string $status Backup status.
+     * @param sting $type Type of backup.
+     * @param int $backup_time Bakcup time.
+     */
+    public function callback_mainwp_reports_backupwordpress_backup($destination, $message, $status, $type, $backup_time = 0) {
 		$this->log(
 			$message,
 			compact('destination', 'status', 'type', 'backup_time'),
@@ -108,10 +135,17 @@ class Connector_MainWP_Backups extends Connector {
 			'backups',
 			'backupwordpress_backup'			
 		);
-	}  
-	
-	
-	public function callback_mainwp_reports_backwpup_backup( $message, $type, $backup_time ) {
+	}
+
+
+    /**
+     * Record MainWP BackupWPup backup log.
+     *
+     * @param string $message Log message.
+     * @param sting $type Type of backup.
+     * @param int $backup_time Bakcup time.
+     */
+    public function callback_mainwp_reports_backwpup_backup($message, $type, $backup_time ) {
 		$this->log(
 			$message,
 			compact( 'type', 'backup_time' ),
@@ -120,8 +154,17 @@ class Connector_MainWP_Backups extends Connector {
 			'backwpup_backup'			
 		);
 	}
-	
-	public function callback_updraftplus_backup($destination, $message, $status, $type, $backup_time) {
+
+    /**
+     * Record MainWP UpdraftPlus backups log.
+     *
+     * @param string $destination Backup destination.
+     * @param strign $message Log message.
+     * @param string $status Backup status.
+     * @param string $type Backup type.
+     * @param int $backup_time Backup time.
+     */
+    public function callback_updraftplus_backup($destination, $message, $status, $type, $backup_time) {
 		$this->log(
 			$message,
 			compact('destination', 'status', 'type', 'backup_time'),
@@ -130,8 +173,15 @@ class Connector_MainWP_Backups extends Connector {
 			'updraftplus_backup'			
 		);
 	}
-	
-	public function callback_mainwp_reports_wptimecapsule_backup( $message, $type, $backup_time ) {
+
+    /**
+     * Record MainWP WPTimeCapsule backups log.
+     *
+     * @param strign $message Log message.
+     * @param string $type Backup type.
+     * @param int $backup_time Backup time.
+     */
+    public function callback_mainwp_reports_wptimecapsule_backup($message, $type, $backup_time ) {
 		$this->log(
 			$message,
 			compact( 'type', 'backup_time' ),
@@ -141,6 +191,15 @@ class Connector_MainWP_Backups extends Connector {
 		);
 	}
 
+    /**
+     * Record MainWP WPvivid backup log.
+     *
+     * @param string $destination Backup destination.
+     * @param strign $message Log message.
+     * @param string $status Backup status.
+     * @param string $type Backup type.
+     * @param int $backup_time Backup time.
+     */
     public function callback_wpvivid_backup($destination, $message, $status, $type, $backup_time){
         $this->log(
             $message,
