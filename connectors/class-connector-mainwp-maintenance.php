@@ -36,10 +36,10 @@ class Connector_MainWP_Maintenance extends Connector {
             return $links;
 	}
        
-	public function callback_mainwp_reports_maintenance( $message, $log_time, $details, $result = '') {
+	public function callback_mainwp_reports_maintenance( $message, $log_time, $details, $result = '', $revisions = 0) {
 		$this->log(
 			$message,
-			compact('log_time', 'details' , 'result'),
+			compact('log_time', 'details' , 'result', 'revisions'),
 			0,
 			'mainwp_maintenance',
 			'maintenance'			

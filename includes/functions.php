@@ -120,6 +120,15 @@ function wp_mainwp_stream_is_vip() {
 }
 
 /**
+ * True if it is mainwp dashboard request
+ *
+ * @return bool
+ */
+function wp_mainwp_stream_is_dashboard_request() {
+	return ( isset( $_POST['mainwpsignature'] ) && isset( $_POST['function'] ) ) ? true : false;
+}
+
+/**
  * True if native WP Cron is enabled, otherwise false
  *
  * @return bool
@@ -127,6 +136,7 @@ function wp_mainwp_stream_is_vip() {
 function wp_mainwp_stream_is_cron_enabled() {
 	return ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) ? false : true;
 }
+
 
 /**
  * Get the asset min suffix if defined.

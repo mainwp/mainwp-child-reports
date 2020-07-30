@@ -87,11 +87,13 @@ class Connectors {
 			'mainwp-wordfence',				
 		);
 
+		$is_dashboard_request = wp_mainwp_stream_is_dashboard_request(); 
+		
 		$classes = array();
 		foreach ( $connectors as $connector ) {
 			include_once $this->plugin->locations['dir'] . '/connectors/class-connector-' . $connector . '.php';
-			$class_name = sprintf( '\WP_MainWP_Stream\Connector_%s', str_replace( '-', '_', $connector ) );
-			if ( ! class_exists( $class_name ) ) {
+			$class_name = sprintf( '\WP_MainWP_Stream\Connector_%s', str_replace( '-', '_', $connector ) );			
+			if ( ! class_exists( $class_name ) ) {			
 				continue;
 			}
 			$class = new $class_name( $this->plugin->log );
@@ -102,12 +104,12 @@ class Connectors {
 			}
 
 			// Check if the Connector is allowed to be registered in the WP Admin
-			if ( is_admin() && ! $class->register_admin ) {
+			if ( is_admin() && ! $class->register_admin && ! $is_dashboard_request ) {
 				continue;
 			}
 
 			// Check if the Connector is allowed to be registered in the WP Frontend
-			if ( ! is_admin() && ! $class->register_frontend ) {
+			if ( ! is_admin() && ! $class->register_frontend && ! $is_dashboard_request ) {
 				continue;
 			}
 
@@ -212,5 +214,5 @@ class Connectors {
 		 * @param Connectors $connectors The Connectors object
 		 */
 		do_action( 'wp_mainwp_stream_after_connectors_registration', $labels, $this );
-	}
+	}	
 }

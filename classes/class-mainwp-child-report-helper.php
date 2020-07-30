@@ -58,6 +58,9 @@ class MainWP_Child_Report_Helper {
         if ( $this->branding_options === null ) {
 
             $opts = get_option( 'mainwp_child_branding_settings' ); // settings from mainwp-child plugin
+			$cancelled_branding = false;		
+			$branding_header = array();
+			
             // this is new update
             if ( is_array($opts) ) {
                 if (isset($opts['cancelled_branding'])) { // if it was set
@@ -70,12 +73,7 @@ class MainWP_Child_Report_Helper {
                 }
                 $branding_header = isset( $opts['branding_header'] ) ? $opts['branding_header'] : '';
             } else { // to compatible will old code
-                $opts = array();
-                $opts['hide'] = get_option( 'mainwp_branding_child_hide' );
-                $opts['branding_header'] = get_option( 'mainwp_branding_plugin_header' );
-                $cancelled_branding = ( get_option( 'mainwp_child_branding_disconnected' ) === 'yes' ) && ! get_option( 'mainwp_branding_preserve_branding' );
-                $opts['cancelled_branding'] = $cancelled_branding;
-                $branding_header = $opts['branding_header'];
+                $opts = array();                
             }
 
             if ( ! $cancelled_branding && ( is_array( $branding_header ) && ! empty( $branding_header['name'] ) ) ) {
