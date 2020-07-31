@@ -1,28 +1,25 @@
 <?php
+/** EDD Connector. */
 
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Connector_EDD
+ * @package WP_MainWP_Stream
+ */
 class Connector_EDD extends Connector {
 
-	/**
-	 * Connector slug
-	 *
-	 * @var string
-	 */
+	/** @var string Connector slug */
 	public $name = 'edd';
 
 	/**
-	 * Holds tracked plugin minimum version required
+	 * Defines plugin minimum version required.
 	 *
-	 * @const string
+	 * @const ( string ) Holds tracked plugin minimum version required.
 	 */
 	const PLUGIN_MIN_VERSION = '1.8.8';
 
-	/**
-	 * Actions registered for this connector
-	 *
-	 * @var array
-	 */
+	/** @var array Actions registered for this connector. */
 	public $actions = array(
 		'update_option',
 		'add_option',
@@ -43,45 +40,27 @@ class Connector_EDD extends Connector {
 		'delete_user_meta',
 	);
 
-	/**
-	 * Tracked option keys
-	 *
-	 * @var array
-	 */
+	/** @var array Tracked option keys. */
 	public $options = array();
 
-	/**
-	 * Tracking registered Settings, with overridden data
-	 *
-	 * @var array
-	 */
+	/** @var array Tracking registered Settings, with overridden data. */
 	public $options_override = array();
 
-	/**
-	 * Tracking user meta updates related to this connector
-	 *
-	 * @var array
-	 */
+	/** @var array Tracking user meta updates related to this connector. */
 	public $user_meta = array(
 		'edd_user_public_key',
 	);
 
-	/**
-	 * Flag status changes to not create duplicate entries
-	 * @var bool
-	 */
+	/** @var bool Flag status changes to not create duplicate entries. */
 	public $is_discount_status_change = false;
 
-	/**
-	 * Flag status changes to not create duplicate entries
-	 * @var bool
-	 */
+	/** @var bool Flag status changes to not create duplicate entries. */
 	public $is_payment_status_change = false;
 
 	/**
-	 * Check if plugin dependencies are satisfied and add an admin notice if not
+	 * Check if plugin dependencies are satisfied and add an admin notice if not.
 	 *
-	 * @return bool
+	 * @return bool Return TRUE|FALSE.
 	 */
 	public function is_dependency_satisfied() {
 		if ( class_exists( 'Easy_Digital_Downloads' ) && defined( 'EDD_VERSION' ) && version_compare( EDD_VERSION, self::PLUGIN_MIN_VERSION, '>=' ) ) {
@@ -92,18 +71,18 @@ class Connector_EDD extends Connector {
 	}
 
 	/**
-	 * Return translated connector label
+	 * Return translated connector label.
 	 *
-	 * @return string Translated connector label
+	 * @return string Translated connector label.
 	 */
 	public function get_label() {
 		return esc_html_x( 'Easy Digital Downloads', 'edd', 'mainwp-child-reports' );
 	}
 
 	/**
-	 * Return translated action labels
+	 * Return translated action labels.
 	 *
-	 * @return array Action label translations
+	 * @return array Action label translations.
 	 */
 	public function get_action_labels() {
 		return array(
@@ -121,9 +100,9 @@ class Connector_EDD extends Connector {
 	}
 
 	/**
-	 * Return translated context labels
+	 * Return translated context labels.
 	 *
-	 * @return array Context label translations
+	 * @return array Context label translations.
 	 */
 	public function get_context_labels() {
 		return array(
@@ -138,14 +117,14 @@ class Connector_EDD extends Connector {
 	}
 
 	/**
-	 * Add action links to Stream drop row in admin list screen
+	 * Add action links to Stream drop row in admin list screen.
 	 *
-	 * @filter wp_mainwp_stream_action_links_{connector}
+	 * @filter wp_mainwp_stream_action_links_{connector}.
 	 *
-	 * @param  array  $links Previous links registered
-	 * @param  object $record Stream record
+	 * @param  array  $links Previous links registered.
+	 * @param  object $record Stream record.
 	 *
-	 * @return array             Action links
+	 * @return array Action links.
 	 */
 	public function action_links( $links, $record ) {
 		if ( in_array( $record->context, array( 'downloads' ), true ) ) {
@@ -155,7 +134,7 @@ class Connector_EDD extends Connector {
 			$post_type_label = get_post_type_labels( get_post_type_object( 'edd_discount' ) )->singular_name;
 			$base            = admin_url( 'edit.php?post_type=download&page=edd-discounts' );
 
-			// translators: Placeholder refers to a post type (e.g. "Post")
+			// translators: Placeholder refers to a post type (e.g. "Post").
 			$links[ sprintf( esc_html__( 'Edit %s', 'mainwp-child-reports' ), $post_type_label ) ] = add_query_arg(
 				array(
 					'edd-action' => 'edit_discount',
@@ -165,7 +144,7 @@ class Connector_EDD extends Connector {
 			);
 
 			if ( 'active' === get_post( $record->object_id )->post_status ) {
-				// translators: Placeholder refers to a post type (e.g. "Post")
+				// translators: Placeholder refers to a post type (e.g. "Post").
 				$links[ sprintf( esc_html__( 'Deactivate %s', 'mainwp-child-reports' ), $post_type_label ) ] = add_query_arg(
 					array(
 						'edd-action' => 'deactivate_discount',
@@ -174,7 +153,7 @@ class Connector_EDD extends Connector {
 					$base
 				);
 			} else {
-				// translators: Placeholder refers to a post type (e.g. "Post")
+				// translators: Placeholder refers to a post type (e.g. "Post").
 				$links[ sprintf( esc_html__( 'Activate %s', 'mainwp-child-reports' ), $post_type_label ) ] = add_query_arg(
 					array(
 						'edd-action' => 'activate_discount',
@@ -226,7 +205,10 @@ class Connector_EDD extends Connector {
 		return $links;
 	}
 
-	public function register() {
+    /**
+     * Register with parent class.
+     */
+    public function register() {
 		parent::register();
 
 		add_filter( 'wp_mainwp_stream_log_data', array( $this, 'log_override' ) );
@@ -236,31 +218,73 @@ class Connector_EDD extends Connector {
 		);
 	}
 
-	public function callback_update_option( $option, $old, $new ) {
+    /**
+     * Update options callback.
+     *
+     * @param string $option Option to update.
+     * @param string $old Old option value.
+     * @param string $new New option value.
+     */
+    public function callback_update_option($option, $old, $new ) {
 		$this->check( $option, $old, $new );
 	}
 
-	public function callback_add_option( $option, $val ) {
+    /**
+     * Add option callback.
+     *
+     * @param string $option Option to update.
+     * @param string $val Option value.
+     */
+    public function callback_add_option($option, $val ) {
 		$this->check( $option, null, $val );
 	}
 
-	public function callback_delete_option( $option ) {
+    /**
+     * Delete option callback.
+     *
+     * @param string $option Option to update.
+     */
+    public function callback_delete_option($option ) {
 		$this->check( $option, null, null );
 	}
 
-	public function callback_update_site_option( $option, $old, $new ) {
+    /**
+     * Update site option callback.
+     *
+     * @param string $option Option to update.
+     * @param string $old Old option value.
+     * @param string $new New option value.
+     */
+    public function callback_update_site_option($option, $old, $new ) {
 		$this->check( $option, $old, $new );
 	}
-
-	public function callback_add_site_option( $option, $val ) {
+    /**
+     * Add site option callback.
+     *
+     * @param string $option Option to update.
+     * @param string $val Option value.
+     */
+    public function callback_add_site_option($option, $val ) {
 		$this->check( $option, null, $val );
 	}
 
-	public function callback_delete_site_option( $option ) {
+    /**
+     * Delete site option callback.
+     *
+     * @param string $option Option to update.
+     */
+    public function callback_delete_site_option($option ) {
 		$this->check( $option, null, null );
 	}
 
-	public function check( $option, $old_value, $new_value ) {
+    /**
+     * Check if option value already exists.
+     *
+     * @param string $option Option to update.
+     * @param string $old_value Old option value.
+     * @param string $new_value New option value.
+     */
+    public function check($option, $old_value, $new_value ) {
 		if ( ! array_key_exists( $option, $this->options ) ) {
 			return;
 		}
@@ -288,7 +312,13 @@ class Connector_EDD extends Connector {
 		}
 	}
 
-	public function check_edd_settings( $old_value, $new_value ) {
+    /**
+     * Check EDD settings.
+     *
+     * @param string $old_value Old option value.
+     * @param string $new_value New option value.
+     */
+    public function check_edd_settings($old_value, $new_value ) {
 		$options = array();
 
 		if ( ! is_array( $old_value ) || ! is_array( $new_value ) ) {
@@ -299,7 +329,7 @@ class Connector_EDD extends Connector {
 			$options[ $field_key ] = $field_value;
 		}
 
-		//TODO: Check this exists first
+		/**  TODO: Check this exists first. */
 		$settings = \edd_get_registered_settings();
 
 		foreach ( $options as $option => $option_value ) {
@@ -324,7 +354,7 @@ class Connector_EDD extends Connector {
 			}
 
 			$this->log(
-				// translators: Placeholder refers to a setting title (e.g. "Language")
+				// translators: Placeholder refers to a setting title (e.g. "Language").
 				__( '"%s" setting updated', 'mainwp-child-reports' ),
 				array(
 					'option_title' => $field['name'],
@@ -341,11 +371,11 @@ class Connector_EDD extends Connector {
 	}
 
 	/**
-	 * Override connector log for our own Settings / Actions
+	 * Override connector log for our own Settings / Actions.
 	 *
-	 * @param array $data
+	 * @param array $data Post or downloads data.
 	 *
-	 * @return array|bool
+	 * @return array|bool Return posts or downloads data, or FALSE on faliure.
 	 */
 	public function log_override( $data ) {
 		if ( ! is_array( $data ) ) {
@@ -370,14 +400,14 @@ class Connector_EDD extends Connector {
 			$data['context']   = 'discounts';
 			$data['connector'] = $this->name;
 		} elseif ( 'posts' === $data['connector'] && 'edd_payment' === $data['context'] ) {
-			// Payment posts operations
-			return false; // Do not track payments, they're well logged!
+			// Payment posts operations.
+			return false; // Do not track payments, they're well logged!.
 		} elseif ( 'posts' === $data['connector'] && 'edd_log' === $data['context'] ) {
-			// Logging operations
-			return false; // Do not track notes, because they're basically logs
+			// Logging operations.
+			return false; // Do not track notes, because they're basically logs.
 		} elseif ( 'comments' === $data['connector'] && 'edd_payment' === $data['context'] ) {
-			// Payment notes ( comments ) operations
-			return false; // Do not track notes, because they're basically logs
+			// Payment notes ( comments ) operations.
+			return false; // Do not track notes, because they're basically logs.
 		} elseif ( 'taxonomies' === $data['connector'] && 'download_category' === $data['context'] ) {
 			$data['connector'] = $this->name;
 		} elseif ( 'taxonomies' === $data['connector'] && 'download_tag' === $data['context'] ) {
@@ -391,12 +421,18 @@ class Connector_EDD extends Connector {
 		return $data;
 	}
 
-	public function callback_edd_pre_update_discount_status( $code_id, $new_status ) {
+    /**
+     * Add pre-update discount status callback.
+     *
+     * @param string $code_id Code ID.
+     * @param string $new_status New status.
+     */
+    public function callback_edd_pre_update_discount_status($code_id, $new_status ) {
 		$this->is_discount_status_change = true;
 
 		$this->log(
 			sprintf(
-				// translators: Placeholders refer to a discount title, and a status (e.g. "Mother's Day", "activated")
+				// translators: Placeholders refer to a discount title, and a status (e.g. "Mother's Day", "activated").
 				__( '"%1$s" discount %2$s', 'mainwp-child-reports' ),
 				get_post( $code_id )->post_title,
 				'active' === $new_status ? esc_html__( 'activated', 'mainwp-child-reports' ) : esc_html__( 'deactivated', 'mainwp-child-reports' )
@@ -411,27 +447,47 @@ class Connector_EDD extends Connector {
 		);
 	}
 
-	private function callback_edd_generate_pdf() {
+    /**
+     * EDD generated PDF callback.
+     */
+    private function callback_edd_generate_pdf() {
 		$this->report_generated( 'pdf' );
 	}
 
-	public function callback_edd_earnings_export() {
+    /**
+     * EDD earnings export callback.
+     */
+    public function callback_edd_earnings_export() {
 		$this->report_generated( 'earnings' );
 	}
 
-	public function callback_edd_payment_export() {
+    /**
+     * EDD payments export callback.
+     */
+    public function callback_edd_payment_export() {
 		$this->report_generated( 'payments' );
 	}
 
-	public function callback_edd_email_export() {
+    /**
+     * EDD email export callback.
+     */
+    public function callback_edd_email_export() {
 		$this->report_generated( 'emails' );
 	}
 
-	public function callback_edd_downloads_history_export() {
+    /**
+     * EDD downloads history export callback.
+     */
+    public function callback_edd_downloads_history_export() {
 		$this->report_generated( 'download-history' );
 	}
 
-	private function report_generated( $type ) {
+    /**
+     * Generated report.
+     *
+     * @param string $type PDF type.
+     */
+    private function report_generated($type ) {
 		$label = '';
 
 		if ( 'pdf' === $type ) {
@@ -448,7 +504,7 @@ class Connector_EDD extends Connector {
 
 		$this->log(
 			sprintf(
-				// translators: Placeholder refers to a report title (e.g. "Sales and Earnings")
+				// translators: Placeholder refers to a report title (e.g. "Sales and Earnings").
 				__( 'Generated %s report', 'mainwp-child-reports' ),
 				$label
 			),
@@ -461,7 +517,10 @@ class Connector_EDD extends Connector {
 		);
 	}
 
-	public function callback_edd_export_settings() {
+    /**
+     * EDD export settings callback.
+     */
+    public function callback_edd_export_settings() {
 		$this->log(
 			__( 'Exported Settings', 'mainwp-child-reports' ),
 			array(),
@@ -471,7 +530,10 @@ class Connector_EDD extends Connector {
 		);
 	}
 
-	public function callback_edd_import_settings() {
+    /**
+     * EDD import settings callback.
+     */
+    public function callback_edd_import_settings() {
 		$this->log(
 			__( 'Imported Settings', 'mainwp-child-reports' ),
 			array(),
@@ -481,20 +543,52 @@ class Connector_EDD extends Connector {
 		);
 	}
 
-	public function callback_update_user_meta( $meta_id, $object_id, $meta_key, $_meta_value ) {
+    /**
+     * Update user meta callback.
+     *
+     * @param string $meta_id Meta ID.
+     * @param string $object_id Object ID.
+     * @param string $meta_key Meta Key.
+     * @param string $_meta_value Meta value.
+     */
+    public function callback_update_user_meta($meta_id, $object_id, $meta_key, $_meta_value ) {
 		unset( $meta_id );
 		$this->meta( $object_id, $meta_key, $_meta_value );
 	}
 
-	public function callback_add_user_meta( $object_id, $meta_key, $_meta_value ) {
+    /**
+     * Add user meta callback.
+     *
+     * @param string $object_id Object ID.
+     * @param string $meta_key Meta Key.
+     * @param string $_meta_value Meta value.
+     */
+    public function callback_add_user_meta($object_id, $meta_key, $_meta_value ) {
 		$this->meta( $object_id, $meta_key, $_meta_value, true );
 	}
 
-	public function callback_delete_user_meta( $meta_id, $object_id, $meta_key, $_meta_value ) {
+    /**
+     * Delete user meta callback.
+     *
+     * @param string $meta_id Meta ID.
+     * @param string $object_id Object ID.
+     * @param string $meta_key Meta Key.
+     * @param string $_meta_value Meta value.
+     */
+    public function callback_delete_user_meta($meta_id, $object_id, $meta_key, $_meta_value ) {
 		$this->meta( $object_id, $meta_key, null );
 	}
 
-	public function meta( $object_id, $key, $value, $is_add = false ) {
+    /**
+     * Check if meta option was added.
+     *
+     * @param $object_id Object ID.
+     * @param $key Object key.
+     * @param $value Object value.
+     * @param bool $is_add Check if option was added. TRUE|FALSE.
+     * @return bool|mixed Return respose array or FALSE on failure.
+     */
+    public function meta($object_id, $key, $value, $is_add = false ) {
 		if ( ! in_array( $key, $this->user_meta, true ) ) {
 			return false;
 		}
@@ -511,7 +605,14 @@ class Connector_EDD extends Connector {
 		), $object_id, $value, $is_add );
 	}
 
-	private function meta_edd_user_public_key( $user_id, $value, $is_add = false ) {
+    /**
+     * EDD user public key callback.
+     *
+     * @param string $user_id User ID.
+     * @param string $value Public key.
+     * @param bool $is_add Whether the key was added or not. TRUE|FASLE.
+     */
+    private function meta_edd_user_public_key($user_id, $value, $is_add = false ) {
 		if ( is_null( $value ) ) {
 			$action       = 'revoked';
 			$action_title = esc_html__( 'revoked', 'mainwp-child-reports' );
@@ -525,7 +626,7 @@ class Connector_EDD extends Connector {
 
 		$this->log(
 			sprintf(
-				// translators: Placeholder refers to a status (e.g. "revoked")
+				// translators: Placeholder refers to a status (e.g. "revoked").
 				__( 'User API Key %s', 'mainwp-child-reports' ),
 				$action_title
 			),
