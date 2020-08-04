@@ -1166,6 +1166,7 @@ class Admin {
 	/**
 	 * Delete user meta in a way that is also safe for VIP.
 	 *
+     * @param int $user_id User ID.
      * @param string $meta_key Meta Key.
      * @param mixed  $meta_value Meta value (optional).
 	 *
