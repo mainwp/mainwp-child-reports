@@ -8,15 +8,36 @@ namespace WP_MainWP_Stream;
  * @package WP_MainWP_Stream
  */
 class MainWP_Child_Report_Helper {
-	
-	public static $instance;	
+
+    /**
+     * Public static variable to hold the single instance of the class.
+     *
+     * @var object $instance
+     */
+    public static $instance;
+
+    /**
+     * @var null Child Site branding options.
+     */
     public $branding_options = null;
+
+    /** @var string Child Site branding title. */
     public $branding_title = null;
-	public $setting_fields = array();
-	public $plugin;
-	public $list_table = null;
-		
-	function __construct( $plugin = null ) {			
+
+    /** @var array Settings fields. */
+    public $setting_fields = array()
+
+    /**  @var string Plugin slug. */
+    public $plugin;
+
+    /** @var array List table array. */
+    public $list_table = null;
+
+    /**
+     * MainWP_Child_Report_Helper constructor.
+     * @param null $plugin
+     */
+    function __construct( $plugin = null ) {
 		$this->plugin = $plugin;
 		
 		add_action( 'admin_menu', array( &$this, 'admin_menu' ) );				
@@ -29,8 +50,16 @@ class MainWP_Child_Report_Helper {
 		add_filter( 'wp_mainwp_stream_settings_option_fields', array( $this, 'get_hide_child_report_fields' ) );					
 		$this->init_branding_options();		
 	}
-	 
-	public static function get_instance() {
+
+    /**
+     * Method get_instance
+     *
+     * Create a public static instance.
+     *
+     * @static
+     * @return MainWP_Child_Report_Helper
+     */
+    public static function get_instance() {
 		if ( empty( self::$instance ) ) {
 			$class = __CLASS__;
 			self::$instance = new $class;
@@ -39,27 +68,46 @@ class MainWP_Child_Report_Helper {
 		return self::$instance;
 	}
 
-	public function admin_menu() {		
+    /**
+     * Initiate admin menu.
+     */
+    public function admin_menu() {
 		$opts = $this->branding_options;		
-        $hide = is_array($opts) && isset($opts['hide_child_reports']) && ($opts['hide_child_reports'] == 'hide');
+        $hide = is_array($opts) && isset( $opts['hide_child_reports']) && ($opts['hide_child_reports'] == 'hide');
         if ( ! $hide ) {
             // Register settings page
             add_filter( 'mainwp-child-init-subpages', array( $this, 'init_subpages' ) );
 		}
 	}
-	
-	function settings_form_action( $action ) {
+
+    /**
+     * Form settings action.
+     *
+     * @param array $action Action to perform.
+     * @return array $action Action to perform.
+     */
+    function settings_form_action($action ) {
 		if ( is_network_admin() ) {
 			$current_page = wp_mainwp_stream_filter_input( INPUT_GET, 'page' );
 			$action       = add_query_arg( array( 'action' => $current_page ), 'edit.php' );
 		}
 		return $action;
 	}
-	
+
+    /**
+     * Initiate branding options.
+     *
+     * @return array|null Return branding options or Null.
+     */
     public function init_branding_options() {
         return $this->get_branding_options();
     }
 
+    /**
+     * Get branding options.
+     *
+     * @return array|null Return branding options or Null.
+     */
     public function get_branding_options() {
         if ( $this->branding_options === null ) {
 
@@ -96,8 +144,14 @@ class MainWP_Child_Report_Helper {
         return $this->branding_options;
     }
 
-	
-	public function modify_plugin_header( $plugins ) {
+
+    /**
+     * Modify Plugin header.
+     *
+     * @param array $plugins Plugins array.
+     * @return array Modified plugins array.
+     */
+    public function modify_plugin_header( $plugins ) {
         $_opts = $this->branding_options;
         $is_hide = isset( $_opts['hide'] ) ? $_opts['hide'] : '';
         $cancelled_branding = isset( $_opts['cancelled_branding'] ) ? $_opts['cancelled_branding'] : false;
@@ -123,8 +177,15 @@ class MainWP_Child_Report_Helper {
 			return $plugins;
 		}
 	}
-	
-	public function update_plugin_header( $plugins, $header ) {
+
+    /**
+     * Update plugins header.
+     *
+     * @param array $plugins Plugins array.
+     * @param string $header Header to update.
+     * @return array Modified plugins array.
+     */
+    public function update_plugin_header($plugins, $header ) {
 		$plugin_key = '';
 		foreach ( $plugins as $key => $value ) {
 			$plugin_slug = basename( $key, '.php' );
@@ -147,8 +208,13 @@ class MainWP_Child_Report_Helper {
 
 		return $plugins;
 	}
-	
-	public function is_branding() {
+
+    /**
+     * Check if branding is enabled.
+     *
+     * @return bool TRUE|FALSE.
+     */
+    public function is_branding() {
 
         $_opts = $this->branding_options;
         $is_hide = isset( $_opts['hide'] ) ? $_opts['hide'] : '';
@@ -158,7 +224,7 @@ class MainWP_Child_Report_Helper {
         if ( $cancelled_branding ) {
             return false;
         }
-        // hide
+        // hide.
         if ( 'T' === $is_hide ) {
             return true;
         }
@@ -169,8 +235,15 @@ class MainWP_Child_Report_Helper {
 
     }
 
-	
-	public function plugin_row_meta( $plugin_meta, $plugin_file ) {		
+
+    /**
+     * Plugin row meta.
+     *
+     * @param array $plugin_meta Plugin meta data.
+     * @param string $plugin_file Plugin file.
+     * @return array $plugin_meta Return pugin meta data array.
+     */
+    public function plugin_row_meta($plugin_meta, $plugin_file ) {
         if ( WP_MAINWP_STREAM_PLUGIN !== $plugin_file ) {
 			return $plugin_meta;
 		}
@@ -190,8 +263,14 @@ class MainWP_Child_Report_Helper {
 
 		return $plugin_meta;
 	}
-	
-    public function init_subpages( $subPages = array() ) {
+
+    /**
+     * Initiate subpages.
+     *
+     * @param array $subPages Subpages array.
+     * @return array Return subpages array, or
+     */
+    public function init_subpages($subPages = array() ) {
 
         if ( is_network_admin() && ! is_plugin_active_for_network( WP_MAINWP_STREAM_PLUGIN ) ) {
             return $subPages;
@@ -210,8 +289,14 @@ class MainWP_Child_Report_Helper {
 
         return $subPages;
     }
-		
-    public static function hook_updraftplus_save_last_backup($last_backup) {
+
+    /**
+     * Save UpdraftPlus last backup hook.
+     *
+     * @param array $last_backup last backup meta data.
+     * @return array $last_backup last backup meta data.
+     */
+    public static function hook_updraftplus_save_last_backup( $last_backup ) {
 
 		if (!is_array($last_backup))
 			return $last_backup;
@@ -258,11 +343,22 @@ class MainWP_Child_Report_Helper {
 		return $last_backup;
 	}
 
-	public static function hook_reports_log($ext_name = '') {
+    /**
+     * Reports log hook.
+     *
+     * @param string $ext_name Extension name.
+     */
+    public static function hook_reports_log( $ext_name = '') {
 		do_action('mainwp_child_log', $ext_name);
 	}
 
-	public function get_hide_child_report_fields( $fields ) {
+    /**
+     * Hide Child Reports Fields.
+     *
+     * @param array $fields Fields array.
+     * @return array $fields Return modified fields array.
+     */
+    public function get_hide_child_report_fields( $fields ) {
 		
 		$branding_text = $this->get_branding_title();
 		$branding_name = !empty($branding_text) ? $branding_text : 'MainWP Child';
@@ -282,29 +378,41 @@ class MainWP_Child_Report_Helper {
 		return $fields;
 			
 	}
-		
-	public function register_list_table() {		
+
+    /**
+     * Register list table.
+     */
+    public function register_list_table() {
 		$this->list_table = new List_Table(
 			$this->plugin, array(
 				'screen' => 'settings_page_' . $this->plugin->admin->records_page_slug,
 			)
 		);		
 	}
-	
-	public function render_list_table() {			
+
+    /**
+     * Render list table.
+     */
+    public function render_list_table() {
 		$this->list_table->prepare_items();
 		echo '<div class="mainwp_child_reports_wrap">';
 		$this->list_table->display();
 		echo '</div>';
 	}
-		
-	public function render_reports_page() {				
+
+    /**
+     * Render reports page.
+     */
+    public function render_reports_page() {
 		do_action('mainwp-child-pageheader', 'reports-page');		
 		$this->render_list_table();		
 		do_action('mainwp-child-pagefooter', 'reports-page');
 	}
 
-	public function render_settings_page() {		
+    /**
+     * Render settings page.
+     */
+    public function render_settings_page() {
 		$option_key  = $this->plugin->settings->option_key;
 		$form_action = apply_filters( 'mainwp_wp_stream_settings_form_action', admin_url( 'options.php' ) );		
 		do_action('mainwp-child-pageheader', 'reports-settings');		
@@ -323,8 +431,13 @@ class MainWP_Child_Report_Helper {
 	<?php
 		do_action('mainwp-child-pagefooter', 'reports-settings');
 	}
-		
-	public function get_branding_title() {
+
+    /**
+     * Get branding title.
+     *
+     * @return string|null Return branding title or Null
+     */
+    public function get_branding_title() {
 		return $this->branding_title;
 	}
 }
