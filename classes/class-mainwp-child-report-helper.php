@@ -1,5 +1,5 @@
 <?php
-/** MainWP CHild Reports helper. */
+/** MainWP Child Reports helper. */
 
 namespace WP_MainWP_Stream;
 
