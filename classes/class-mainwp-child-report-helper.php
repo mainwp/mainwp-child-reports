@@ -25,7 +25,7 @@ class MainWP_Child_Report_Helper {
     public $branding_title = null;
 
     /** @var array Settings fields. */
-    public $setting_fields = array()
+    public $setting_fields = array();
 
     /**  @var string Plugin slug. */
     public $plugin;
