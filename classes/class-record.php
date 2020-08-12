@@ -8,22 +8,55 @@ namespace WP_MainWP_Stream;
  * @package WP_MainWP_Stream
  */
 class Record {
-	public $ID;
-	public $created;
-	public $site_id;
-	public $blog_id;
-	public $object_id;
-	public $user_id;
-	public $user_role;
-	public $user_meta;
-	public $summary;
-	public $connector;
-	public $context;
-	public $action;
-	public $ip;
-	public $meta;
 
-	public function __construct( $item ) {
+    /** @var mixed|null Record ID. */
+    public $ID;
+
+    /** @var mixed|null Record Timestamp. */
+    public $created;
+
+    /** @var mixed|null Child Site ID. */
+    public $site_id;
+
+    /** @var mixed|null Blog ID. */
+    public $blog_id;
+
+    /** @var mixed|null Object ID. */
+    public $object_id;
+
+    /** @var mixed|null User ID. */
+    public $user_id;
+
+    /** @var mixed|null User Role. */
+    public $user_role;
+
+    /** @var mixed|null User Meta. */
+    public $user_meta;
+
+    /** @var mixed|null Record summary. */
+    public $summary;
+
+    /** @var mixed|null Connector to use. */
+    public $connector;
+
+    /** @var mixed|null Context of action. */
+    public $context;
+
+    /** @var mixed|null Action to perform. */
+    public $action;
+
+    /** @var mixed|null User IP address. */
+    public $ip;
+
+    /** @var mixed|null Meta Data. */
+    public $meta;
+
+    /**
+     * Record constructor.
+     *
+     * @param array $item Record.
+     */
+    public function __construct( $item ) {
 		$this->ID        = isset( $item->ID ) ? $item->ID : null;
 		$this->created   = isset( $item->created ) ? $item->created : null;
 		$this->site_id   = isset( $item->site_id ) ? $item->site_id : null;
@@ -44,7 +77,12 @@ class Record {
 		}
 	}
 
-	public function save() {
+    /**
+     * Save Record.
+     *
+     * @return false|int|\WP_Error Return FALSE on failure along with error message or return ID of record updated.
+     */
+    public function save() {
 		if ( ! $this->validate() ) {
 			return new \WP_Error( 'validation-error', esc_html__( 'Could not validate record data.', 'mainwp-child-reports' ) );
 		}
@@ -52,7 +90,12 @@ class Record {
 		return wp_mainwp_stream_get_instance()->db->insert( (array) $this );
 	}
 
-	public function populate( array $raw ) {
+    /**
+     * Populate array.
+     *
+     * @param array $raw Raw data.
+     */
+    public function populate(array $raw ) {
 		$keys = get_class_vars( $this );
 		$data = array_intersect_key( $raw, $keys );
 		foreach ( $data as $key => $val ) {
@@ -60,30 +103,35 @@ class Record {
 		}
 	}
 
-	public function validate() {
+    /**
+     * Validation method.
+     *
+     * @return bool Default: true.
+     */
+    public function validate() {
 		return true;
 	}
 
 	/**
-	 * Query record meta
+	 * Query record meta.
 	 *
-	 * @param string $meta_key (optional)
-	 * @param bool   $single (optional)
+	 * @param string $meta_key Meta Key (optional).
+	 * @param bool $single Whether or not this is a single record (optional). Default: false.
 	 *
-	 * @return array
+	 * @return array Return record query.
 	 */
 	public function get_meta( $meta_key = '', $single = false ) {
 		return get_metadata( 'record', $this->ID, $meta_key, $single );
 	}
 
 	/**
-	 * Update record meta
+	 * Update record meta.
 	 *
-	 * @param string $meta_key
-	 * @param mixed $meta_value
-	 * @param mixed $prev_value (optional)
+	 * @param string $meta_key Meta Key
+	 * @param mixed $meta_value Meta value.
+	 * @param mixed $prev_value Prev Meta value (optional).
 	 *
-	 * @return bool
+	 * @return bool Return TRUE if record has been updated successfully or FALSE on failure.
 	 */
 	public function update_meta( $meta_key, $meta_value, $prev_value = '' ) {
 		return update_metadata( 'record', $this->ID, $meta_key, $meta_value, $prev_value );
@@ -91,9 +139,8 @@ class Record {
 
 	/**
 	 * Determine the title of an object that a record is for.
-	 *
-	 * @param  object  Record object
-	 * @return mixed   The title of the object as a string, otherwise false
+     *
+	 * @return string|bool The title of the object as a string, otherwise false.
 	 */
 	public function get_object_title() {
 		if ( ! isset( $this->object_id ) || empty( $this->object_id ) ) {
