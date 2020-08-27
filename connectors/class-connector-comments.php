@@ -609,7 +609,10 @@ class Connector_Comments extends Connector {
 	 * @param array $comment_data
 	 */
 	public function callback_comment_duplicate_trigger( $comment_data ) {
+
+		/** @global object $wpdb WordPress Database instance. */
 		global $wpdb;
+
 		unset( $comment_data );
 
 		$comment_id = $wpdb->last_result[0]->comment_ID;

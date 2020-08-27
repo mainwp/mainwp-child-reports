@@ -93,6 +93,8 @@ class Uninstall {
 	 * Delete the Stream database tables
 	 */
 	private function delete_all_records() {
+
+		/** @global object $wpdb WordPress Database instance. */
 		global $wpdb;
 
 		$wpdb->query( "DROP TABLE {$wpdb->mainwp_stream}" );
@@ -109,6 +111,7 @@ class Uninstall {
 			return;
 		}
 
+		/** @global object $wpdb WordPress Database instance. */
 		global $wpdb;
 
 		$wpdb->query(
@@ -127,6 +130,8 @@ class Uninstall {
 	 * Delete all options
 	 */
 	private function delete_all_options() {
+
+		/** @global object $wpdb WordPress Database instance. */
 		global $wpdb;
 
 		// Wildcard matches
@@ -161,6 +166,7 @@ class Uninstall {
 			return;
 		}
 
+		/** @global object $wpdb WordPress Database instance. */
 		global $wpdb;
 
 		// Wildcard matches
@@ -176,6 +182,8 @@ class Uninstall {
 	 * Delete all user meta
 	 */
 	private function delete_all_user_meta() {
+
+		/** @global object $wpdb WordPress Database instance. */
 		global $wpdb;
 
 		// Wildcard matches
@@ -199,6 +207,7 @@ class Uninstall {
 			return;
 		}
 
+		/** @global object $wpdb WordPress Database instance. */
 		global $wpdb;
 
 		// Wildcard matches

@@ -189,6 +189,8 @@ class Author {
 	 * @return string
 	 */
 	public function get_role() {
+
+		/** @global object $wp_roles Core class used to implement a user roles API. */
 		global $wp_roles;
 
 		$user_role = '';

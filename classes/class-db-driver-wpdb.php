@@ -35,7 +35,9 @@ class DB_Driver_WPDB implements DB_Driver {
 	public function __construct() {
 		$this->query = new Query( $this );
 
+		/** @global object $wpdb WordPress Database instance. */
 		global $wpdb;
+
 		$prefix = apply_filters( 'wp_mainwp_stream_db_tables_prefix', $wpdb->base_prefix );
 
 		$this->table      = $prefix . 'mainwp_stream';
@@ -44,7 +46,7 @@ class DB_Driver_WPDB implements DB_Driver {
 		$wpdb->mainwp_stream     = $this->table;
 		$wpdb->mainwp_streammeta = $this->table_meta;
 
-		// Hack for get_metadata
+		// Hack for get_metadata.
 		$wpdb->recordmeta = $this->table_meta;
 	}
 
@@ -56,6 +58,8 @@ class DB_Driver_WPDB implements DB_Driver {
 	 * @return int
 	 */
 	public function insert_record( $data ) {
+
+		/** @global object $wpdb WordPress Database instance. */
 		global $wpdb;
 
 		if ( defined( 'WP_IMPORTING' ) && WP_IMPORTING ) {
@@ -92,6 +96,8 @@ class DB_Driver_WPDB implements DB_Driver {
 	 * @return array
 	 */
 	public function insert_meta( $record_id, $key, $val ) {
+
+		/** @global object $wpdb WordPress Database instance. */
 		global $wpdb;
 
 		$result = $wpdb->insert(
@@ -129,7 +135,10 @@ class DB_Driver_WPDB implements DB_Driver {
 	 * @return array
 	 */
 	public function get_column_values( $column ) {
+
+		/** @global object $wpdb WordPress Database instance. */
 		global $wpdb;
+
 		return (array) $wpdb->get_results(
 			"SELECT DISTINCT $column FROM $wpdb->mainwp_stream", // @codingStandardsIgnoreLine can't prepare column name
 			'ARRAY_A'

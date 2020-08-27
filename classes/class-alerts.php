@@ -430,6 +430,8 @@ class Alerts {
 	 * @return bool
 	 */
 	public function change_menu_link_url() {
+
+        /** @global object $submenu WordPress submenu array. */
 		global $submenu;
 
 		$parent = 'wp_mainwp_stream';

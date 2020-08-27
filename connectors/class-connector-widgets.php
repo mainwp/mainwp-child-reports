@@ -77,6 +77,8 @@ class Connector_Widgets extends Connector {
 	 * @return array Context label translations
 	 */
 	public function get_context_labels() {
+
+		/** @global object $wp_registered_sidebars WordPress registered sidebars array. */
 		global $wp_registered_sidebars;
 
 		$labels = array();
@@ -104,6 +106,8 @@ class Connector_Widgets extends Connector {
 	public function action_links( $links, $record ) {
 		$sidebar = $record->get_meta( 'sidebar_id', true );
 		if ( $sidebar ) {
+
+			/** @global object $wp_registered_sidebars WordPress registered sidebars array. */
 			global $wp_registered_sidebars;
 
 			if ( array_key_exists( $sidebar, $wp_registered_sidebars ) ) {
@@ -772,6 +776,8 @@ class Connector_Widgets extends Connector {
 	 * @return \WP_Widget|null Return \WP_Widget or Null on failure.
 	 */
 	public function get_widget_object( $widget_id ) {
+
+		/** @global object $wp_widget_factory Singleton that registers and instantiates WP_Widget classes. */
 		global $wp_widget_factory;
 
 		$parsed_widget_id = $this->parse_widget_id( $widget_id );
