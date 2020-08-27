@@ -76,6 +76,8 @@ class Connector_Woocommerce extends Connector {
 	 * @return bool Return TRUE if dependencies were satisfied, FALSE if not.
 	 */
 	public function is_dependency_satisfied() {
+
+		/** @global object $woocommerce WooCommerce class instance. */
 		global $woocommerce;
 
 		if ( class_exists( 'WooCommerce' ) && version_compare( $woocommerce->version, self::PLUGIN_MIN_VERSION, '>=' ) ) {
@@ -732,6 +734,8 @@ class Connector_Woocommerce extends Connector {
 			$settings       = $settings_transient['settings'];
 			$settings_pages = $settings_transient['settings_pages'];
 		} else {
+
+			/** @global object $woocommerce WooCommerce class instance. */
 			global $woocommerce;
 
 			$settings       = array();

@@ -724,6 +724,8 @@ class Connector_Jetpack extends Connector {
     private function get_settings_def($key, $value = null ) {
 		// Sharing.
 		if ( 0 === strpos( $key, 'publicize_connections::' ) ) {
+
+			/** @global object $publicize_ui JetPack Publicize ui.  */
 			global $publicize_ui;
 
 			$name = str_replace( 'publicize_connections::', '', $key );

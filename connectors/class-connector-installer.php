@@ -84,6 +84,8 @@ class Connector_Installer extends Connector {
 	 */
 	public function action_links( $links, $record ) {
 		if ( 'WordPress' === $record->context && 'updated' === $record->action ) {
+
+			/** @global string $wp_version WordPress verison. */
 			global $wp_version;
 
 			$version = $record->get_meta( 'new_version', true );

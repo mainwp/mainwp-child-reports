@@ -32,10 +32,11 @@ class DB {
 	 */
 	public function __construct( $driver ) {
 		$this->driver = $driver;
-		
+
+		/** @global object $wpdb WordPress Database instance. */
 		global $wpdb;
 
-		$this->wpdb			 = &$wpdb;
+		$this->wpdb	= &$wpdb;
 		
 	}
 

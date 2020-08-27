@@ -545,7 +545,9 @@ class Connector_Settings extends Connector {
 		);
 
 		if ( 'settings' !== $record->context && in_array( $record->context, array_keys( $context_labels ), true ) ) {
-			global $submenu;
+
+		    /** @global object $submenu WordPress submenu array. */
+		    global $submenu;
 
 			$applicable_rules = array_filter(
 				$rules,
@@ -688,6 +690,11 @@ class Connector_Settings extends Connector {
 	 * @param mixed $value
 	 */
 	public function callback_updated_option( $option, $old_value, $value ) {
+
+		/**
+		 * @global object $whitelist_options     Whitelist options.
+         * @global object $new_whitelist_options New Whitelist options.
+		 */
 		global $whitelist_options, $new_whitelist_options;
 
 		if ( $this->is_option_ignored( $option ) ) {

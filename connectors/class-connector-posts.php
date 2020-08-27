@@ -61,6 +61,8 @@ class Connector_Posts extends Connector {
 	 * @return array Context label translations
 	 */
 	public function get_context_labels() {
+
+		/** @global object $wp_post_types  The global array that stores the post type objects. */
 		global $wp_post_types;
 
 		$post_types = wp_filter_object_list( $wp_post_types, array(), null, 'label' );
@@ -412,7 +414,9 @@ class Connector_Posts extends Connector {
 		$operator = ( $previous ) ? '<' : '>';
 		$order    = ( $previous ) ? 'DESC' : 'ASC';
 
+		/** @global object $wpdb WordPress Database instance. */
 		global $wpdb;
+
 		// @codingStandardsIgnoreStart
 		$revision_id = $wpdb->get_var( // db call okay
 			$wpdb->prepare(

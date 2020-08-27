@@ -76,6 +76,8 @@ class Connector_Taxonomies extends Connector {
 	 * @return array Context label translations
 	 */
 	public function get_context_labels() {
+
+		/** @global object $wp_taxonomies WordPress Taxonomies array. */
 		global $wp_taxonomies;
 
 		$labels = wp_list_pluck( $wp_taxonomies, 'labels' );

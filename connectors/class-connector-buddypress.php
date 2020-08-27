@@ -1022,7 +1022,10 @@ class Connector_BuddyPress extends Connector {
      * @param string $group Form field group.
      */
     public function callback_xprofile_group_after_save($group ) {
+
+	    /** @global object $wpdb WordPress Database instance. */
 		global $wpdb;
+
 		// a bit hacky, due to inconsistency with BP action scheme, see callback_xprofile_field_after_save for correct behavior
 		$action = ( $group->id === $wpdb->insert_id ) ? 'created' : 'updated';
 		$this->field_group_action( $group, $action );

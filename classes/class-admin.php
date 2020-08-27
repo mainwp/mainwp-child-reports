@@ -221,6 +221,14 @@ class Admin {
 	 * @action shutdown
 	 */
 	public function admin_notices() {
+
+		/**
+		 * WordPress core white list of html tags and attributes
+		 * that WordPress allows in posts used for sanitizing post_content.
+         *
+		 * @global object $allowedposttags
+		 *
+		 */
 		global $allowedposttags;
 
 		$custom = array(
@@ -779,6 +787,8 @@ class Admin {
      * @throws \Exception
      */
     public function purge_scheduled_action() {
+
+	    /** @global object $wpdb WordPress database object. */
 		global $wpdb;
 
 		// Don't purge when in Network Admin unless Stream is network activated.
@@ -995,7 +1005,7 @@ class Admin {
 	 */
     public function filter_user_caps($allcaps, $caps, $args, $user = null ) {
 
-        /** @global object $wp_roles WordPress Roles. */
+        /** @global object $wp_roles Core class used to implement a user roles API. */
 		global $wp_roles;
 
 		$_wp_roles = isset( $wp_roles ) ? $wp_roles : new WP_Roles();
