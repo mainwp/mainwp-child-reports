@@ -117,6 +117,7 @@ class Connector_Users extends Connector {
 			return array();
 		}
 
+		/** @global object $wp_roles Core class used to implement a user roles API. */
 		global $wp_roles;
 
 		$roles  = $wp_roles->get_names();
@@ -205,10 +206,14 @@ class Connector_Users extends Connector {
 			return;
 		}
 
+		/** @global object $wp_roles Core class used to implement a user roles API. */
 		global $wp_roles;
 
 		$this->log(
-			// translators: Placeholders refer to a user display name, a user role, and another user role (e.g. "Jane Doe", "editor", "subscriber")
+			/**
+			 * translators: Placeholders refer to a user display name,
+			 * a user role, and another user role (e.g. "Jane Doe", "editor", "subscriber").
+			 */
 			_x(
 				'%1$s\'s role was changed from %2$s to %3$s',
 				'1: User display name, 2: Old role, 3: New role',

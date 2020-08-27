@@ -23,6 +23,8 @@ class Query {
 	 * @return array Stream Records
 	 */
 	public function query( $args ) {
+
+		/** @global object $wpdb WordPress Database instance. */
 		global $wpdb;
 
 		$join  = '';

@@ -3,27 +3,23 @@
 
 namespace WP_MainWP_Stream;
 
+/**
+ * Class Connector_BuddyPress
+ * @package WP_MainWP_Stream
+ */
 class Connector_BuddyPress extends Connector {
 
-	/**
-	 * Connector slug
-	 *
-	 * @var string
-	 */
+    /** @var string Connector slug */
 	public $name = 'buddypress';
 
-	/**
-	 * Holds tracked plugin minimum version required
-	 *
-	 * @const string
-	 */
+    /**
+     * Defines plugin minimum version required.
+     *
+     * @const ( string ) Holds tracked plugin minimum version required.
+     */
 	const PLUGIN_MIN_VERSION = '2.0.1';
 
-	/**
-	 * Actions registered for this connector
-	 *
-	 * @var array
-	 */
+    /** @var array Actions registered for this connector. */
 	public $actions = array(
 		'update_option',
 		'add_option',
@@ -61,43 +57,29 @@ class Connector_BuddyPress extends Connector {
 		'xprofile_groups_deleted_group',
 	);
 
-	/**
-	 * Tracked option keys
-	 *
-	 * @var array
-	 */
+    /** @var array Tracked option keys. */
 	public $options = array(
 		'bp-active-components' => null,
 		'bp-pages'             => null,
 		'buddypress'           => null,
 	);
 
-	/**
-	 * Flag to stop logging update logic twice
-	 *
-	 * @var bool
-	 */
+	/** @var bool Flag to stop logging update logic twice */
 	public $is_update = false;
 
-	/**
-	 * @var bool
-	 */
+	/** @var bool Whether activity was deleted. */
 	public $_deleted_activity = false;
 
-	/**
-	 * @var array
-	 */
+	/** @var array Holds deleted activity arguments. */
 	public $_delete_activity_args = array();
 
-	/**
-	 * @var bool
-	 */
+	/** @var bool Whenter or not to ignore bulk activity deletion. */
 	public $ignore_activity_bulk_deletion = false;
 
 	/**
-	 * Check if plugin dependencies are satisfied and add an admin notice if not
+	 * Check if plugin dependencies are satisfied and add an admin notice if not.
 	 *
-	 * @return bool
+	 * @return bool Return TRUE|FASLE.
 	 */
 	public function is_dependency_satisfied() {
 		if ( class_exists( 'BuddyPress' ) && version_compare( \BuddyPress::instance()->version, self::PLUGIN_MIN_VERSION, '>=' ) ) {
@@ -108,18 +90,18 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	/**
-	 * Return translated connector label
+	 * Return translated connector label.
 	 *
-	 * @return string Translated connector label
+	 * @return string Translated connector label.
 	 */
 	public function get_label() {
 		return esc_html_x( 'BuddyPress', 'buddypress', 'mainwp-child-reports' );
 	}
 
 	/**
-	 * Return translated action labels
+	 * Return translated action labels.
 	 *
-	 * @return array Action label translations
+	 * @return array Action label translations.
 	 */
 	public function get_action_labels() {
 		return array(
@@ -136,9 +118,9 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	/**
-	 * Return translated context labels
+	 * Return translated context labels.
 	 *
-	 * @return array Context label translations
+	 * @return array Context label translations.
 	 */
 	public function get_context_labels() {
 		return array(
@@ -150,14 +132,14 @@ class Connector_BuddyPress extends Connector {
 	}
 
 	/**
-	 * Add action links to Stream drop row in admin list screen
+	 * Add action links to Stream drop row in admin list screen.
 	 *
-	 * @filter wp_mainwp_stream_action_links_{connector}
+	 * @filter wp_mainwp_stream_action_links_{connector}.
 	 *
-	 * @param  array  $links Previous links registered
-	 * @param  object $record Stream record
+	 * @param  array  $links Previous links registered.
+	 * @param  object $record Stream record.
 	 *
-	 * @return array Action links
+	 * @return array Action links.
 	 */
 	public function action_links( $links, $record ) {
 		if ( in_array( $record->context, array( 'components' ), true ) ) {
@@ -201,7 +183,7 @@ class Connector_BuddyPress extends Connector {
 			);
 
 			if ( $group ) {
-				// Build actions URLs
+				// Build actions URLs.
 				$base_url   = \bp_get_admin_url( 'admin.php?page=bp-groups&amp;gid=' . $group_id );
 				$delete_url = wp_nonce_url( $base_url . '&amp;action=delete', 'bp-groups-delete' );
 				$edit_url   = $base_url . '&amp;action=edit';
@@ -286,7 +268,10 @@ class Connector_BuddyPress extends Connector {
 		return $links;
 	}
 
-	public function register() {
+    /**
+     * Register with parent class.
+     */
+    public function register() {
 		parent::register();
 
 		$this->options = array_merge(
@@ -336,31 +321,74 @@ class Connector_BuddyPress extends Connector {
 		);
 	}
 
-	public function callback_update_option( $option, $old, $new ) {
+    /**
+     * Update option callback.
+     *
+     * @param string $option Option to update.
+     * @param string $old Old option value.
+     * @param string $new New option value.
+     */
+    public function callback_update_option($option, $old, $new ) {
 		$this->check( $option, $old, $new );
 	}
 
-	public function callback_add_option( $option, $val ) {
+    /**
+     * Add option callback.
+     *
+     * @param string $option Option to update.
+     * @param string $val Option value.
+     */
+    public function callback_add_option($option, $val ) {
 		$this->check( $option, null, $val );
 	}
 
-	public function callback_delete_option( $option ) {
+    /**
+     * Delete option callback.
+     *
+     * @param string $option Option to update.
+     */
+    public function callback_delete_option($option ) {
 		$this->check( $option, null, null );
 	}
 
-	public function callback_update_site_option( $option, $old, $new ) {
+    /**
+     * Update site option callback.
+     *
+     * @param string $option Option to update.
+     * @param string $old Old option value.
+     * @param string $new New option value.
+     */
+    public function callback_update_site_option($option, $old, $new ) {
 		$this->check( $option, $old, $new );
 	}
 
-	public function callback_add_site_option( $option, $val ) {
+    /**
+     * Add site option callback.
+     *
+     * @param string $option Option to update.
+     * @param string $val Option value.
+     */
+    public function callback_add_site_option($option, $val ) {
 		$this->check( $option, null, $val );
 	}
 
-	public function callback_delete_site_option( $option ) {
+    /**
+     * Delete site option callback.
+     *
+     * @param string $option Option to update.
+     */
+    public function callback_delete_site_option($option ) {
 		$this->check( $option, null, null );
 	}
 
-	public function check( $option, $old_value, $new_value ) {
+    /**
+     * Check if option values exist.
+     *
+     * @param string $option Option to update.
+     * @param string $old_value Old option value.
+     * @param string $new_value New option value.
+     */
+    public function check($option, $old_value, $new_value ) {
 		if ( ! array_key_exists( $option, $this->options ) ) {
 			return;
 		}
@@ -389,7 +417,13 @@ class Connector_BuddyPress extends Connector {
 		}
 	}
 
-	public function check_bp_active_components( $old_value, $new_value ) {
+    /**
+     * Check active components.
+     *
+     * @param string $old_value Old option value.
+     * @param string $new_value New option value.
+     */
+    public function check_bp_active_components($old_value, $new_value ) {
 		$options = array();
 
 		if ( ! is_array( $old_value ) || ! is_array( $new_value ) ) {
@@ -414,7 +448,7 @@ class Connector_BuddyPress extends Connector {
 
 			$this->log(
 				sprintf(
-					// translators: Placeholder refers to component title (e.g. "Members")
+					// translators: Placeholder refers to component title (e.g. "Members").
 					__( '"%1$s" component %2$s', 'mainwp-child-reports' ),
 					$components[ $option ]['title'],
 					$actions[ $option_value ]
@@ -432,7 +466,13 @@ class Connector_BuddyPress extends Connector {
 		}
 	}
 
-	public function check_bp_pages( $old_value, $new_value ) {
+    /**
+     * Check buddypress pages.
+     *
+     * @param string $old_value Old option value.
+     * @param string $new_value New option value.
+     */
+    public function check_bp_pages($old_value, $new_value ) {
 		$options = array();
 
 		if ( ! is_array( $old_value ) || ! is_array( $new_value ) ) {
@@ -460,7 +500,7 @@ class Connector_BuddyPress extends Connector {
 
 			$this->log(
 				sprintf(
-					// translators: Placeholders refer to a directory page, and a page title (e.g. "Register", "Registration" )
+					// translators: Placeholders refer to a directory page, and a page title (e.g. "Register", "Registration" ).
 					__( '"%1$s" page set to "%2$s"', 'mainwp-child-reports' ),
 					$pages[ $option ],
 					$page
@@ -479,7 +519,12 @@ class Connector_BuddyPress extends Connector {
 		}
 	}
 
-	public function callback_bp_before_activity_delete( $args ) {
+    /**
+     * Buddypress before delete activity callback.
+     *
+     * @param array $args Deletion arguments.
+     */
+    public function callback_bp_before_activity_delete($args ) {
 		if ( empty( $args['id'] ) ) { // Bail if we're deleting in bulk
 			$this->_delete_activity_args = $args;
 
@@ -491,12 +536,17 @@ class Connector_BuddyPress extends Connector {
 		$this->_deleted_activity = $activity;
 	}
 
-	public function callback_bp_activity_deleted_activities( $activities_ids ) {
+    /**
+     * Buddypress delete activities callback.
+     *
+     * @param array $activities_ids Activity IDs
+     */
+    public function callback_bp_activity_deleted_activities($activities_ids ) {
 		if ( 1 === count( $activities_ids ) && isset( $this->_deleted_activity ) ) { // Single activity deletion
 			$activity = $this->_deleted_activity;
 			$this->log(
 				sprintf(
-					// translators: Placeholder refers to an activity title (e.g. "Update")
+					// translators: Placeholder refers to an activity title (e.g. "Update").
 					__( '"%s" activity deleted', 'mainwp-child-reports' ),
 					strip_tags( $activity->action )
 				),
@@ -510,9 +560,14 @@ class Connector_BuddyPress extends Connector {
 				$activity->component,
 				'deleted'
 			);
-		} else { // Bulk deletion
-			// Sometimes some objects removal are followed by deleting relevant
-			// activities, so we probably don't need to track those
+		} else {
+
+            /**
+             * Bulk deletion.
+             *
+             * Sometimes some objects removal are followed by deleting relevant
+             * activities, so we probably don't need to track those.
+             */
 			if ( $this->ignore_activity_bulk_deletion ) {
 				$this->ignore_activity_bulk_deletion = false;
 
@@ -520,7 +575,7 @@ class Connector_BuddyPress extends Connector {
 			}
 			$this->log(
 				sprintf(
-					// translators: Placeholder refers to an activity title (e.g. "Update")
+					// translators: Placeholder refers to an activity title (e.g. "Update").
 					__( '"%s" activities were deleted', 'mainwp-child-reports' ),
 					count( $activities_ids )
 				),
@@ -536,7 +591,13 @@ class Connector_BuddyPress extends Connector {
 		}
 	}
 
-	public function callback_bp_activity_mark_as_spam( $activity, $by ) {
+    /**
+     * Buddypress mark as spam callback.
+     *
+     * @param array $activity Activity to mark as spam.
+     * @param $by ID, item_id, type, user_id.
+     */
+    public function callback_bp_activity_mark_as_spam($activity, $by ) {
 		unset( $by );
 
 		$this->log(
@@ -557,12 +618,19 @@ class Connector_BuddyPress extends Connector {
 		);
 	}
 
-	public function callback_bp_activity_mark_as_ham( $activity, $by ) {
+
+    /**
+     * Buddypress mark as ham callback.
+     *
+     * @param array $activity Activity to mark as spam.
+     * @param $by ID, item_id, type, user_id.
+     */
+    public function callback_bp_activity_mark_as_ham($activity, $by ) {
 		unset( $by );
 
 		$this->log(
 			sprintf(
-				// translators: Placeholder refers to an activity title (e.g. "Update")
+				// translators: Placeholder refers to an activity title (e.g. "Update").
 				__( 'Unmarked activity "%s" as spam', 'mainwp-child-reports' ),
 				strip_tags( $activity->action )
 			),
@@ -578,7 +646,13 @@ class Connector_BuddyPress extends Connector {
 		);
 	}
 
-	public function callback_bp_activity_admin_edit_after( $activity, $error ) {
+    /**
+     * Buddypress admin after edit activity callback.
+     *
+     * @param array $activity Activity to mark as spam.
+     * @param $error Error message.
+     */
+    public function callback_bp_activity_admin_edit_after($activity, $error ) {
 		unset( $error );
 
 		$this->log(
@@ -599,7 +673,15 @@ class Connector_BuddyPress extends Connector {
 		);
 	}
 
-	public function group_action( $group, $action, $meta = array(), $message = null ) {
+    /**
+     * Group action.
+     *
+     * @param array $group Group array.
+     * @param strign $action Action to perform.
+     * @param array $meta Meta data.
+     * @param string $message Response message.
+     */
+    public function group_action($group, $action, $meta = array(), $message = null ) {
 		if ( is_numeric( $group ) ) {
 			$group = \groups_get_group(
 				array(
@@ -664,45 +746,92 @@ class Connector_BuddyPress extends Connector {
 		);
 	}
 
-	public function callback_groups_create_group( $group_id, $member, $group ) {
+    /**
+     * Create groups callback.
+     *
+     * @param string $group_id Group ID.
+     * @param string $member Member data.
+     * @param array $group Buddypress group.
+     */
+    public function callback_groups_create_group($group_id, $member, $group ) {
 		unset( $group_id );
 		unset( $member );
 
 		$this->group_action( $group, 'created' );
 	}
 
-	public function callback_groups_update_group( $group_id, $group ) {
+    /**
+     * Update group calback.
+     *
+     * @param string $group_id Group ID.
+     * @param array $group Buddypress group.
+     */
+    public function callback_groups_update_group($group_id, $group ) {
 		unset( $group_id );
 
 		$this->group_action( $group, 'updated' );
 	}
 
-	public function callback_groups_before_delete_group( $group_id ) {
+    /**
+     * Before delete groups callback.
+     *
+     * @param string $group_id Group ID.
+     */
+    public function callback_groups_before_delete_group($group_id ) {
 		$this->ignore_activity_bulk_deletion = true;
 		$this->group_action( $group_id, 'deleted' );
 	}
 
-	public function callback_groups_details_updated( $group_id ) {
+    /**
+     * Updated group details callback.
+     *
+     * @param string $group_id Group ID.
+     */
+    public function callback_groups_details_updated($group_id ) {
 		$this->is_update = true;
 		$this->group_action( $group_id, 'updated' );
 	}
 
-	public function callback_groups_settings_updated( $group_id ) {
+    /**
+     * Updated group settings.
+     *
+     * @param string $group_id Group ID.
+     */
+    public function callback_groups_settings_updated($group_id ) {
 		if ( $this->is_update ) {
 			return;
 		}
 		$this->group_action( $group_id, 'updated' );
 	}
 
-	public function callback_groups_leave_group( $group_id, $user_id ) {
+    /**
+     * Leave groups callback.
+     *
+     * @param string $group_id Group ID.
+     * @param string $user_id User ID.
+     */
+    public function callback_groups_leave_group($group_id, $user_id ) {
 		$this->group_action( $group_id, 'left', compact( 'user_id' ) );
 	}
 
-	public function callback_groups_join_group( $group_id, $user_id ) {
+    /**
+     * Join group callback.
+     *
+     * @param string $group_id Group ID.
+     * @param string $user_id User ID.
+     */
+    public function callback_groups_join_group($group_id, $user_id ) {
 		$this->group_action( $group_id, 'joined', compact( 'user_id' ) );
 	}
 
-	public function callback_groups_promote_member( $group_id, $user_id, $status ) {
+    /**
+     * Promote member.
+     *
+     * @param string $group_id Group ID.
+     * @param string $user_id User ID.
+     * @param string $status Member status.
+     */
+    public function callback_groups_promote_member($group_id, $user_id, $status ) {
 		$group   = \groups_get_group(
 			array(
 				'group_id' => $group_id,
@@ -714,7 +843,7 @@ class Connector_BuddyPress extends Connector {
 			'mod'   => esc_html_x( 'Moderator', 'buddypress', 'mainwp-child-reports' ),
 		);
 		$message = sprintf(
-			// translators: Placeholders refer to a user's display name, a user role, and a group name (e.g. "Jane Doe", "subscriber", "Favourites")
+			// translators: Placeholders refer to a user's display name, a user role, and a group name (e.g. "Jane Doe", "subscriber", "Favourites").
 			__( 'Promoted "%1$s" to "%2$s" in "%3$s"', 'mainwp-child-reports' ),
 			$user->display_name,
 			$roles[ $status ],
@@ -723,7 +852,13 @@ class Connector_BuddyPress extends Connector {
 		$this->group_action( $group_id, 'promoted', compact( 'user_id', 'status' ), $message );
 	}
 
-	public function callback_groups_demote_member( $group_id, $user_id ) {
+    /**
+     * Demote member.
+     *
+     * @param string $group_id Group ID.
+     * @param string $user_id User ID.
+     */
+    public function callback_groups_demote_member($group_id, $user_id ) {
 		$group   = \groups_get_group(
 			array(
 				'group_id' => $group_id,
@@ -731,7 +866,7 @@ class Connector_BuddyPress extends Connector {
 		);
 		$user    = new \WP_User( $user_id );
 		$message = sprintf(
-			// translators: Placeholders refer to a user's display name, a user role, and a group name (e.g. "Jane Doe", "Member", "Favourites")
+			// translators: Placeholders refer to a user's display name, a user role, and a group name (e.g. "Jane Doe", "Member", "Favourites").
 			__( 'Demoted "%1$s" to "%2$s" in "%3$s"', 'mainwp-child-reports' ),
 			$user->display_name,
 			_x( 'Member', 'buddypress', 'mainwp-child-reports' ),
@@ -740,19 +875,45 @@ class Connector_BuddyPress extends Connector {
 		$this->group_action( $group_id, 'demoted', compact( 'user_id' ), $message );
 	}
 
-	public function callback_groups_ban_member( $group_id, $user_id ) {
+    /**
+     * Ban member.
+     *
+     * @param string $group_id Group ID.
+     * @param string $user_id User ID.
+     */
+    public function callback_groups_ban_member($group_id, $user_id ) {
 		$this->group_action( $group_id, 'banned', compact( 'user_id' ) );
 	}
 
-	public function callback_groups_unban_member( $group_id, $user_id ) {
+    /**
+     * Unban member.
+     *
+     * @param string $group_id Group ID.
+     * @param string $user_id User ID.
+     */
+    public function callback_groups_unban_member($group_id, $user_id ) {
 		$this->group_action( $group_id, 'unbanned', compact( 'user_id' ) );
 	}
 
-	public function callback_groups_remove_member( $group_id, $user_id ) {
+    /**
+     * Remove member.
+     *
+     * @param string $group_id Group ID.
+     * @param string $user_id User ID.
+     */
+    public function callback_groups_remove_member($group_id, $user_id ) {
 		$this->group_action( $group_id, 'removed', compact( 'user_id' ) );
 	}
 
-	public function field_action( $field, $action, $meta = array(), $message = null ) {
+    /**
+     * Field action.
+     *
+     * @param string $field Form field.
+     * @param string $action Action to perform.
+     * @param array $meta Meta data.
+     * @param null $message Response message.
+     */
+    public function field_action($field, $action, $meta = array(), $message = null ) {
 		$replacements = array(
 			$field->name,
 		);
@@ -791,16 +952,33 @@ class Connector_BuddyPress extends Connector {
 		);
 	}
 
-	public function callback_xprofile_field_after_save( $field ) {
+    /**
+     * XPROFILE save field calback.
+     *
+     * @param string $field Form field.
+     */
+    public function callback_xprofile_field_after_save($field ) {
 		$action = isset( $field->id ) ? 'updated' : 'created';
 		$this->field_action( $field, $action );
 	}
 
-	public function callback_xprofile_fields_deleted_field( $field ) {
+    /**
+     * XPROFILE delete field callback.
+     * @param string $field Form field.
+     */
+    public function callback_xprofile_fields_deleted_field($field ) {
 		$this->field_action( $field, 'deleted' );
 	}
 
-	public function field_group_action( $group, $action, $meta = array(), $message = null ) {
+    /**
+     * Field group action.
+     *
+     * @param string $group Form field group.
+     * @param string $action Action to perform.
+     * @param array $meta Meta data.
+     * @param null $message Response message.
+     */
+    public function field_group_action($group, $action, $meta = array(), $message = null ) {
 		$replacements = array(
 			$group->name,
 		);
@@ -838,27 +1016,45 @@ class Connector_BuddyPress extends Connector {
 		);
 	}
 
-	public function callback_xprofile_group_after_save( $group ) {
+    /**
+     * XPROFILE save group calback.
+     *
+     * @param string $group Form field group.
+     */
+    public function callback_xprofile_group_after_save($group ) {
+
+	    /** @global object $wpdb WordPress Database instance. */
 		global $wpdb;
+
 		// a bit hacky, due to inconsistency with BP action scheme, see callback_xprofile_field_after_save for correct behavior
 		$action = ( $group->id === $wpdb->insert_id ) ? 'created' : 'updated';
 		$this->field_group_action( $group, $action );
 	}
 
-	public function callback_xprofile_groups_deleted_group( $group ) {
+    /**
+     * XPROFILE delete groups callback.
+     *
+     * @param string $group Form field group.
+     */
+    public function callback_xprofile_groups_deleted_group($group ) {
 		$this->field_group_action( $group, 'deleted' );
 	}
 
-	private function bp_get_directory_pages() {
+    /**
+     * Buddypress get directory pages.
+     *
+     * @return array Directory pages array.
+     */
+    private function bp_get_directory_pages() {
 		$bp              = \buddypress();
 		$directory_pages = array();
 
-		// Loop through loaded components and collect directories
+		// Loop through loaded components and collect directories.
 		if ( is_array( $bp->loaded_components ) ) {
 			foreach ( $bp->loaded_components as $component_slug => $component_id ) {
-				// Only components that need directories should be listed here
+				// Only components that need directories should be listed here.
 				if ( isset( $bp->{$component_id} ) && ! empty( $bp->{$component_id}->has_directory ) ) {
-					// component->name was introduced in BP 1.5, so we must provide a fallback
+					// component->name was introduced in BP 1.5, so we must provide a fallback.
 					$directory_pages[ $component_id ] = ! empty( $bp->{$component_id}->name ) ? $bp->{$component_id}->name : ucwords( $component_id );
 				}
 			}
