@@ -10,8 +10,8 @@
  * Version: 2.0.5
  * Requires at least: 3.6
  * Text Domain: mainwp-child-reports
- * License: GPLv2 or later
- * License URI: http://www.gnu.org/licenses/gpl-2.0.html
+ * License: GPLv3 or later
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  */
 
  /**
