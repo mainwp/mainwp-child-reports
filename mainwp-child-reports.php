@@ -8,6 +8,10 @@
  * Author: MainWP
  * Author URI: https://mainwp.com
  * Version: 2.0.4
+ * Requires at least: 3.6
+ * Text Domain: mainwp-child-reports
+ * License: GPLv2 or later
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
 
  /**
