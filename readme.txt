@@ -5,11 +5,11 @@ Author: mainwp
 Author URI: https://mainwp.com
 Plugin URI: https://mainwp.com
 Requires at least: 3.6
-Tested up to: 5.4
+Tested up to: 5.5
 Requires PHP: 5.6
-Stable tag: 2.0.4
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Stable tag: 2.0.5
+License: GPLv3 or later
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 The MainWP Child Report plugin tracks changes to Child sites for the Client Reports Extension.
 
@@ -35,6 +35,11 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 2. The MainWP Child Reports Settings Screen
 
 == Changelog ==
+
+= 2.0.5 - 8-31-2020 =
+* Fixed: jQuery warning
+* Fixed: Compatibility issues with MySQL 8
+* Fixed: An issue with logging maintenance tasks
 
 = 2.0.4 - 4-30-2020 =
 * Fixed: an issue with logging themes updates
