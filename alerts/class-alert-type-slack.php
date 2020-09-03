@@ -29,7 +29,9 @@ class Alert_Type_Slack extends Alert_Type {
 	public $slug = 'slack';
 
 	/**
-	 * Class Constructor
+	 * Alert_Type_Slack constructor.
+	 *
+	 * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin Plugin object.
 	 */

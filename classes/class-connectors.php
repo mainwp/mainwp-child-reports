@@ -48,7 +48,9 @@ class Connectors {
 	protected $admin_notices = array();
 
 	/**
-	 * Class constructor.
+	 * Connectors constructor.
+	 *
+	 * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin The main Plugin class.
 	 */

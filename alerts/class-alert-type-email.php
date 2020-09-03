@@ -31,7 +31,9 @@ class Alert_Type_Email extends Alert_Type {
 	public $slug = 'email';
 
 	/**
-	 * Class Constructor
+	 * Alert_Type_Email constructor.
+	 *
+	 * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin Plugin object.
 	 * @return void

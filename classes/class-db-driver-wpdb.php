@@ -30,7 +30,9 @@ class DB_Driver_WPDB implements DB_Driver {
 	public $table_meta;
 
 	/**
-	 * Class constructor.
+	 * DB_Driver_WPDB constructor.
+	 *
+	 * Run each time the class is called.
 	 */
 	public function __construct() {
 		$this->query = new Query( $this );

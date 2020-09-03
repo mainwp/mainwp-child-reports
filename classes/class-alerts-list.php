@@ -21,7 +21,9 @@ class Alerts_List {
 	public $plugin;
 
 	/**
-	 * Class constructor.
+	 * Alerts_List constructor.
+     *
+     * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin The main Plugin class.
 	 */

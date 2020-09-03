@@ -22,7 +22,9 @@ class Export {
 	protected $exporters = array();
 
 	/**
-	 * Class constructor
+	 * Export constructor
+	 *
+	 * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin The plugin object.
 	 */

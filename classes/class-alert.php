@@ -64,7 +64,9 @@ class Alert {
 	public $plugin;
 
 	/**
-	 * Class constructor
+	 * Alert constructor.
+	 *
+	 * Run each time the class is called.
 	 *
 	 * @param object $item Alert data.
 	 * @param Plugin $plugin Plugin class.

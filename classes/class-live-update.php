@@ -29,7 +29,9 @@ class Live_Update {
 	public $list_table = null;
 
 	/**
-	 * Class constructor.
+	 * Live_Update constructor.
+	 *
+	 * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin The main Plugin class.
 	 */

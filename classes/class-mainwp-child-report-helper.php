@@ -35,6 +35,9 @@ class MainWP_Child_Report_Helper {
 
     /**
      * MainWP_Child_Report_Helper constructor.
+     *
+     * Run each time the class is called.
+     *
      * @param null $plugin
      */
     function __construct( $plugin = null ) {

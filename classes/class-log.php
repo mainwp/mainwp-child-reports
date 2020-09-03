@@ -19,7 +19,9 @@ class Log {
 	private $prev_record;
 
 	/**
-	 * Class constructor.
+	 * Log constructor.
+	 *
+	 * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin The main Plugin class.
 	 */

@@ -21,6 +21,8 @@ class Network {
     /**
      * Network constructor.
      *
+     * Run each time the class is called.
+     *
      * @param Plugin $plugin Plugin class.
      *
      * @uses \WP_MainWP_Stream\Network::is_network_activated()

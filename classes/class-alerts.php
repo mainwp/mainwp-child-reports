@@ -50,7 +50,9 @@ class Alerts {
 	public $alert_triggers = array();
 
 	/**
-	 * Class constructor.
+	 * Alerts constructor.
+     *
+     * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin The main Plugin class.
 	 */

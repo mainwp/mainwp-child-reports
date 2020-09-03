@@ -45,9 +45,13 @@ class Plugin {
 	
 	/** @var \WP_MainWP_Stream\Child_Helper Child_Helper class. */
 	public $child_helper;
-		
+
 	/**
-	 * Class constructor.
+	 * Plugin constructor.
+	 *
+	 * Run each time the class is called.
+	 *
+	 * @throws \Exception
 	 */
 	public function __construct() {
 		$locate = $this->locate_plugin();

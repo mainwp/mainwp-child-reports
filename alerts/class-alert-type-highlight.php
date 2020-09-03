@@ -58,7 +58,9 @@ class Alert_Type_Highlight extends Alert_Type {
 	public $plugin;
 
 	/**
-	 * Class Constructor
+	 * Alert_Type_Highlight constructor.
+	 *
+	 * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin Plugin object.
 	 * @return void

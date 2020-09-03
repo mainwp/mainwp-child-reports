@@ -48,7 +48,9 @@ class Settings {
 	public $fields = array();
 
 	/**
-	 * Class constructor.
+	 * Settings constructor.
+	 *
+	 * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin The main Plugin class.
 	 */

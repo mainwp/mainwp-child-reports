@@ -10,7 +10,9 @@ namespace WP_MainWP_Stream;
 class Preview_List_Table extends List_Table {
 
 	/**
-	 * Class constructor.
+	 * Preview_List_Table constructor.
+     *
+     * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin Plugin object.
 	 *

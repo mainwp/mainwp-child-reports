@@ -29,7 +29,9 @@ class Alert_Type_Menu_Alert extends Alert_Type {
 	public $slug = 'menu-alert';
 
 	/**
-	 * Class Constructor
+	 * Alert_Type_Menu_Alert constructor.
+	 *
+	 * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin Plugin object.
 	 * @return void

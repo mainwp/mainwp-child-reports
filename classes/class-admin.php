@@ -61,7 +61,9 @@ class Admin {
 	public $notices = array();
 
 	/**
-	 * Class constructor.
+	 * Admin constructor.
+     *
+     * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin The main Plugin class.
 	 */

@@ -15,7 +15,9 @@ class List_Table extends \WP_List_Table {
 	public $plugin;
 
 	/**
-	 * Class constructor.
+	 * List_Table constructor.
+     *
+     * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin The main Plugin class.
 	 * @param array  $args Constructor arguments.

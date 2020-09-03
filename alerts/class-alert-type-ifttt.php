@@ -65,7 +65,9 @@ class Alert_Type_IFTTT extends Alert_Type {
 	public $slug = 'ifttt';
 
 	/**
-	 * Class Constructor
+	 * Alert_Type_IFTTT constructor.
+	 *
+	 * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin Plugin object.
 	 */
