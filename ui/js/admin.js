@@ -141,8 +141,7 @@ jQuery(
 				}
 			);
 
-			$( window ).load(
-				function() {
+			$( window ).on( "load", function() {
 					$( '.settings_page_mainwp-reports-page input[type="search"]' ).off( 'mousedown' );
 				}
 			);

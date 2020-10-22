@@ -79,7 +79,7 @@ class MainWP_Child_Report_Helper {
         $hide = is_array($opts) && isset( $opts['hide_child_reports']) && ($opts['hide_child_reports'] == 'hide');
         if ( ! $hide ) {
             // Register settings page
-            add_filter( 'mainwp-child-init-subpages', array( $this, 'init_subpages' ) );
+            add_filter( 'mainwp_child_init_subpages', array( $this, 'init_subpages' ) );
 		}
 	}
 
