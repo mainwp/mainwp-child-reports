@@ -12,6 +12,8 @@
  * @param mixed  $options        Associative array of options or bitwise disjunction of flags. If filter accepts options, flags can be provided in "flags" field of array.
  *
  * @return Value of the requested variable on success, FALSE if the filter fails, or NULL if the $variable_name is not set.
+ *
+ * @uses \WP_MainWP_Stream\Filter_Input
  */
 function wp_mainwp_stream_filter_input( $type, $variable_name, $filter = null, $options = array() ) {
 	return call_user_func_array( array( '\WP_MainWP_Stream\Filter_Input', 'super' ), func_get_args() );
@@ -28,6 +30,8 @@ function wp_mainwp_stream_filter_input( $type, $variable_name, $filter = null, $
  * @param mixed  $options  Associative array of options or bitwise disjunction of flags. If filter accepts options, flags can be provided in "flags" field of array. For the "callback" filter, callable type should be passed. The callback must accept one argument, the value to be filtered, and return the value after filtering/sanitizing it.
  *
  * @return Returns the filtered data, or FALSE if the filter fails.
+ *
+ * @uses \WP_MainWP_Stream\Filter_Input
  */
 function wp_mainwp_stream_filter_var( $var, $filter = null, $options = array() ) {
 	return call_user_func_array( array( '\WP_MainWP_Stream\Filter_Input', 'filter' ), func_get_args() );

@@ -7,6 +7,8 @@ namespace WP_MainWP_Stream;
 /**
  * Class Connector_ACF
  * @package WP_MainWP_Stream
+ *
+ * @uses \WP_MainWP_Stream\Connector
  */
 class Connector_ACF extends Connector {
 
@@ -113,6 +115,8 @@ class Connector_ACF extends Connector {
 
 	/**
 	 * Register the connector.
+	 *
+	 * @uses \WP_MainWP_Stream\Connector::register()
 	 */
 	public function register() {
 		add_filter( 'wp_mainwp_stream_log_data', array( $this, 'log_override' ) );
@@ -138,6 +142,8 @@ class Connector_ACF extends Connector {
 	 * @param object $record Stream record
 	 *
 	 * @return array          Action links
+	 *
+	 * @uses \WP_MainWP_Stream\Connector_Posts
 	 */
 	public function action_links( $links, $record ) {
 		$posts_connector = new Connector_Posts();
@@ -355,6 +361,8 @@ class Connector_ACF extends Connector {
 	 * @param mixed|null $value
 	 *
 	 * @return bool
+	 *
+	 * @uses \WP_MainWP_Stream\Connector_Posts
 	 */
 	public function check_meta_values( $type, $action, $meta_id, $object_id, $key, $value = null ) {
 		unset( $action );

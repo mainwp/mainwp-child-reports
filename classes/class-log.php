@@ -43,23 +43,27 @@ class Log {
 	/**
 	 * Log handler.
 	 *
-	 * @param Connector $connector Connector responsible for logging the event.
-	 * @param string    $message sprintf-ready error message string.
-	 * @param array     $args sprintf (and extra) arguments to use.
-	 * @param int       $object_id Target object id.
-	 * @param string    $context Context of the event.
-	 * @param string    $action Action of the event.
-	 * @param int       $user_id User responsible for the event.
-     * @param int       $created_timestamp  1|0 Whether or not the timestamp was created.
+	 * @param Connector $connector         Connector responsible for logging the event.
+	 * @param string    $message           sprintf-ready error message string.
+	 * @param array     $args              sprintf (and extra) arguments to use.
+	 * @param int       $object_id         Target object id.
+	 * @param string    $context           Context of the event.
+	 * @param string    $action            Action of the event.
+	 * @param int       $user_id           User responsible for the event.
+	 * @param int       $created_timestamp 1|0 Whether or not the timestamp was created.
 	 *
 	 * @return bool|WP_Error True if updated, otherwise false|WP_Error
-     *
-     * @uses \WP_MainWP_Stream\Author::get_current_agent()
-     * @uses \WP_MainWP_Stream\Author::get_display_name()
-     * @uses \WP_MainWP_Stream\Author::get_role()
-     * @uses \WP_MainWP_Stream\Log::is_record_excluded()
-     * @uses $wp_roles::is_role()
-     * @uses \WP_MainWP_Stream\Log::$plugin::db::insert()
+	 * @throws \Exception
+	 *
+	 * @uses \WP_MainWP_Stream\Author
+	 * @uses \WP_MainWP_Stream\Author::get_current_agent()
+	 * @uses \WP_MainWP_Stream\Author::get_display_name()
+	 * @uses \WP_MainWP_Stream\Author::get_role()
+	 * @uses \WP_MainWP_Stream\Log::is_record_excluded()
+	 * @uses \WP_MainWP_Stream\Log::$plugin::db::insert()
+	 *
+	 * @uses $wp_roles::is_role()
+	 * @see https://developer.wordpress.org/reference/classes/wp_roles/is_role/
 	 */
 	public function log( $connector, $message, $args, $object_id, $context, $action, $user_id = null, $created_timestamp = 0 ) {
 

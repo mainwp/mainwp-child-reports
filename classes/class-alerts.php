@@ -203,6 +203,8 @@ class Alerts {
 	 * @param Alert_Type $alert_type The class to check.
 	 *
 	 * @return bool
+     *
+     * @uses \WP_MainWP_Stream\Alert_Type
 	 */
 	public function is_valid_alert_type( $alert_type ) {
 		if ( ! is_a( $alert_type, 'WP_MainWP_Stream\Alert_Type' ) ) {
@@ -222,6 +224,8 @@ class Alerts {
 	 * @param Alert_Trigger $alert_trigger The class to check.
 	 *
 	 * @return bool
+     *
+     * @uses \WP_MainWP_Stream\Alert_Trigger
 	 */
 	public function is_valid_alert_trigger( $alert_trigger ) {
 		if ( ! is_a( $alert_trigger, 'WP_MainWP_Stream\Alert_Trigger' ) ) {
@@ -373,6 +377,8 @@ class Alerts {
 	 * @param string $post_id Post ID for the alert.
 	 *
 	 * @return Alert
+     *
+     * @uses \WP_MainWP_Stream\Alert
 	 */
 	public function get_alert( $post_id = '' ) {
 		if ( ! $post_id ) {
@@ -478,6 +484,8 @@ class Alerts {
 	 * @param \WP_Post|array $post Post object for current alert.
 	 *
 	 * @return void
+     *
+     * @uses \WP_MainWP_Stream\Form_Generator
 	 */
 	public function display_notification_box( $post = array() ) {
 		$alert_type = 'none';
@@ -561,6 +569,8 @@ class Alerts {
 	 * @param \WP_Post|array $post Post object for current alert.
 	 *
 	 * @return void
+     *
+     * @uses \WP_MainWP_Stream\Form_Generator
 	 */
 	public function display_triggers_box( $post = array() ) {
 		if ( is_object( $post ) ) {
@@ -699,6 +709,8 @@ class Alerts {
 
 	/**
 	 * Save a new alert.
+     *
+     * @uses \WP_MainWP_Stream\Alert
 	 */
 	public function save_new_alert() {
 		check_ajax_referer( 'save_alert', 'wp_mainwp_alerts_nonce' );
@@ -800,6 +812,8 @@ class Alerts {
 	 * @param Record $record Stream record
 	 *
 	 * @return array Action links
+     *
+     * @uses \WP_MainWP_Stream\Connector_Posts
 	 */
 	public function change_alert_action_links( $links, $record ) {
 		$post = get_post( $record->object_id );

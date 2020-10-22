@@ -11,6 +11,8 @@ namespace WP_MainWP_Stream;
  * Class Alert_Trigger_Author
  *
  * @package WP_MainWP_Stream
+ *
+ * @uses \WP_MainWP_Stream\Alert_Trigger
  */
 class Alert_Trigger_Author extends Alert_Trigger {
 
@@ -80,6 +82,8 @@ class Alert_Trigger_Author extends Alert_Trigger {
 	 * Generate array of possible action values
 	 *
 	 * @return array
+	 *
+	 * @uses \WP_MainWP_Stream\Author
 	 */
 	public function get_values() {
 		$all_records = array();

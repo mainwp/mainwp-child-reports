@@ -61,6 +61,8 @@ class Connectors {
 
 	/**
 	 * Load built-in connectors
+	 *
+	 * @uses \WP_MainWP_Stream\Connector
 	 */
 	public function load_connectors() {
 		$connectors = array(

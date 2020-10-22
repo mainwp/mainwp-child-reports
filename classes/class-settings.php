@@ -90,6 +90,9 @@ class Settings {
 	 * Ajax callback function to search users, used on exclude setting page
 	 *
 	 * @uses \WP_User_Query
+	 * @see https://developer.wordpress.org/reference/classes/wp_user_query/
+	 *
+	 * @uses \WP_MainWP_Stream\Author
 	 */
 	public function get_users() {
 		if ( ! defined( 'DOING_AJAX' ) || ! current_user_can( $this->plugin->admin->settings_cap ) ) {
@@ -608,6 +611,8 @@ class Settings {
 	 * @param array $field Field settings
 	 *
 	 * @return string HTML to be displayed
+	 *
+	 * @uses \WP_MainWP_Stream\Form_Generator
 	 */
 	public function render_field( $field ) {
 		$output      = null;

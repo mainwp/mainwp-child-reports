@@ -11,6 +11,8 @@ namespace WP_MainWP_Stream;
  * Class Alert_Type_None
  *
  * @package WP_MainWP_Stream
+ *
+ * @uses \WP_MainWP_Stream\Alert_Type
  */
 class Alert_Type_None extends Alert_Type {
 	/**

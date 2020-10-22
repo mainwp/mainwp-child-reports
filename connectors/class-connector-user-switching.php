@@ -6,6 +6,8 @@ namespace WP_MainWP_Stream;
 /**
  * Class Connector_User_Switching.
  * @package WP_MainWP_Stream
+ *
+ * @uses \WP_MainWP_Stream\Connector
  */
 class Connector_User_Switching extends Connector {
 
@@ -73,6 +75,7 @@ class Connector_User_Switching extends Connector {
 	 *
 	 * Overrides the default `Connector::register()` method.
 	 *
+	 * @uses \WP_MainWP_Stream\Connector::register()
 	 */
 	public function register() {
 		parent::register();
@@ -109,6 +112,8 @@ class Connector_User_Switching extends Connector {
 	 *
 	 * @param array      $labels     All registered connector labels
 	 * @param Connectors $connectors The Connectors object instance
+	 *
+	 * @uses \WP_MainWP_Stream\Connectors
 	 */
 	public function callback_wp_mainwp_stream_after_connectors_registration( array $labels, Connectors $connectors ) {
 		$action = wp_mainwp_stream_filter_input( INPUT_GET, 'action' ) ?: wp_mainwp_stream_filter_input( INPUT_POST, 'action' );
@@ -234,6 +239,8 @@ class Connector_User_Switching extends Connector {
 	 *
 	 * @param Connectors $connectors The Connectors instance
 	 * @param string     $action     The name of the action to unhook
+	 *
+	 * @uses \WP_MainWP_Stream\Connectors
 	 */
 	protected function unhook_user_action( Connectors $connectors, $action ) {
 		foreach ( $connectors->connectors as $connector ) {

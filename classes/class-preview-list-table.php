@@ -6,6 +6,8 @@ namespace WP_MainWP_Stream;
 /**
  * Class Preview_List_Table.
  * @package WP_MainWP_Stream
+ *
+ * @uses \WP_MainWP_Stream\List_Table
  */
 class Preview_List_Table extends List_Table {
 
@@ -17,6 +19,8 @@ class Preview_List_Table extends List_Table {
 	 * @param Plugin $plugin Plugin object.
 	 *
 	 * @return void
+     *
+     * @uses \WP_MainWP_Stream\List_Table
 	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;

@@ -101,7 +101,11 @@ class Export {
 	 *
 	 * @param array $item Post to extract data from.
 	 * @param array $columns Columns being extracted.
+	 *
 	 * @return array Numerically-indexed array with extracted data.
+	 *
+	 * @uses \WP_MainWP_Stream\Author
+	 * @uses \WP_MainWP_Stream\Record
 	 */
 	public function build_record( $item, $columns ) {
 		$record = new Record( $item );
@@ -227,6 +231,8 @@ class Export {
 	 *
 	 * @param Exporter $exporter The class to check.
 	 * @return bool
+	 *
+	 * @uses \WP_MainWP_Stream\Exporter
 	 */
 	public function is_valid_exporter( $exporter ) {
 		if ( ! is_a( $exporter, 'WP_MainWP_Stream\Exporter' ) ) {

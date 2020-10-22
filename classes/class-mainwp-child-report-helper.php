@@ -382,6 +382,8 @@ class MainWP_Child_Report_Helper {
 
     /**
      * Register list table.
+     *
+     * @uses \WP_MainWP_Stream\List_Table
      */
     public function register_list_table() {
 		$this->list_table = new List_Table(

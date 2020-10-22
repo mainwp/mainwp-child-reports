@@ -4,7 +4,11 @@
 namespace WP_MainWP_Stream;
 
 /**
- * Class . @package WP_MainWP_Stream
+ * Class Connector_Posts
+ *
+ * @package WP_MainWP_Stream
+ *
+ * @uses \WP_MainWP_Stream\Connector
  */
 class Connector_Posts extends Connector {
 	/**

@@ -166,6 +166,10 @@ class Admin {
 	 * Load admin classes.
 	 *
 	 * @action init
+     *
+     * @uses \WP_MainWP_Stream\Export
+     * @uses \WP_MainWP_Stream\Live_Update
+     * @uses \WP_MainWP_Stream\Network
 	 */
 	public function init() {
 		$this->network     = new Network( $this->plugin );
@@ -463,6 +467,8 @@ class Admin {
 	 * Check whether or not the current admin screen belongs to Stream.
 	 *
 	 * @return bool TRUE|FALSE.
+     *
+     * @uses \WP_MainWP_Stream\Alerts::POST_TYPE
 	 */
 	public function is_stream_screen() {
 		if ( is_admin() && false !== strpos( wp_mainwp_stream_filter_input( INPUT_GET, 'page' ), $this->records_page_slug ) ) {
@@ -965,7 +971,7 @@ class Admin {
 	/**
 	 * Instantiate the list table.
      *
-     * @deprecated Disabled.
+     * @uses \WP_MainWP_Stream\List_Table
 	 */
     public function register_list_table() {
 		$this->list_table = new List_Table(
@@ -1120,7 +1126,10 @@ class Admin {
      * Get users record meta.
      *
      * @param array $authors Authors array.
+     *
      * @return array Return author records.
+     *
+     * @uses \WP_MainWP_Stream\Author
      */
     public function get_users_record_meta($authors ) {
 		$authors_records = array();

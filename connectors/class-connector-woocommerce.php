@@ -5,6 +5,8 @@ namespace WP_MainWP_Stream;
 /**
  * Class Connector_Woocommerce
  * @package WP_MainWP_Stream
+ *
+ * @uses \WP_MainWP_Stream\Connector
  */
 class Connector_Woocommerce extends Connector {
 
@@ -60,6 +62,8 @@ class Connector_Woocommerce extends Connector {
 
     /**
      * Register WooCommerce Connector with parent class.
+     *
+     * @uses \WP_MainWP_Stream\Connector::register()
      */
     public function register() {
 		parent::register();
@@ -115,6 +119,8 @@ class Connector_Woocommerce extends Connector {
 	 * Return translated context labels.
 	 *
 	 * @return array Context label translations.
+	 *
+	 * @uses \WP_MainWP_Stream\Connector_Posts
 	 */
 	public function get_context_labels() {
 		$context_labels = array();
@@ -217,6 +223,8 @@ class Connector_Woocommerce extends Connector {
 	 * @param Record $record Stream record.
 	 *
 	 * @return array Action links.
+	 *
+	 * @uses \WP_MainWP_Stream\Connector_Posts
 	 */
 	public function action_links( $links, $record ) {
 		if ( in_array( $record->context, $this->post_types, true ) && get_post( $record->object_id ) ) {

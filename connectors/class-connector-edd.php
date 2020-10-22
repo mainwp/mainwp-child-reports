@@ -6,6 +6,8 @@ namespace WP_MainWP_Stream;
 /**
  * Class Connector_EDD
  * @package WP_MainWP_Stream
+ *
+ * @uses \WP_MainWP_Stream\Connector
  */
 class Connector_EDD extends Connector {
 
@@ -125,6 +127,8 @@ class Connector_EDD extends Connector {
 	 * @param  object $record Stream record.
 	 *
 	 * @return array Action links.
+	 *
+	 * @uses \WP_MainWP_Stream\Connector_Posts
 	 */
 	public function action_links( $links, $record ) {
 		if ( in_array( $record->context, array( 'downloads' ), true ) ) {
@@ -207,6 +211,8 @@ class Connector_EDD extends Connector {
 
     /**
      * Register with parent class.
+     *
+     * @uses \WP_MainWP_Stream\Connector::register()
      */
     public function register() {
 		parent::register();

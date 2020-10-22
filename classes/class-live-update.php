@@ -174,6 +174,8 @@ class Live_Update {
 	 * @param array $data     Data from heartbeat send
 	 *
 	 * @return array Data sent to heartbeat tick
+	 *
+	 * @uses \WP_MainWP_Stream\List_Table
 	 */
 	public function heartbeat_received( $response, $data ) {
 		// Only fire when Stream is requesting a live update
