@@ -6,6 +6,8 @@ namespace WP_MainWP_Stream;
 /**
  * Class Connector_Taxonomies.
  * @package WP_MainWP_Stream
+ *
+ * @uses \WP_MainWP_Stream\Connector
  */
 class Connector_Taxonomies extends Connector {
 	/**

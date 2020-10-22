@@ -6,6 +6,8 @@ namespace WP_MainWP_Stream;
 /**
  * Class Connector_BbPress.
  * @package WP_MainWP_Stream
+ *
+ * @uses \WP_MainWP_Stream\Connector
  */
 class Connector_BbPress extends Connector {
 
@@ -155,6 +157,8 @@ class Connector_BbPress extends Connector {
 
     /**
      * Register log data.
+     *
+     * @uses \WP_MainWP_Stream\Connector::register()
      */
 	public function register() {
 		parent::register();

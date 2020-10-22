@@ -26,7 +26,9 @@ class DB {
 	private $wpdb;
 	
 	/**
-	 * Class constructor.
+	 * DB constructor.
+	 *
+	 * Run each time the class is called.
 	 *
 	 * @param DB_Driver $driver Driver we want to use.
 	 */

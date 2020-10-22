@@ -11,6 +11,8 @@ namespace WP_MainWP_Stream;
  * Class Alert_Type_Highlight
  *
  * @package WP_MainWP_Stream
+ *
+ * @uses \WP_MainWP_Stream\Alert_Type
  */
 class Alert_Type_Highlight extends Alert_Type {
 
@@ -58,10 +60,15 @@ class Alert_Type_Highlight extends Alert_Type {
 	public $plugin;
 
 	/**
-	 * Class Constructor
+	 * Alert_Type_Highlight constructor.
+	 *
+	 * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin Plugin object.
 	 * @return void
+	 *
+	 * @uses \WP_MainWP_Stream\Alert_Type
+	 * @uses \WP_MainWP_Stream\Alert_Type_Highlight
 	 */
 	public function __construct( $plugin ) {
 		parent::__construct( $plugin );
@@ -116,7 +123,11 @@ class Alert_Type_Highlight extends Alert_Type {
 	 * @param int|string $record_id Record that triggered alert.
 	 * @param array      $recordarr Record details.
 	 * @param object     $alert Alert options.
+	 *
 	 * @return void
+	 *
+	 * @uses \WP_MainWP_Stream\Alert::update_record_triggered_alerts()
+	 *
 	 */
 	public function alert( $record_id, $recordarr, $alert ) {
 		$recordarr['ID']       = $record_id;
@@ -134,6 +145,8 @@ class Alert_Type_Highlight extends Alert_Type {
 	 *
 	 * @param Alert $alert Alert object for the currently displayed alert.
 	 * @return void
+	 *
+	 * @uses \WP_MainWP_Stream\Form_Generator
 	 */
 	public function display_fields( $alert ) {
 		$alert_meta = array();
@@ -231,6 +244,9 @@ class Alert_Type_Highlight extends Alert_Type {
 	 * @param object $record A record object.
 	 *
 	 * @return mixed
+	 *
+	 * @uses \WP_MainWP_Stream\Alerts::ALERTS_TRIGGERED_META_KEY
+	 * @uses \WP_MainWP_Stream\Record
 	 */
 	public function action_link_remove_highlight( $actions, $record ) {
 		$record           = new Record( $record );
@@ -261,6 +277,9 @@ class Alert_Type_Highlight extends Alert_Type {
 	 * those triggered on specific Alert (post) IDs.
 	 *
 	 * @action wp_ajax_stream_remove_highlight
+	 *
+	 * @uses \WP_MainWP_Stream\Alerts::ALERTS_TRIGGERED_META_KEY
+	 * @uses \WP_MainWP_Stream\Record
 	 */
 	public function ajax_remove_highlight() {
 		check_ajax_referer( self::REMOVE_ACTION_NONCE, 'security' );

@@ -6,6 +6,8 @@ namespace WP_MainWP_Stream;
 /**
  * Class Connector_Menus.
  * @package WP_MainWP_Stream
+ *
+ * @uses \WP_MainWP_Stream\Connector
  */
 class Connector_Menus extends Connector {
 	/**
@@ -80,6 +82,8 @@ class Connector_Menus extends Connector {
 
     /**
      * Register MainWP Child Reports stylesheet.
+     *
+     * @uses \WP_MainWP_Stream\Connector::register()
      */
 	public function register() {
 		parent::register();

@@ -21,7 +21,9 @@ class Alerts_List {
 	public $plugin;
 
 	/**
-	 * Class constructor.
+	 * Alerts_List constructor.
+     *
+     * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin The main Plugin class.
 	 */
@@ -53,7 +55,10 @@ class Alerts_List {
 	 * @filter request
 	 *
 	 * @param array $query_vars Arguments for query to populate table.
+     *
 	 * @return array
+     *
+     * @uses \WP_MainWP_Stream\Alerts::POST_TYPE
 	 */
 	public function parse_request( $query_vars ) {
 		$screen = get_current_screen();
@@ -240,7 +245,10 @@ class Alerts_List {
 	 * @filter post_row_actions
 	 *
 	 * @param array $actions List of inline edit actions available.
+     *
 	 * @return array
+     *
+     * @uses \WP_MainWP_Stream\Alerts::POST_TYPE
 	 */
 	public function suppress_quick_edit( $actions ) {
 		if ( Alerts::POST_TYPE !== get_post_type() ) {
@@ -260,7 +268,10 @@ class Alerts_List {
 	 *
 	 * @param bool   $status Status of months dropdown enabling.
 	 * @param string $post_type Post type status is related to.
+     *
 	 * @return bool
+     *
+     * @uses \WP_MainWP_Stream\Alerts::POST_TYPE
 	 */
 	public function suppress_months_dropdown( $status, $post_type ) {
 		if ( Alerts::POST_TYPE === $post_type ) {
@@ -296,6 +307,8 @@ class Alerts_List {
 
 	/**
 	 * Display a custom quick edit form.
+     *
+     * @uses \WP_MainWP_Stream\Alerts::POST_TYPE
 	 */
 	public function display_custom_quick_edit() {
 		static $fired = false;
@@ -354,6 +367,8 @@ class Alerts_List {
 	 * @param array $postarr Raw post data.
 	 *
 	 * @return array
+     *
+     * @uses \WP_MainWP_Stream\Alerts::POST_TYPE
 	 */
 	public function save_alert_inline_edit( $data, $postarr ) {
 		if ( did_action( 'customize_preview_init' ) || empty( $postarr['ID'] ) ) {

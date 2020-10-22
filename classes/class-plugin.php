@@ -45,9 +45,21 @@ class Plugin {
 	
 	/** @var \WP_MainWP_Stream\Child_Helper Child_Helper class. */
 	public $child_helper;
-		
+
 	/**
-	 * Class constructor.
+	 * Plugin constructor.
+	 *
+	 * Run each time the class is called.
+	 *
+	 * @throws \Exception
+	 *
+	 * @uses \WP_MainWP_Stream\Admin
+	 * @uses \WP_MainWP_Stream\CLI
+	 * @uses \WP_MainWP_Stream\DB
+	 * @uses \WP_MainWP_Stream\DB_Driver
+	 * @uses \WP_MainWP_Stream\DB_Driver_WPDB
+	 * @uses \WP_MainWP_Stream\Log
+	 * @uses \WP_MainWP_Stream\MainWP_Child_Report_Helper
 	 */
 	public function __construct() {
 		$locate = $this->locate_plugin();
@@ -158,6 +170,11 @@ class Plugin {
 	 * Load Settings, Notifications, and Connectors.
 	 *
 	 * @action init
+	 *
+	 * @uses \WP_MainWP_Stream\Alerts
+	 * @uses \WP_MainWP_Stream\Alerts_List
+	 * @uses \WP_MainWP_Stream\Connectors
+	 * @uses \WP_MainWP_Stream\Settings
 	 */
 	public function init() {
 		$this->settings    = new Settings( $this );
@@ -195,6 +212,9 @@ class Plugin {
 
 	/**
 	 * Change plugin database driver in case driver plugin loaded after stream.
+	 *
+	 * @uses \WP_MainWP_Stream\DB
+	 * @uses \WP_MainWP_Stream\DB_Driver_WPDB
 	 */
 	public function plugins_loaded() {
 		// Load DB helper interface/class

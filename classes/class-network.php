@@ -21,6 +21,8 @@ class Network {
     /**
      * Network constructor.
      *
+     * Run each time the class is called.
+     *
      * @param Plugin $plugin Plugin class.
      *
      * @uses \WP_MainWP_Stream\Network::is_network_activated()
@@ -126,6 +128,8 @@ class Network {
 	 * Check if Stream is a must-use plugin.
 	 *
 	 * @return bool Returns true if Stream is a must-use plugin, otherwise false
+	 *
+	 * @uses \WP_MainWP_Stream\Plugin
 	 */
 	public function is_mustuse() {
 

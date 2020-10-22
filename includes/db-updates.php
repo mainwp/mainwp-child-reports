@@ -255,7 +255,8 @@ function wp_mainwp_stream_update_auto_352( $db_version, $current_version ) {
  * @return string
  */
 function wp_mainwp_stream_update_auto_350($db_version, $current_version ) {
-	
+
+	/** @global object $wpdb WordPress Database objcet. */
 	global $wpdb;
 	
 	$stream_entries = $wpdb->get_results( "SELECT * FROM {$wpdb->base_prefix}mainwp_stream" );
@@ -332,6 +333,8 @@ function wp_mainwp_stream_update_auto_308( $db_version, $current_version ) {
  * @return string
  */
 function wp_mainwp_stream_update_302( $db_version, $current_version ) {
+
+	/** @global object $wpdb WordPress Database objcet. */
 	global $wpdb;
 
 	$stream_entries = $wpdb->get_results( "SELECT * FROM {$wpdb->base_prefix}mainwp_stream" );
@@ -370,7 +373,9 @@ function wp_mainwp_stream_update_302( $db_version, $current_version ) {
  *
  * @return string
  */
-function wp_mainwp_stream_update_auto_300( $db_version, $current_version ) {	
+function wp_mainwp_stream_update_auto_300( $db_version, $current_version ) {
+
+	/** @global object $wpdb WordPress Database objcet. */
 	global $wpdb;
 
 	// Get only the author_meta values that are double-serialized

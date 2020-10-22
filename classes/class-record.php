@@ -54,6 +54,8 @@ class Record {
     /**
      * Record constructor.
      *
+     * Run each time the class is called.
+     *
      * @param array $item Record.
      */
     public function __construct( $item ) {

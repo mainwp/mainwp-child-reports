@@ -30,6 +30,9 @@ class Uninstall {
 
     /**
      * Uninstall constructor.
+     *
+     * Run each time the class is called.
+     *
      * @param object $plugin Plugin class.
      */
 	public function __construct( $plugin ) {

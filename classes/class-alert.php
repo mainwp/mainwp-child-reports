@@ -64,7 +64,9 @@ class Alert {
 	public $plugin;
 
 	/**
-	 * Class constructor
+	 * Alert constructor.
+	 *
+	 * Run each time the class is called.
 	 *
 	 * @param object $item Alert data.
 	 * @param Plugin $plugin Plugin class.
@@ -86,6 +88,8 @@ class Alert {
 	 * Save state of the Alert to database
 	 *
 	 * @return int The Post ID of the alert.
+	 *
+	 * @uses \WP_MainWP_Stream\Alerts::POST_TYPE
 	 */
 	public function save() {
 
@@ -124,7 +128,10 @@ class Alert {
 	 * Process settings form data
 	 *
 	 * @param array $data Processed post object data.
+	 *
 	 * @return array New post object data.
+	 *
+	 * @uses \WP_MainWP_Stream\Alerts::POST_TYPE
 	 */
 	public function process_settings_form( $data ) {
 
@@ -255,6 +262,9 @@ class Alert {
 	 * @param array  $alert_meta Alert meta.
 	 *
 	 * @return bool If the meta was updated successfully.
+	 *
+	 * @uses \WP_MainWP_Stream\Alerts::ALERTS_TRIGGERED_META_KEY
+	 * @uses \WP_MainWP_Stream\Record
 	 */
 	public static function update_record_triggered_alerts( $record, $alert_slug, $alert_meta ) {
 		if ( ! is_string( $alert_slug ) ) {
@@ -301,6 +311,9 @@ class Alert {
 	 * @param mixed  $default The default value if no value is found.
 	 *
 	 * @return mixed
+	 *
+	 * @uses \WP_MainWP_Stream\Alerts::ALERTS_TRIGGERED_META_KEY
+	 * @uses \WP_MainWP_Stream\Record
 	 */
 	public function get_single_alert_setting_from_record( $record, $alert_slug, $setting, $default = false ) {
 		if ( ! is_object( $record ) || ! is_string( $alert_slug ) || ! is_string( $setting ) ) {

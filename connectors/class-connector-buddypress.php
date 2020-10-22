@@ -6,6 +6,8 @@ namespace WP_MainWP_Stream;
 /**
  * Class Connector_BuddyPress
  * @package WP_MainWP_Stream
+ *
+ * @uses \WP_MainWP_Stream\Connector
  */
 class Connector_BuddyPress extends Connector {
 
@@ -270,6 +272,8 @@ class Connector_BuddyPress extends Connector {
 
     /**
      * Register with parent class.
+     *
+     * @uses \WP_MainWP_Stream\Connector::register()
      */
     public function register() {
 		parent::register();

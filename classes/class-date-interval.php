@@ -23,7 +23,9 @@ class Date_Interval {
 	public $intervals;
 
 	/**
-	 * Class constructor
+	 * Date_Interval constructor.
+	 *
+	 * Run each time the class is called.
 	 */
 	public function __construct() {
 		// Get all default intervals

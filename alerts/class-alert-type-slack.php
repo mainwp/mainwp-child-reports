@@ -11,6 +11,8 @@ namespace WP_MainWP_Stream;
  * Class Alert_Type_Slack
  *
  * @package WP_MainWP_Stream
+ *
+ * @uses \WP_MainWP_Stream\Alert_Type
  */
 class Alert_Type_Slack extends Alert_Type {
 
@@ -29,9 +31,14 @@ class Alert_Type_Slack extends Alert_Type {
 	public $slug = 'slack';
 
 	/**
-	 * Class Constructor
+	 * Alert_Type_Slack constructor.
+	 *
+	 * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin Plugin object.
+	 *
+	 * @uses \WP_MainWP_Stream\Alert_Type
+	 * @uses \WP_MainWP_Stream\Alert_Type_Slack
 	 */
 	public function __construct( $plugin ) {
 		parent::__construct( $plugin );
@@ -177,6 +184,8 @@ class Alert_Type_Slack extends Alert_Type {
 	 *
 	 * @param Alert $alert Alert object for the currently displayed alert.
 	 * @return void
+	 *
+	 * @uses \WP_MainWP_Stream\Form_Generator
 	 */
 	public function display_fields( $alert ) {
 		$alert_meta = array();

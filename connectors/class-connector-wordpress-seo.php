@@ -5,6 +5,8 @@ namespace WP_MainWP_Stream;
 /**
  * Class Connector_WordPress_SEO
  * @package WP_MainWP_Stream
+ *
+ * @uses \WP_MainWP_Stream\Connector
  */
 class Connector_WordPress_SEO extends Connector {
 
@@ -97,6 +99,8 @@ class Connector_WordPress_SEO extends Connector {
 	 * @param Record $record Stream record.
 	 *
 	 * @return array Action links.
+	 *
+	 * @uses \WP_MainWP_Stream\Connector_Posts
 	 */
 	public function action_links( $links, $record ) {
 		// Options
@@ -173,6 +177,8 @@ class Connector_WordPress_SEO extends Connector {
 
     /**
      * Register with parent class.
+     *
+     * @uses \WP_MainWP_Stream\Connector::register()
      */
 	public function register() {
 		if ( is_network_admin() && ! is_plugin_active_for_network( 'wordpress-seo/wordpress-seo-main.php' ) ) {

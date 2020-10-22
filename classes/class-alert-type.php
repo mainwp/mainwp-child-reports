@@ -31,7 +31,9 @@ abstract class Alert_Type {
 	public $slug;
 
 	/**
-	 * Class constructor.
+	 * Alert_Type constructor.
+	 *
+	 * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin Plugin object.
 	 */

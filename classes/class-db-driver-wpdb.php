@@ -6,6 +6,8 @@ namespace WP_MainWP_Stream;
 /**
  * Class DB_Driver_WPDB.
  * @package WP_MainWP_Stream
+ *
+ * @uses \WP_MainWP_Stream\DB_Driver
  */
 class DB_Driver_WPDB implements DB_Driver {
 	/**
@@ -30,7 +32,11 @@ class DB_Driver_WPDB implements DB_Driver {
 	public $table_meta;
 
 	/**
-	 * Class constructor.
+	 * DB_Driver_WPDB constructor.
+	 *
+	 * Run each time the class is called.
+	 *
+	 * @uses \WP_MainWP_Stream\Query
 	 */
 	public function __construct() {
 		$this->query = new Query( $this );
@@ -162,6 +168,8 @@ class DB_Driver_WPDB implements DB_Driver {
 	 *
 	 * @param \WP_MainWP_Stream\Plugin $plugin Instance of the plugin.
 	 * @return \WP_MainWP_Stream\Install
+	 *
+	 * @uses \WP_MainWP_Stream\Install
 	 */
 	public function setup_storage( $plugin ) {
 		return new Install( $plugin );
@@ -172,6 +180,8 @@ class DB_Driver_WPDB implements DB_Driver {
 	 *
 	 * @param \WP_MainWP_Stream\Plugin $plugin Instance of the plugin.
 	 * @return \WP_MainWP_Stream\Uninstall
+	 *
+	 * @uses \WP_MainWP_Stream\Uninstall
 	 */
 	public function purge_storage( $plugin ) {
 		$uninstall = new Uninstall( $plugin );

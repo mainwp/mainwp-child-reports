@@ -15,7 +15,9 @@ class List_Table extends \WP_List_Table {
 	public $plugin;
 
 	/**
-	 * Class constructor.
+	 * List_Table constructor.
+     *
+     * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin The main Plugin class.
 	 * @param array  $args Constructor arguments.
@@ -271,7 +273,11 @@ class List_Table extends \WP_List_Table {
      *
      * @param array $item Row item.
      * @param atring $column_name Column name.
+     *
      * @throws \Exception Error message.
+     *
+     * @uses \WP_MainWP_Stream\Author
+     * @uses \WP_MainWP_Stream\Record
      */
     public function column_default( $item, $column_name ) {
 		$out    = '';
@@ -525,6 +531,9 @@ class List_Table extends \WP_List_Table {
 	 * @param string $column List table column name.
 	 *
 	 * @return array Options to be displayed in search filters.
+     *
+     * @uses \WP_MainWP_Stream\Author
+     *
      * @todo eliminate special condition for authors, especially using a WP_User object as the value; should use string or stringifiable object.
      */
 	public function assemble_records( $column ) {
@@ -632,6 +641,8 @@ class List_Table extends \WP_List_Table {
      * Get filters.
      *
      * @return array Return filters array.
+     *
+     * @uses \WP_MainWP_Stream\Date_Interval
      */
     public function get_filters() {
 		$filters = array();
@@ -1187,6 +1198,8 @@ class List_Table extends \WP_List_Table {
 	 * @param array $users Users array.
 	 *
 	 * @return array Dropdown array.
+     *
+     * @uses \WP_MainWP_Stream\Author
 	 */
 	public function get_users_dropdown_items( $users ) {
 		$record_meta = array();

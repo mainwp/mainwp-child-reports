@@ -11,6 +11,8 @@ namespace WP_MainWP_Stream;
  * Class Alert_Trigger_Action
  *
  * @package WP_MainWP_Stream
+ *
+ * @uses \WP_MainWP_Stream\Alert_Trigger
  */
 class Alert_Trigger_Action extends Alert_Trigger {
 

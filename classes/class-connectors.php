@@ -48,7 +48,9 @@ class Connectors {
 	protected $admin_notices = array();
 
 	/**
-	 * Class constructor.
+	 * Connectors constructor.
+	 *
+	 * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin The main Plugin class.
 	 */
@@ -59,6 +61,8 @@ class Connectors {
 
 	/**
 	 * Load built-in connectors
+	 *
+	 * @uses \WP_MainWP_Stream\Connector
 	 */
 	public function load_connectors() {
 		$connectors = array(

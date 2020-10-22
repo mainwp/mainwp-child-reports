@@ -19,7 +19,9 @@ class Author {
 	protected $user;
 
 	/**
-	 * Class constructor.
+	 * Author constructor.
+	 *
+	 * Run each time the class is called.
 	 *
 	 * @param int   $user_id   The user ID.
 	 * @param array $user_meta The user meta array.

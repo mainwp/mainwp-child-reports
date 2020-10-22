@@ -6,6 +6,8 @@ namespace WP_MainWP_Stream;
 /**
  * Class Exporter_JSON.
  * @package WP_MainWP_Stream
+ *
+ * @uses \WP_MainWP_Stream\Exporter
  */
 class Exporter_JSON extends Exporter {
 	/**

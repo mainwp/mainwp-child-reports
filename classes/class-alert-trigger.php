@@ -29,7 +29,9 @@ abstract class Alert_Trigger {
 	public $slug;
 
 	/**
-	 * Class constructor
+	 * Alert_Trigger constructor.
+	 *
+	 * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin Plugin class.
 	 */

@@ -33,6 +33,8 @@ class Install {
     /**
      * Install constructor.
      *
+     * Run each time the class is called.
+     *
      * @param object $plugin Plugin class.
      *
      * @uses \WP_MainWP_Stream\Install::get_db_version()

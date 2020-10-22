@@ -7,6 +7,8 @@ namespace WP_MainWP_Stream;
  * Class Connector_MainWP_Maintenance
  *
  * @package WP_MainWP_Stream
+ *
+ * @uses \WP_MainWP_Stream\Connector
  */
 class Connector_MainWP_Maintenance extends Connector {
 
@@ -51,6 +53,8 @@ class Connector_MainWP_Maintenance extends Connector {
 
 	/**
 	 * Register with parent class.
+	 *
+	 * @uses \WP_MainWP_Stream\Connector::register()
 	 */
 	public function register() {
 		parent::register();

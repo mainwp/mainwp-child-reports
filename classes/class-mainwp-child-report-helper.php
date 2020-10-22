@@ -35,6 +35,9 @@ class MainWP_Child_Report_Helper {
 
     /**
      * MainWP_Child_Report_Helper constructor.
+     *
+     * Run each time the class is called.
+     *
      * @param null $plugin
      */
     function __construct( $plugin = null ) {
@@ -379,6 +382,8 @@ class MainWP_Child_Report_Helper {
 
     /**
      * Register list table.
+     *
+     * @uses \WP_MainWP_Stream\List_Table
      */
     public function register_list_table() {
 		$this->list_table = new List_Table(

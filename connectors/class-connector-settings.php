@@ -7,7 +7,7 @@ namespace WP_MainWP_Stream;
  * Class Connector_Settings.
  * @package WP_MainWP_Stream
  *
- *
+ * @uses \WP_MainWP_Stream\Connector
  */
 class Connector_Settings extends Connector {
 
@@ -101,6 +101,8 @@ class Connector_Settings extends Connector {
 	 * Register all context hooks.
 	 *
 	 * @return void
+     *
+     * @uses \WP_MainWP_Stream\Connector::register()
 	 */
 	public function register() {
 		parent::register();
