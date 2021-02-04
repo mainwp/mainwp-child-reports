@@ -36,6 +36,10 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 
 == Changelog ==
 
+= 2.0.7 - 2-4-2021 =
+* Fixed: An issue with logging deleted plugins
+* Updated: exclusion rules for certain custom post types
+
 = 2.0.6 - 10-29-2020 =
 * Added: PHP Docs blocks
 * Updated: MainWP Child 4.1 compatibility
