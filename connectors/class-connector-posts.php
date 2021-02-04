@@ -379,6 +379,9 @@ class Connector_Posts extends Connector {
 				'nav_menu_item',
 				'attachment',
 				'revision',
+				'seopress_404',
+				'seopress_bot',
+				'seopress_schemas'
 			)
 		);
 	}

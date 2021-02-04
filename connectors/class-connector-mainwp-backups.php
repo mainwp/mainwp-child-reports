@@ -162,6 +162,8 @@ class Connector_MainWP_Backups extends Connector {
     /**
      * Record MainWP UpdraftPlus backups log.
      *
+	 * Not used.
+	 * 
      * @param string $destination Backup destination.
      * @param strign $message Log message.
      * @param string $status Backup status.
