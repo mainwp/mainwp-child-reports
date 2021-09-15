@@ -7,7 +7,7 @@ Plugin URI: https://mainwp.com
 Requires at least: 3.6
 Tested up to: 5.8
 Requires PHP: 7.0
-Stable tag: 2.0.7
+Stable tag: 2.0.8
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -35,6 +35,12 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 2. The MainWP Child Reports Settings Screen
 
 == Changelog ==
+
+= 2.0.8 - 9-15-2021 =
+* Fixed: An issue with logging certain actions triggered by WP Cron
+* Fixed: An issue with displaying timestamps on some setups
+* Fixed: Problems with the multibyte string functions usage
+* Preventative: Multiple security improvements
 
 = 2.0.7 - 2-4-2021 =
 * Fixed: An issue with logging deleted plugins
