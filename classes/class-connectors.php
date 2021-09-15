@@ -108,6 +108,13 @@ class Connectors {
 			}
 			$class = new $class_name( $this->plugin->log );
 
+			if ( $class->register_cron && wp_mainwp_stream_is_cron_doing() ) {
+				if ( $class->is_dependency_satisfied() ) {
+					$classes[ $class->name ] = $class;
+					continue; // load it.
+				}				
+			}
+
 			// Check if the Connector extends WP_MainWP_Stream\Connector
 			if ( ! is_subclass_of( $class, 'WP_MainWP_Stream\Connector' ) ) {
 				continue;

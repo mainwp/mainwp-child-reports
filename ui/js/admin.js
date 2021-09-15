@@ -113,7 +113,7 @@ jQuery(
 			$contextInput.trigger( 'change' );
 		}
 
-			$( 'input[type=submit]', '#record-filter-form' ).click(
+			$( 'input[type=submit]', '#record-filter-form' ).on( 'click',
 				function() {
 					$( 'input[type=submit]', $( this ).parents( 'form' ) ).removeAttr( 'clicked' );
 					$( this ).attr( 'clicked', 'true' );
@@ -226,7 +226,7 @@ jQuery(
 				function() {
 
 					// Enable Live Updates checkbox ajax
-					$( '#enable_live_update' ).click(
+					$( '#enable_live_update' ).on( 'click',
 						function() {
 							var nonce = $( '#mainwp_stream_live_update_nonce' ).val(),
 							user      = $( '#mainwp_enable_live_update_user' ).val(),
@@ -318,7 +318,7 @@ jQuery(
 
 					toggle_filter_submit();
 
-					$( 'div.metabox-prefs [type="checkbox"]' ).click(
+					$( 'div.metabox-prefs [type="checkbox"]' ).on( 'click',
 						function() {
 							var id = $( this ).prop( 'id' );
 
@@ -525,8 +525,7 @@ jQuery(
 
 				save_interval: function( $btn ) {
 					var $wrapper = this.wrapper;
-					$btn.click(
-						function() {
+					$btn.on( 'click', function() {
 							var data = {
 								key:   $wrapper.find( 'select.field-predefined' ).find( ':selected' ).val(),
 								start: $wrapper.find( '.date-inputs .field-from' ).val(),

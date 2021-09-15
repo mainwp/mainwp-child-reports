@@ -5,6 +5,7 @@ namespace WP_MainWP_Stream;
 
 /**
  * Class Query.
+ *
  * @package WP_MainWP_Stream
  */
 class Query {
@@ -88,41 +89,40 @@ class Query {
 		}
 
 		if ( ! empty( $args['date_from'] ) ) {
-			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_from'] . ' 00:00:00' ) ) );
-			//$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) >= %s", $date );
-			$where .= " AND ($wpdb->mainwp_stream.created >= STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
+			$date = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_from'] . ' 00:00:00' ) ) );
+			// $where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) >= %s", $date );
+			$where .= " AND ($wpdb->mainwp_stream.created >= STR_TO_DATE(" . $wpdb->prepare( '%s', $date ) . ", '%Y-%m-%d %H:%i:%s'))";
 		}
 
 		if ( ! empty( $args['date_to'] ) ) {
-			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_to'] . ' 23:59:59' ) ) );
-			//$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) <= %s", $date );
-			$where .= " AND ($wpdb->mainwp_stream.created <= STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
+			$date = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_to'] . ' 23:59:59' ) ) );
+			// $where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) <= %s", $date );
+			$where .= " AND ($wpdb->mainwp_stream.created <= STR_TO_DATE(" . $wpdb->prepare( '%s', $date ) . ", '%Y-%m-%d %H:%i:%s'))";
 		}
 
 		if ( ! empty( $args['date_after'] ) ) {
-			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_after'] ) ) );
-			//$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) > %s", $date );
-			$where .= " AND ($wpdb->mainwp_stream.created > STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
+			$date = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_after'] ) ) );
+			// $where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) > %s", $date );
+			$where .= " AND ($wpdb->mainwp_stream.created > STR_TO_DATE(" . $wpdb->prepare( '%s', $date ) . ", '%Y-%m-%d %H:%i:%s'))";
 		}
 
 		if ( ! empty( $args['date_before'] ) ) {
-			$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_before'] ) ) );
-			//$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) < %s", $date );
-			$where .= " AND ($wpdb->mainwp_stream.created < STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
+			$date = get_gmt_from_date( date( 'Y-m-d H:i:s', strtotime( $args['date_before'] ) ) );
+			// $where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) < %s", $date );
+			$where .= " AND ($wpdb->mainwp_stream.created < STR_TO_DATE(" . $wpdb->prepare( '%s', $date ) . ", '%Y-%m-%d %H:%i:%s'))";
 		}
-		
-		
+
 		// mainwp custom parameter
 		if ( ! empty( $args['created'] ) ) {
 			$created = strtotime( $args['created'] );
-			//$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', $created + 5 ) );
-			$date = wp_mainwp_stream_get_iso_8601_extended_date( $created + 5, 0, true ); 
-			//$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) <= %s", $date );
-			$where .= " AND ($wpdb->mainwp_stream.created <= STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
-			//$date   = get_gmt_from_date( date( 'Y-m-d H:i:s', $created - 5 ) );
-			$date = wp_mainwp_stream_get_iso_8601_extended_date( $created - 5, 0, true ); 
-			//$where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) >= %s", $date );
-			$where .= " AND ($wpdb->mainwp_stream.created >= STR_TO_DATE(" . $wpdb->prepare('%s', $date) . ", '%Y-%m-%d %H:%i:%s'))";
+			// $date   = get_gmt_from_date( date( 'Y-m-d H:i:s', $created + 5 ) );
+			$date = wp_mainwp_stream_get_iso_8601_extended_date( $created + 5, 0, true );
+			// $where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) <= %s", $date );
+			$where .= " AND ($wpdb->mainwp_stream.created <= STR_TO_DATE(" . $wpdb->prepare( '%s', $date ) . ", '%Y-%m-%d %H:%i:%s'))";
+			// $date   = get_gmt_from_date( date( 'Y-m-d H:i:s', $created - 5 ) );
+			$date = wp_mainwp_stream_get_iso_8601_extended_date( $created - 5, 0, true );
+			// $where .= $wpdb->prepare( " AND DATE($wpdb->mainwp_stream.created) >= %s", $date );
+			$where .= " AND ($wpdb->mainwp_stream.created >= STR_TO_DATE(" . $wpdb->prepare( '%s', $date ) . ", '%Y-%m-%d %H:%i:%s'))";
 		}
 
 		/**
@@ -180,23 +180,22 @@ class Query {
 				}
 			}
 		}
-		
-		// exclude child/report plugins from log results
-		if (isset($args['hide_child_reports']) && $args['hide_child_reports']) {
-			$child_record_ids = array();
-			$sql_meta = "SELECT record_id FROM $wpdb->mainwp_streammeta WHERE meta_key = 'slug' AND (meta_value = 'mainwp-child/mainwp-child.php' OR meta_value = 'mainwp-child-reports/mainwp-child-reports.php')";
-			$ret  = $wpdb->get_results( $sql_meta, 'ARRAY_A' );
 
-			if ( is_array($ret) && count($ret)> 0 ) {
-				foreach($ret as $val) {
+		// exclude child/report plugins from log results
+		if ( isset( $args['hide_child_reports'] ) && $args['hide_child_reports'] ) {
+			$child_record_ids = array();
+			$sql_meta         = "SELECT record_id FROM $wpdb->mainwp_streammeta WHERE meta_key = 'slug' AND (meta_value = 'mainwp-child/mainwp-child.php' OR meta_value = 'mainwp-child-reports/mainwp-child-reports.php')";
+			$ret              = $wpdb->get_results( $sql_meta, 'ARRAY_A' );
+
+			if ( is_array( $ret ) && count( $ret ) > 0 ) {
+				foreach ( $ret as $val ) {
 					$child_record_ids[] = $val['record_id'];
 				}
 			}
-			if (count($child_record_ids) > 0) {
-				$where .= " AND $wpdb->mainwp_stream.ID NOT IN (" . implode(",", $child_record_ids). ") ";
+			if ( count( $child_record_ids ) > 0 ) {
+				$where .= " AND $wpdb->mainwp_stream.ID NOT IN (" . implode( ',', $child_record_ids ) . ') ';
 			}
 		}
-
 
 		/**
 		 * PARSE PAGINATION PARAMS
@@ -213,14 +212,16 @@ class Query {
 		/**
 		 * PARSE ORDER PARAMS
 		 */
-		$order     = esc_sql( $args['order'] );
-		$orderby   = esc_sql( $args['orderby'] );
-		
+		$order = esc_sql( $args['order'] );
+		$order = ( 'asc' === $order ) ? 'asc' : 'desc';
+
+		$orderby = esc_sql( $args['orderby'] );
+
 		// to fix order by created
-		if ($orderby == 'date')  { 
+		if ( $orderby == 'date' ) {
 			$orderby = 'created';
 		}
-			
+
 		$orderable = array( 'ID', 'site_id', 'blog_id', 'object_id', 'user_id', 'user_role', 'summary', 'created', 'connector', 'context', 'action' );
 
 		if ( in_array( $orderby, $orderable, true ) ) {
@@ -234,7 +235,7 @@ class Query {
 		}
 
 		$orderby = "ORDER BY {$orderby} {$order}";
-		
+
 		/**
 		 * PARSE FIELDS PARAMETER
 		 */
@@ -265,7 +266,7 @@ class Query {
 		WHERE 1=1 {$where}
 		{$orderby}
 		{$limits}";
-		
+
 		/**
 		 * Filter allows the final query to be modified before execution
 		 *
@@ -274,42 +275,41 @@ class Query {
 		 *
 		 * @return string
 		 */
-		
+
 		$query = apply_filters( 'wp_mainwp_stream_db_query', $query, $args );
-				
+
 		$items = $wpdb->get_results( $query ); // @codingStandardsIgnoreLine $query already prepared		
-				
+
 		$found_row = $items ? absint( $wpdb->get_var( 'SELECT FOUND_ROWS()' ) ) : 0;
-		
+
 		// mainwp-child custom query
 		if ( isset( $args['with-meta'] ) && $args['with-meta'] && is_array( $items ) && $items ) {
-			$ids      = array_map( 'absint', wp_list_pluck( $items, 'ID' ) );
-            // to fix issue long query
-            $start_slice = 0;
-            $max_slice = 100;
-            
-            while( $start_slice <=  count($ids)) {
-                $slice_ids = array_slice($ids, $start_slice, $max_slice);
-                $start_slice += $max_slice;
+			$ids = array_map( 'absint', wp_list_pluck( $items, 'ID' ) );
+			// to fix issue long query
+			$start_slice = 0;
+			$max_slice   = 100;
 
-                if (!empty($slice_ids)) {
-                    $sql_meta = sprintf(
-                        "SELECT * FROM $wpdb->mainwp_streammeta WHERE record_id IN ( %s )",
-                        implode( ',', $slice_ids )
-                    );
+			while ( $start_slice <= count( $ids ) ) {
+				$slice_ids    = array_slice( $ids, $start_slice, $max_slice );
+				$start_slice += $max_slice;
 
-                    $meta_records  = $wpdb->get_results( $sql_meta );
-                    $ids_flip = array_flip( $ids );
+				if ( ! empty( $slice_ids ) ) {
+					$sql_meta = sprintf(
+						"SELECT * FROM $wpdb->mainwp_streammeta WHERE record_id IN ( %s )",
+						implode( ',', $slice_ids )
+					);
 
-                    foreach ( $meta_records as $meta_record ) {							
-						if ( !empty($meta_record->meta_value) ) {
-							$items[ $ids_flip[ $meta_record->record_id ] ]->meta[ $meta_record->meta_key ][] = $meta_record->meta_value;						
+					$meta_records = $wpdb->get_results( $sql_meta );
+					$ids_flip     = array_flip( $ids );
+
+					foreach ( $meta_records as $meta_record ) {
+						if ( ! empty( $meta_record->meta_value ) ) {
+							$items[ $ids_flip[ $meta_record->record_id ] ]->meta[ $meta_record->meta_key ][] = $meta_record->meta_value;
 						}
-                    }
-                }
-            }            
+					}
+				}
+			}
 		}
-		
 
 		$result = array();
 		/**

@@ -30,6 +30,7 @@ class Connector_Installer extends Connector {
 		'mainwp_child_installPluginTheme',
 		'mainwp_child_plugin_action',
 		'mainwp_child_theme_action',
+		'automatic_updates_complete',
 	);
 
 	/** @var array Old plugins array. */
@@ -37,6 +38,8 @@ class Connector_Installer extends Connector {
 
 	/** @var bool Register connector in the WP Frontend. */
 	public $register_frontend = false;
+
+	public $register_cron = true;
 
 	/**
 	 * Return translated connector label.
@@ -430,6 +433,40 @@ class Connector_Installer extends Connector {
 	}
 
 	/**
+	 * Logs WordPress core upgrades
+	 *
+	 * @action automatic_updates_complete
+	 *
+	 * @param string $update_results  Update results.
+	 * @return void
+	 */
+	public function callback_automatic_updates_complete( $update_results ) {
+		global $pagenow, $wp_version;
+
+		if ( ! is_array( $update_results ) || ! isset( $update_results['core'] ) ) {
+			return false;
+		}
+
+		$info = $update_results['core'][0];
+
+		$old_version  = $wp_version;
+		$new_version  = $info->item->version;
+		$auto_updated = true;
+
+		$message = esc_html__( 'WordPress auto-updated to %s', 'stream' );
+
+		$this->log(
+			$message,
+			compact( 'new_version', 'old_version', 'auto_updated' ),
+			null,
+			'wordpress', // phpcs:ignore -- fix format text.
+			'updated',
+			null,
+			true // forced log - $forced_log.
+		);
+	}
+
+	/**
 	 * Core updated successfully callback.
 	 *
 	 * @param $new_version New WordPress verison.
@@ -457,7 +494,7 @@ class Connector_Installer extends Connector {
 			$message,
 			compact( 'new_version', 'old_version', 'auto_updated' ),
 			null,
-			'WordPress',
+			'wordpress', // phpcs:ignore -- fix format text.
 			'updated'
 		);
 	}

@@ -49,7 +49,7 @@ function wp_mainwp_stream_filter_var( $var, $filter = null, $options = array() )
  */
 function wp_mainwp_stream_get_iso_8601_extended_date( $time = false, $offset = 0, $mysql_date_string = false ) {
 	if ( $time ) {
-		$microtime = (float) $time . '.0000';
+		$microtime = (float) ( $time . '.0000' );
 	} else {
 		$microtime = microtime( true );
 	}
@@ -139,6 +139,15 @@ function wp_mainwp_stream_is_cron_enabled() {
 	return ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) ? false : true;
 }
 
+
+/**
+ * True if native WP Cron is enabled, otherwise false
+ *
+ * @return bool
+ */
+function wp_mainwp_stream_is_cron_doing() {
+	return ( defined( 'DOING_CRON' ) && DOING_CRON ) ? true : false;
+}
 
 /**
  * Get the asset min suffix if defined.

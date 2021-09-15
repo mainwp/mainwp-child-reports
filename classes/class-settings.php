@@ -920,7 +920,7 @@ class Settings {
 					}
 
 					if ( empty( $author_or_role_selected ) && is_numeric( $author_or_role ) ) {
-						$user                    = new WP_User( $author_or_role );
+						$user                    = new \WP_User( $author_or_role );
 						$display_name            = ( 0 === $user->ID ) ? esc_html__( 'N/A', 'mainwp-child-reports' ) : $user->display_name;
 						$author_or_role_selected = array(
 							'value' => $user->ID,

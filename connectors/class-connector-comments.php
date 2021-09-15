@@ -278,7 +278,7 @@ class Connector_Comments extends Connector {
 			}
 		}
 
-		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
+		$comment_type = \mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		if ( $comment->comment_parent ) {
 			$parent_user_name = get_comment_author( $comment->comment_parent );
@@ -333,7 +333,7 @@ class Connector_Comments extends Connector {
 		$post_type    = get_post_type( $post_id );
 		$post         = get_post( $post_id );
 		$post_title   = $post ? "\"$post->post_title\"" : esc_html__( 'a post', 'mainwp-child-reports' );
-		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
+		$comment_type = \mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		$this->log(
 			// translators: Placeholders refer to a comment author, a post title, and a comment type
@@ -399,7 +399,7 @@ class Connector_Comments extends Connector {
 		$post_type    = get_post_type( $post_id );
 		$post         = get_post( $post_id );
 		$post_title   = $post ? "\"$post->post_title\"" : esc_html__( 'a post', 'mainwp-child-reports' );
-		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
+		$comment_type = \mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		if ( $this->delete_post === $post_id ) {
 			return;
@@ -439,7 +439,7 @@ class Connector_Comments extends Connector {
 		$post_type    = get_post_type( $post_id );
 		$post         = get_post( $post_id );
 		$post_title   = $post ? "\"$post->post_title\"" : esc_html__( 'a post', 'mainwp-child-reports' );
-		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
+		$comment_type = \mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		$this->log(
 			// translators: Placeholders refer to a comment author, a post title, and a comment type
@@ -475,7 +475,7 @@ class Connector_Comments extends Connector {
 		$post_type    = get_post_type( $post_id );
 		$post         = get_post( $post_id );
 		$post_title   = $post ? "\"$post->post_title\"" : esc_html__( 'a post', 'mainwp-child-reports' );
-		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
+		$comment_type = \mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		$this->log(
 			// translators: Placeholders refer to a comment author, a post title, and a comment type
@@ -511,7 +511,7 @@ class Connector_Comments extends Connector {
 		$post_type    = get_post_type( $post_id );
 		$post         = get_post( $post_id );
 		$post_title   = $post ? "\"$post->post_title\"" : esc_html__( 'a post', 'mainwp-child-reports' );
-		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
+		$comment_type = \mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		$this->log(
 			// translators: Placeholders refer to a comment author, a post title, and a comment type
@@ -547,7 +547,7 @@ class Connector_Comments extends Connector {
 		$post_type    = get_post_type( $post_id );
 		$post         = get_post( $post_id );
 		$post_title   = $post ? "\"$post->post_title\"" : esc_html__( 'a post', 'mainwp-child-reports' );
-		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
+		$comment_type = \mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		$this->log(
 			// translators: Placeholders refer to a comment author, a post title, and a comment type
@@ -630,7 +630,7 @@ class Connector_Comments extends Connector {
 		$post_type    = get_post_type( $post_id );
 		$post         = get_post( $post_id );
 		$post_title   = $post ? "\"$post->post_title\"" : esc_html__( 'a post', 'mainwp-child-reports' );
-		$comment_type = mb_strtolower( $this->get_comment_type_label( $comment_id ) );
+		$comment_type = \mb_strtolower( $this->get_comment_type_label( $comment_id ) );
 
 		$this->log(
 			// translators: Placeholders refer to a comment author, a post title, and a comment type

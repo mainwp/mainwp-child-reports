@@ -65,7 +65,7 @@ class Log {
 	 * @uses $wp_roles::is_role()
 	 * @see https://developer.wordpress.org/reference/classes/wp_roles/is_role/
 	 */
-	public function log( $connector, $message, $args, $object_id, $context, $action, $user_id = null, $created_timestamp = 0 ) {
+	public function log( $connector, $message, $args, $object_id, $context, $action, $user_id = null, $created_timestamp = 0, $forced_log = false ) {
 
 	    /** @global object $wp_roles Wordpress user roles object.  */
 	    global $wp_roles;
@@ -84,7 +84,7 @@ class Log {
 
 		$backup_logging = ( is_string( $connector ) && 'mainwp_backups' == $connector ) ? true : false;					
 		// WP Cron tracking requires opt-in and WP Cron to be enabled.
-		if ( ! $wp_cron_tracking && 'wp_cron' === $agent && ! $backup_logging ) {			 
+		if ( ! $wp_cron_tracking && 'wp_cron' === $agent && ! $backup_logging && ! $forced_log ) {			 
 				return false;
 		}
 

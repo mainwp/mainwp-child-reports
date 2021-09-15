@@ -5,6 +5,7 @@ namespace WP_MainWP_Stream;
 
 /**
  * Class Connector.
+ *
  * @package WP_MainWP_Stream
  */
 abstract class Connector {
@@ -51,10 +52,17 @@ abstract class Connector {
 	public $register_frontend = true;
 
 	/**
+	 * Register connector in the WP CRON
+	 *
+	 * @var bool
+	 */
+	public $register_cron = false;
+
+	/**
 	 * Register all context hooks
 	 */
 	public function register() {
-		foreach ( $this->actions as $action ) {			
+		foreach ( $this->actions as $action ) {
 			add_action( $action, array( $this, 'callback' ), 10, 99 );
 		}
 
@@ -66,9 +74,9 @@ abstract class Connector {
 	 * Looks for a class method with the convention: "callback_{action name}"
 	 */
 	public function callback() {
-		$action   = current_filter();		
-		$callback = array( $this, 'callback_' . preg_replace( '/[^A-Za-z0-9_\-]/', '_', $action ) ); // to fix A-Z charater in callback name		
-		
+		$action   = current_filter();
+		$callback = array( $this, 'callback_' . preg_replace( '/[^A-Za-z0-9_\-]/', '_', $action ) ); // to fix A-Z charater in callback name
+
 		// For the sake of testing, trigger an action with the name of the callback
 		if ( defined( 'WP_MAINWP_STREAM_TESTS' ) && WP_MAINWP_STREAM_TESTS ) {
 			/**
@@ -80,15 +88,15 @@ abstract class Connector {
 		}
 
 		// Call the real function
-		if ( is_callable( $callback ) ) {		
+		if ( is_callable( $callback ) ) {
 			return call_user_func_array( $callback, func_get_args() );
-		} 
+		}
 	}
 
 	/**
 	 * Add action links to Stream drop row in admin list screen
 	 *
-	 * @param array $links   Previous links registered
+	 * @param array  $links   Previous links registered
 	 * @param object $record Stream record
 	 *
 	 * @filter wp_mainwp_stream_action_links_{connector}
@@ -104,94 +112,98 @@ abstract class Connector {
 	 * Log handler
 	 *
 	 * @param string $message sprintf-ready error message string
-	 * @param array $args     sprintf (and extra) arguments to use
-	 * @param int $object_id  Target object id
+	 * @param array  $args     sprintf (and extra) arguments to use
+	 * @param int    $object_id  Target object id
 	 * @param string $context Context of the event
 	 * @param string $action  Action of the event
-	 * @param int $user_id    User responsible for the event
+	 * @param int    $user_id    User responsible for the event
 	 *
 	 * @return bool
 	 */
-	public function log( $message, $args, $object_id, $context, $action, $user_id = null ) {
+	public function log( $message, $args, $object_id, $context, $action, $user_id = null, $forced_log = false ) {
 		$connector = $this->name;
 
 		$data = apply_filters(
 			'wp_mainwp_stream_log_data',
-			compact( 'connector', 'message', 'args', 'object_id', 'context', 'action', 'user_id' )
+			compact( 'connector', 'message', 'args', 'object_id', 'context', 'action', 'user_id', 'forced_log' )
 		);
-		
+
 		if ( ! $data ) {
 			return false;
 		} else {
-			$connector = $data['connector'];
-			$message   = $data['message'];
-			$args      = $data['args'];
-			$object_id = $data['object_id'];
-			$context   = $data['context'];
-			$action    = $data['action'];
-			$user_id   = $data['user_id'];
+			$connector  = $data['connector'];
+			$message    = $data['message'];
+			$args       = $data['args'];
+			$object_id  = $data['object_id'];
+			$context    = $data['context'];
+			$action     = $data['action'];
+			$user_id    = $data['user_id'];
+			$forced_log = $data['forced_log'];
 		}
 
 		$created_timestamp = null;
-			
-        if ( !empty( $context ) && is_array($args) ) {
-            if ( $context == "plugins" ) {
-				
-                if (isset($args['slug']) && ( $args['slug'] == 'mainwp-child/mainwp-child.php' || $args['slug'] ==  'mainwp-child-reports/mainwp-child-reports.php' )) {										
-					$options = (array) get_option( 'wp_mainwp_stream', array() );							
-					if ( ! empty( $options['general_hide_child_plugins'] ) ) {						
+
+		if ( ! empty( $context ) && is_array( $args ) ) {
+			if ( $context == 'plugins' ) {
+
+				if ( isset( $args['slug'] ) && ( $args['slug'] == 'mainwp-child/mainwp-child.php' || $args['slug'] == 'mainwp-child-reports/mainwp-child-reports.php' ) ) {
+					$options = (array) get_option( 'wp_mainwp_stream', array() );
+					if ( ! empty( $options['general_hide_child_plugins'] ) ) {
 						return false; // return, do not log child/reports plugin
 					}
 					$branding_text = wp_mainwp_stream_get_instance()->child_helper->get_branding_title();
-					if ( !empty( $branding_text ) ) {
-						if ($args['slug'] == 'mainwp-child/mainwp-child.php') {
+					if ( ! empty( $branding_text ) ) {
+						if ( $args['slug'] == 'mainwp-child/mainwp-child.php' ) {
 							$args['name'] = $branding_text;
 						} else {
 							$args['name'] = $branding_text . ' Reports';
 						}
-					}                    
-                }
+					}
+				}
 			}
 
 			$addition_connector = '';
-			
-			$mainwp_addition_connector = array(				
-				'mainwp_backups',				
+
+			$mainwp_addition_connector = array(
+				'mainwp_backups',
 				'mainwp_maintenances',
 				'mainwp_sucuri',
-				'mainwp_wordfence'				
+				'mainwp_wordfence',
 			);
-			
-			if ( in_array( $connector, $mainwp_addition_connector )) {
-				$addition_connector = $connector;
-			}				
 
-			
+			if ( in_array( $connector, $mainwp_addition_connector ) ) {
+				$addition_connector = $connector;
+			}
+
 			$created_timestamp = 0;
-            if ( !empty( $addition_connector ) ) {	
-				
-                if ( is_array($args) ) {
-                    if (isset($args['backup_time'])) {
-                        $created_timestamp = $args['backup_time'];
-                    } else if (isset($args['scan_time'])) {
-                        $created_timestamp = $args['scan_time'];
-                    }
-                }
-								
-                if ( empty( $created_timestamp ) )
-                    return;
-				
-				$query_args = array( 'connector' => $addition_connector, 'created' =>  date("Y-m-d H:i:s", $created_timestamp ) );				
-				
+			if ( ! empty( $addition_connector ) ) {
+
+				if ( is_array( $args ) ) {
+					if ( isset( $args['backup_time'] ) ) {
+						$created_timestamp = $args['backup_time'];
+					} elseif ( isset( $args['scan_time'] ) ) {
+						$created_timestamp = $args['scan_time'];
+					}
+				}
+
+				if ( empty( $created_timestamp ) ) {
+					return;
+				}
+
+				$query_args = array(
+					'connector' => $addition_connector,
+					'created'   => date( 'Y-m-d H:i:s', $created_timestamp ),
+				);
+
 				$created_item = wp_mainwp_stream_get_instance()->db->get_records( $query_args );
-							
-                if ( $created_item )
-                    return;
-            }
-        }
-		
-		
-		return call_user_func_array( array( wp_mainwp_stream_get_instance()->log, 'log' ), compact( 'connector', 'message', 'args', 'object_id', 'context', 'action', 'user_id', 'created_timestamp' ) );
+
+				if ( $created_item ) {
+					return;
+				}
+			}
+		}
+
+		return call_user_func_array( array( wp_mainwp_stream_get_instance()->log, 'log' ), compact( 'connector', 'message', 'args', 'object_id', 'context', 'action', 'user_id', 'created_timestamp', 'forced_log' ) );
 	}
 
 	/**
@@ -223,8 +235,8 @@ abstract class Connector {
 	/**
 	 * Compare two values and return changed keys if they are arrays
 	 *
-	 * @param  mixed $old_value Value before change
-	 * @param  mixed $new_value Value after change
+	 * @param  mixed    $old_value Value before change
+	 * @param  mixed    $new_value Value after change
 	 * @param  bool|int $deep   Get array children changes keys as well, not just parents
 	 *
 	 * @return array

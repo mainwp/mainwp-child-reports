@@ -5,6 +5,7 @@ namespace WP_MainWP_Stream;
 
 /**
  * Class Install.
+ *
  * @package WP_MainWP_Stream
  */
 class Install {
@@ -30,15 +31,15 @@ class Install {
 	/** @var bool Holds status of whether the database update worked */
 	public $success_db;
 
-    /**
-     * Install constructor.
-     *
-     * Run each time the class is called.
-     *
-     * @param object $plugin Plugin class.
-     *
-     * @uses \WP_MainWP_Stream\Install::get_db_version()
-     */
+	/**
+	 * Install constructor.
+	 *
+	 * Run each time the class is called.
+	 *
+	 * @param object $plugin Plugin class.
+	 *
+	 * @uses \WP_MainWP_Stream\Install::get_db_version()
+	 */
 	public function __construct( $plugin ) {
 		$this->plugin = $plugin;
 
@@ -61,23 +62,23 @@ class Install {
 	 * on the plugin update screen
 	 *
 	 * @return
-     *
-     * @uses \WP_MainWP_Stream\Install::$plugin::get_version()
-     * @uses \WP_MainWP_Stream\Install::get_old_child_report_db_version()
-     * @uses \WP_MainWP_Stream\Install::update()
-     * @uses \WP_MainWP_Stream\Install::db_update_versions()
-     * @uses \WP_MainWP_Stream\Install::update_db_option()
-     */
+	 *
+	 * @uses \WP_MainWP_Stream\Install::$plugin::get_version()
+	 * @uses \WP_MainWP_Stream\Install::get_old_child_report_db_version()
+	 * @uses \WP_MainWP_Stream\Install::update()
+	 * @uses \WP_MainWP_Stream\Install::db_update_versions()
+	 * @uses \WP_MainWP_Stream\Install::update_db_option()
+	 */
 	public function check() {
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 			return;
 		}
 
 		$update_to_new_child_report = false;
-		
+
 		if ( empty( $this->db_version ) ) {
 			$this->install( $this->plugin->get_version() );
-			if ( !empty( $this->get_old_child_report_db_version() ) ) {
+			if ( ! empty( $this->get_old_child_report_db_version() ) ) {
 				$update_to_new_child_report = true;
 			} else {
 				return;
@@ -96,7 +97,9 @@ class Install {
 		if ( ! $update ) {
 			$this->update_required = true;
 			$this->success_db      = $this->update(
-				$this->db_version, $this->plugin->get_version(), array(
+				$this->db_version,
+				$this->plugin->get_version(),
+				array(
 					'type' => 'auto',
 				)
 			);
@@ -104,7 +107,9 @@ class Install {
 
 		if ( 'update_and_continue' === $update ) {
 			$this->success_db = $this->update(
-				$this->db_version, $this->plugin->get_version(), array(
+				$this->db_version,
+				$this->plugin->get_version(),
+				array(
 					'type' => 'user',
 				)
 			);
@@ -120,52 +125,52 @@ class Install {
 		$this->update_db_option();
 	}
 
-    /**
-     * Recreate database tables if they do not already exist.
-     *
-     * @uses \WP_MainWP_Stream\Install::$plugin::db::get_table_names()
-     * @uses \WP_MainWP_Stream\Install::$plugin::get_version()
-     * @uses $wpdb::get_var()
-     * @uses $wpdb::prepare()
-     */
+	/**
+	 * Recreate database tables if they do not already exist.
+	 *
+	 * @uses \WP_MainWP_Stream\Install::$plugin::db::get_table_names()
+	 * @uses \WP_MainWP_Stream\Install::$plugin::get_version()
+	 * @uses $wpdb::get_var()
+	 * @uses $wpdb::prepare()
+	 */
 	public function recreate_tables_if_not_exist() {
 
-	    /** @global object $wpdb WordPress Database. */
+		/** @global object $wpdb WordPress Database. */
 		global $wpdb;
-		
+
 		check_ajax_referer( 'stream_nonce_reset', 'wp_mainwp_stream_nonce_reset' );
-		
+
 		$missing_tables = array();
 		foreach ( $this->plugin->db->get_table_names() as $table_name ) {
 			$table_search = $wpdb->get_var(
 				$wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name )
 			);
-			if ( strcasecmp($table_search,$table_name ) != 0 ) {
+			if ( strcasecmp( $table_search, $table_name ) != 0 ) {
 				$missing_tables[] = $table_name;
 			}
 		}
-		
+
 		if ( $missing_tables ) {
 			$this->install( $this->plugin->get_version() );
-			
-//			 for debugging only.
-//			if( $wpdb->last_error !== '') :
-//				$str   = htmlspecialchars( $wpdb->last_result, ENT_QUOTES );
-//				$query = htmlspecialchars( $wpdb->last_query, ENT_QUOTES );
-//				error_log( $str );
-//				error_log( $query );
-//			endif;
+
+			// for debugging only.
+			// if( $wpdb->last_error !== '') :
+			// $str   = htmlspecialchars( $wpdb->last_result, ENT_QUOTES );
+			// $query = htmlspecialchars( $wpdb->last_query, ENT_QUOTES );
+			// error_log( $str );
+			// error_log( $query );
+			// endif;
 		}
-		
+
 	}
-	
+
 	/**
 	 * Verify that the required DB tables exists
-     *
-     * @uses \WP_MainWP_Stream\Install::$plugin::db::get_table_names()
-     * @uses \WP_MainWP_Stream\Install::$plugin::admin::notice()
-     * @uses $wpdb::get_var()
-     * @uses $wpdb::prepare()
+	 *
+	 * @uses \WP_MainWP_Stream\Install::$plugin::db::get_table_names()
+	 * @uses \WP_MainWP_Stream\Install::$plugin::admin::notice()
+	 * @uses $wpdb::get_var()
+	 * @uses $wpdb::prepare()
 	 */
 	public function verify_db() {
 
@@ -177,6 +182,10 @@ class Install {
 		 * @return bool Return TRUE or FALSE.
 		 */
 		if ( apply_filters( 'wp_mainwp_stream_no_tables', false ) ) {
+			return;
+		}
+
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 			return;
 		}
 
@@ -202,7 +211,7 @@ class Install {
 			$table_search = $wpdb->get_var(
 				$wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name )
 			);
-			if ( strcasecmp($table_search,$table_name ) != 0 ) {
+			if ( strcasecmp( $table_search, $table_name ) != 0 ) {
 				$missing_tables[] = $table_name;
 			}
 		}
@@ -285,11 +294,11 @@ class Install {
 		}
 	}
 
-    /**
-     * Get Child Reports old database version.
-     *
-     * @return string $version MainWP Child Reports old database version.
-     */
+	/**
+	 * Get Child Reports old database version.
+	 *
+	 * @return string $version MainWP Child Reports old database version.
+	 */
 	public static function get_old_child_report_db_version() {
 
 		$version = get_site_option( 'mainwp_child_reports_db' );
@@ -298,8 +307,8 @@ class Install {
 	}
 
 	/**
-     * Get MainWP Child Reports Database version.
-     *
+	 * Get MainWP Child Reports Database version.
+	 *
 	 * @return string MainWP child Reports database version.
 	 */
 	public function get_db_version() {
@@ -307,11 +316,11 @@ class Install {
 	}
 
 	/**
-     * Update MaiNWP Child Reports database version.
-     *
+	 * Update MaiNWP Child Reports database version.
+	 *
 	 * @return void
-     *
-     * @uses \WP_MainWP_Stream\Install::$plugin::get_version()
+	 *
+	 * @uses \WP_MainWP_Stream\Install::$plugin::get_version()
 	 */
 	public function update_db_option() {
 		if ( $this->success_db ) {
@@ -338,9 +347,9 @@ class Install {
 	 * @action admin_notices
 	 *
 	 * @return void
-     *
-     * @uses \WP_MainWP_Stream\Install::prompt_update()
-     * @uses \WP_MainWP_Stream\Install::prompt_update_status()
+	 *
+	 * @uses \WP_MainWP_Stream\Install::prompt_update()
+	 * @uses \WP_MainWP_Stream\Install::prompt_update_status()
 	 */
 	public function update_notice_hook() {
 		if ( ! current_user_can( $this->plugin->admin->view_cap ) ) {
@@ -391,9 +400,9 @@ class Install {
 	 * updates the stream_db version number in the database and outputs a success and continue message
 	 *
 	 * @return void
-     *
-     * @uses \WP_MainWP_Stream\Install::update_db_option()
-     * @uses \WP_MainWP_Stream\Install::$plugin::get_version()
+	 *
+	 * @uses \WP_MainWP_Stream\Install::update_db_option()
+	 * @uses \WP_MainWP_Stream\Install::$plugin::get_version()
 	 */
 	public function prompt_update_status() {
 		check_admin_referer( 'wp_mainwp_stream_update_db' );
@@ -435,7 +444,7 @@ class Install {
 			'3.0.2', /* @version 3.0.2 Fix uppercase values in stream table, connector column */
 			'3.0.8', /* @version 3.0.8 Increase size of user role IDs, user_roll column */
 			'3.5.0', /* @version 3.5.0 Fix connector values */
-			'3.5.2', /* @version 3.5.2 Fix meta data */			
+			'3.5.2', /* @version 3.5.2 Fix meta data */
 		);
 
 		/**
@@ -456,8 +465,8 @@ class Install {
 	 * @param array $update_args Update arguments.
 	 *
 	 * @return mixed Version number on success, true on no update needed, mysql error message on error.
-     *
-     * @uses \WP_MainWP_Stream\Install::db_update_versions()
+	 *
+	 * @uses \WP_MainWP_Stream\Install::db_update_versions()
 	 */
 	public function update( $db_version, $current_version, $update_args ) {
 		$versions = $this->db_update_versions();
@@ -488,9 +497,9 @@ class Install {
 	 * @param string $current_version Current version.
 	 *
 	 * @return string $current_version Current version.
-     *
-     * @uses \WP_MainWP_Stream\Install::plugin::get_version()
-     * @uses \dbDelta()
+	 *
+	 * @uses \WP_MainWP_Stream\Install::plugin::get_version()
+	 * @uses \dbDelta()
 	 */
 	public function install( $current_version ) {
 
@@ -507,7 +516,7 @@ class Install {
 			user_id bigint(20) unsigned NOT NULL DEFAULT '0',
 			user_role varchar(50) NOT NULL DEFAULT '',
 			summary longtext NOT NULL,
-			created datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+			created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			connector varchar(100) NOT NULL,
 			context varchar(100) NOT NULL,
 			action varchar(100) NOT NULL,
@@ -522,7 +531,7 @@ class Install {
 			KEY context (context),
 			KEY action (action)
 		)";
-		
+
 		if ( ! empty( $wpdb->charset ) ) {
 			$sql .= " CHARACTER SET $wpdb->charset";
 		}

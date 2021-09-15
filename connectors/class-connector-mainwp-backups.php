@@ -14,6 +14,8 @@ class Connector_MainWP_Backups extends Connector {
 	/** @var string Connector slug. */
 	public $name = 'mainwp_backups';
 
+	public $register_cron = true; // to fix cron backups.
+
 	/** @var array Actions registered for this connector. */
 	public $actions = array(
 		'mainwp_backup',

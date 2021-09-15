@@ -4,6 +4,7 @@ namespace WP_MainWP_Stream;
 
 /**
  * Class Connector_Woocommerce
+ *
  * @package WP_MainWP_Stream
  *
  * @uses \WP_MainWP_Stream\Connector
@@ -19,7 +20,7 @@ class Connector_Woocommerce extends Connector {
 	/** @var array Actions registered for this context. */
 	public $actions = array(
 		'wp_mainwp_stream_record_array',
-		//'updated_option',
+		// 'updated_option',
 		'transition_post_status',
 		'deleted_post',
 		'woocommerce_order_status_changed',
@@ -31,8 +32,8 @@ class Connector_Woocommerce extends Connector {
 		'woocommerce_tax_rate_deleted',
 	);
 
-    /** @var string[] Array of taxonomies. */
-    public $taxonomies = array(
+	/** @var string[] Array of taxonomies. */
+	public $taxonomies = array(
 		'product_type',
 		'product_cat',
 		'product_tag',
@@ -40,32 +41,32 @@ class Connector_Woocommerce extends Connector {
 		'shop_order_status',
 	);
 
-    /** @var string[] Array of post types. */
-    public $post_types = array(
+	/** @var string[] Array of post types. */
+	public $post_types = array(
 		'product',
 		'product_variation',
 		'shop_order',
 		'shop_coupon',
 	);
 
-    /** @var bool Return TRUE if order update has logged, or FALSE on failure. */
-    private $order_update_logged = false;
+	/** @var bool Return TRUE if order update has logged, or FALSE on failure. */
+	private $order_update_logged = false;
 
-    /** @var array Holds settings pages. */
-    private $settings_pages = array();
+	/** @var array Holds settings pages. */
+	private $settings_pages = array();
 
-    /** @var array Settings array. */
-    private $settings = array();
+	/** @var array Settings array. */
+	private $settings = array();
 
-    /** @var string Current WooCommerce plugin version. */
-    private $plugin_version = null;
+	/** @var string Current WooCommerce plugin version. */
+	private $plugin_version = null;
 
-    /**
-     * Register WooCommerce Connector with parent class.
-     *
-     * @uses \WP_MainWP_Stream\Connector::register()
-     */
-    public function register() {
+	/**
+	 * Register WooCommerce Connector with parent class.
+	 *
+	 * @uses \WP_MainWP_Stream\Connector::register()
+	 */
+	public function register() {
 		parent::register();
 
 		add_filter( 'wp_mainwp_stream_posts_exclude_post_types', array( $this, 'exclude_order_post_types' ) );
@@ -219,7 +220,7 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @filter wp_mainwp_stream_action_links_{connector}.
 	 *
-	 * @param array $links   Previous links registered.
+	 * @param array  $links   Previous links registered.
 	 * @param Record $record Stream record.
 	 *
 	 * @return array Action links.
@@ -303,8 +304,8 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action transition_post_status.
 	 *
-	 * @param string $new Post status.
-	 * @param string $old Post status.
+	 * @param string   $new Post status.
+	 * @param string   $old Post status.
 	 * @param \WP_Post $post WP_Posts object.
 	 */
 	public function callback_transition_post_status( $new, $old, $post ) {
@@ -436,7 +437,7 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action woocommerce_order_status_changed.
 	 *
-	 * @param int $order_id Order ID.
+	 * @param int    $order_id Order ID.
 	 * @param string $old Post status.
 	 * @param string $new Post status.
 	 */
@@ -462,10 +463,10 @@ class Connector_Woocommerce extends Connector {
 			$old_status_name = $old_status->name;
 		}
 
-        /**
-         * translators: Placeholders refer to an order title, and order status,
-         * and another order status (e.g. "Order #42", "processing", "complete").
-         */
+		/**
+		 * translators: Placeholders refer to an order title, and order status,
+		 * and another order status (e.g. "Order #42", "processing", "complete").
+		 */
 		$message = esc_html_x(
 			'%1$s status changed from %2$s to %3$s',
 			'1. Order title, 2. Old status, 3. New status',
@@ -498,7 +499,7 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action woocommerce_attribute_added
 	 *
-	 * @param int $attribute_id Attribute ID.
+	 * @param int   $attribute_id Attribute ID.
 	 * @param array $attribute Attribute array.
 	 */
 	public function callback_woocommerce_attribute_added( $attribute_id, $attribute ) {
@@ -521,8 +522,8 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action woocommerce_attribute_updated
 	 *
-     * @param int $attribute_id Attribute ID.
-     * @param array $attribute Attribute array.
+	 * @param int   $attribute_id Attribute ID.
+	 * @param array $attribute Attribute array.
 	 */
 	public function callback_woocommerce_attribute_updated( $attribute_id, $attribute ) {
 		$this->log(
@@ -544,7 +545,7 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action woocommerce_attribute_updated
 	 *
-	 * @param int $attribute_id Attribute ID.
+	 * @param int    $attribute_id Attribute ID.
 	 * @param string $attribute_name Attribute name.
 	 */
 	public function callback_woocommerce_attribute_deleted( $attribute_id, $attribute_name ) {
@@ -569,7 +570,7 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action woocommerce_tax_rate_added
 	 *
-	 * @param int $tax_rate_id Tax rate ID.
+	 * @param int   $tax_rate_id Tax rate ID.
 	 * @param array $tax_rate Tax rate array.
 	 */
 	public function callback_woocommerce_tax_rate_added( $tax_rate_id, $tax_rate ) {
@@ -592,8 +593,8 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action woocommerce_tax_rate_updated
 	 *
-     * @param int $tax_rate_id Tax rate ID.
-     * @param array $tax_rate Tax rate array.
+	 * @param int   $tax_rate_id Tax rate ID.
+	 * @param array $tax_rate Tax rate array.
 	 */
 	public function callback_woocommerce_tax_rate_updated( $tax_rate_id, $tax_rate ) {
 
@@ -616,11 +617,11 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @action woocommerce_tax_rate_updated
 	 *
-     * @param int $tax_rate_id Tax rate ID.
+	 * @param int $tax_rate_id Tax rate ID.
 	 */
 	public function callback_woocommerce_tax_rate_deleted( $tax_rate_id ) {
 
-	    /** @global object $wpdb WordPress DB object. */
+		/** @global object $wpdb WordPress DB object. */
 		global $wpdb;
 
 		$tax_rate_name = $wpdb->get_var(
@@ -680,14 +681,14 @@ class Connector_Woocommerce extends Connector {
 		return $recordarr;
 	}
 
-    /**
-     * Updated option callback.
-     *
-     * @param string $option_key Option Key.
-     * @param string $old_value Old options value.
-     * @param string $value New options value.
-     */
-    public function callback_updated_option($option_key, $old_value, $value ) {
+	/**
+	 * Updated option callback.
+	 *
+	 * @param string $option_key Option Key.
+	 * @param string $old_value Old options value.
+	 * @param string $value New options value.
+	 */
+	public function callback_updated_option( $option_key, $old_value, $value ) {
 		$options = array( $option_key );
 
 		if ( is_array( $old_value ) || is_array( $value ) ) {
@@ -721,12 +722,12 @@ class Connector_Woocommerce extends Connector {
 		}
 	}
 
-    /**
-     * Get WooCommerce settings fileds.
-     *
-     * @return array|bool Return WooCommerce settings array, or FALSE on failure.
-     */
-    public function get_woocommerce_settings_fields() {
+	/**
+	 * Get WooCommerce settings fileds.
+	 *
+	 * @return array|bool Return WooCommerce settings array, or FALSE on failure.
+	 */
+	public function get_woocommerce_settings_fields() {
 		if ( ! defined( 'WC_VERSION' ) || ! class_exists( 'WC_Admin_Settings' ) ) {
 			return false;
 		}
@@ -751,10 +752,14 @@ class Connector_Woocommerce extends Connector {
 
 			foreach ( \WC_Admin_Settings::get_settings_pages() as $page ) {
 
-                /**
-                 * Get ID / Label of the page, since they're protected, by hacking into
-                 * the callback filter for 'woocommerce_settings_tabs_array'.
-                 */
+				if ( ! is_object( $page ) || ! property_exists( $page, 'add_settings_page' )) {
+					continue;
+				}
+
+				/**
+				 * Get ID / Label of the page, since they're protected, by hacking into
+				 * the callback filter for 'woocommerce_settings_tabs_array'.
+				 */
 				$info       = $page->add_settings_page( array() );
 				$page_id    = key( $info );
 				$page_label = current( $info );
@@ -770,22 +775,27 @@ class Connector_Woocommerce extends Connector {
 				$fields = array();
 
 				foreach ( $sections as $section_key => $section_label ) {
-					$_fields = array_filter(
-						$page->get_settings( $section_key ),
-						function( $item ) {
-							return isset( $item['id'] ) && ( ! in_array( $item['type'], array( 'title', 'sectionend' ), true ) );
-						}
-					);
-
-					foreach ( $_fields as $field ) {
-						$title                  = isset( $field['title'] ) ? $field['title'] : ( isset( $field['desc'] ) ? $field['desc'] : 'N/A' );
-						$fields[ $field['id'] ] = array(
-							'title'   => $title,
-							'page'    => 'wc-settings',
-							'tab'     => $page_id,
-							'section' => $section_key,
-							'type'    => esc_html__( 'setting', 'mainwp-child-reports' ),
+					$section_settings = $page->get_settings( $section_key );
+					if ( is_array( $section_settings ) ) {
+						$_fields = array_filter(
+							$page->get_settings( $section_key ),
+							function( $item ) {
+								return isset( $item['id'] ) && ( ! in_array( $item['type'], array( 'title', 'sectionend' ), true ) );
+							}
 						);
+
+						if ( ! empty( $_fields ) ) {
+							foreach ( $_fields as $field ) {
+								$title                  = isset( $field['title'] ) ? $field['title'] : ( isset( $field['desc'] ) ? $field['desc'] : 'N/A' );
+								$fields[ $field['id'] ] = array(
+									'title'   => $title,
+									'page'    => 'wc-settings',
+									'tab'     => $page_id,
+									'section' => $section_key,
+									'type'    => esc_html__( 'setting', 'mainwp-child-reports' ),
+								);
+							}
+						}
 					}
 				}
 
@@ -795,7 +805,8 @@ class Connector_Woocommerce extends Connector {
 
 			// Provide additional context for each of the settings pages.
 			array_walk(
-				$settings_pages, function( &$value ) {
+				$settings_pages,
+				function( &$value ) {
 					$value .= ' ' . esc_html__( 'Settings', 'mainwp-child-reports' );
 				}
 			);
