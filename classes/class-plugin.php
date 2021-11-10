@@ -18,12 +18,6 @@ class Plugin {
 	/** @var \WP_MainWP_Stream\Admin Admin class. */
 	public $admin;
 
-	/** @var \WP_MainWP_Stream\Alerts Alerts class. */
-	public $alerts;
-
-	/** @var \WP_MainWP_Stream\Alerts_List Alerts_List class. */
-	public $alerts_list;
-
 	/** @var \WP_MainWP_Stream\Connectors Connectors class. */
 	public $connectors;
 
@@ -171,17 +165,12 @@ class Plugin {
 	 *
 	 * @action init
 	 *
-	 * @uses \WP_MainWP_Stream\Alerts
-	 * @uses \WP_MainWP_Stream\Alerts_List
 	 * @uses \WP_MainWP_Stream\Connectors
 	 * @uses \WP_MainWP_Stream\Settings
 	 */
 	public function init() {
 		$this->settings    = new Settings( $this );
-		$this->connectors  = new Connectors( $this );		
-		$this->alerts      = new Alerts( $this );
-		$this->alerts_list = new Alerts_List( $this );
-
+		$this->connectors  = new Connectors( $this );
 	}
 
 	/**

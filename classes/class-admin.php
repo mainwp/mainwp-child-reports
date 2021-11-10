@@ -361,8 +361,7 @@ class Admin {
 			wp_register_script( 'wp-mainwp-stream-timeago-locale', $this->plugin->locations['url'] . sprintf( $file_tmpl, 'en' ), array( 'wp-mainwp-stream-timeago' ), '1' );
 		}
 
-		$min = wp_mainwp_stream_min_suffix();
-		wp_enqueue_style( 'wp-mainwp-stream-admin', $this->plugin->locations['url'] . 'ui/css/admin.' . $min . 'css', array(), $this->plugin->get_version() );
+		wp_enqueue_style( 'wp-mainwp-stream-admin', $this->plugin->locations['url'] . 'ui/css/admin.css', array(), $this->plugin->get_version() );
 
 		$script_screens = array( 'plugins.php' );
 		
@@ -375,19 +374,19 @@ class Admin {
 			wp_enqueue_script( 'wp-mainwp-stream-timeago-locale' );
 
 			wp_enqueue_script(
-				'wp-mainwp-stream-admin', $this->plugin->locations['url'] . 'ui/js/admin.' . $min . 'js', array(
+				'wp-mainwp-stream-admin', $this->plugin->locations['url'] . 'ui/js/admin.js', array(
 					'jquery',
 					'wp-mainwp-stream-select2',
 				), $this->plugin->get_version()
 			);
 			wp_enqueue_script(
-				'wp-mainwp-stream-admin-exclude', $this->plugin->locations['url'] . 'ui/js/exclude.' . $min . 'js', array(
+				'wp-mainwp-stream-admin-exclude', $this->plugin->locations['url'] . 'ui/js/exclude.js', array(
 					'jquery',
 					'wp-mainwp-stream-select2',
 				), $this->plugin->get_version()
 			);
 			wp_enqueue_script(
-				'wp-mainwp-stream-live-updates', $this->plugin->locations['url'] . 'ui/js/live-updates.' . $min . 'js', array(
+				'wp-mainwp-stream-live-updates', $this->plugin->locations['url'] . 'ui/js/live-updates.js', array(
 					'jquery',
 					'heartbeat',
 				), $this->plugin->get_version()
@@ -438,7 +437,7 @@ class Admin {
 		 */
 		$bulk_actions_threshold = apply_filters( 'wp_mainwp_stream_bulk_actions_threshold', 100 );
 
-		wp_enqueue_script( 'wp-mainwp-stream-global', $this->plugin->locations['url'] . 'ui/js/global.' . $min . 'js', array( 'jquery' ), $this->plugin->get_version() );
+		wp_enqueue_script( 'wp-mainwp-stream-global', $this->plugin->locations['url'] . 'ui/js/global.js', array( 'jquery' ), $this->plugin->get_version() );
 		wp_localize_script(
 			'wp-mainwp-stream-global',
 			'wp_mainwp_stream_global',
@@ -459,16 +458,9 @@ class Admin {
 	 * Check whether or not the current admin screen belongs to Stream.
 	 *
 	 * @return bool TRUE|FALSE.
-     *
-     * @uses \WP_MainWP_Stream\Alerts::POST_TYPE
 	 */
 	public function is_stream_screen() {
 		if ( is_admin() && false !== strpos( wp_mainwp_stream_filter_input( INPUT_GET, 'page' ), $this->records_page_slug ) ) {
-			return true;
-		}
-
-		$screen = get_current_screen();
-		if ( is_admin() && Alerts::POST_TYPE === $screen->post_type ) {
 			return true;
 		}
 
@@ -514,8 +506,7 @@ class Admin {
 	 * @action admin_enqueue_scripts
 	 */
 	public function admin_menu_css() {
-		$min = wp_mainwp_stream_min_suffix();
-		wp_register_style( 'wp-mainwp-stream-datepicker', $this->plugin->locations['url'] . 'ui/css/datepicker.' . $min . 'css', array(), $this->plugin->get_version() );
+		wp_register_style( 'wp-mainwp-stream-datepicker', $this->plugin->locations['url'] . 'ui/css/datepicker.css', array(), $this->plugin->get_version() );
 		wp_register_style( 'wp-mainwp-stream-icons', $this->plugin->locations['url'] . 'ui/stream-icons/style.css', array(), $this->plugin->get_version() );
 
 		// Make sure we're working off a clean version
@@ -780,8 +771,7 @@ class Admin {
 
 		$sections   = $this->plugin->settings->get_fields();
 		$active_tab = wp_mainwp_stream_filter_input( INPUT_GET, 'tab' );
-		$min        = wp_mainwp_stream_min_suffix();
-		wp_enqueue_script( 'wp-mainwp-stream-settings', $this->plugin->locations['url'] . 'ui/js/settings.' . $min . 'js', array( 'jquery' ), $this->plugin->get_version(), true );
+		wp_enqueue_script( 'wp-mainwp-stream-settings', $this->plugin->locations['url'] . 'ui/js/settings.js', array( 'jquery' ), $this->plugin->get_version(), true );
 		?>
 		<div class="wrap">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>

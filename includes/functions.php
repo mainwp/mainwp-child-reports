@@ -148,17 +148,3 @@ function wp_mainwp_stream_is_cron_enabled() {
 function wp_mainwp_stream_is_cron_doing() {
 	return ( defined( 'DOING_CRON' ) && DOING_CRON ) ? true : false;
 }
-
-/**
- * Get the asset min suffix if defined.
- *
- * @return string
- */
-function wp_mainwp_stream_min_suffix() {
-	$min = '';
-//	if ( ! defined( 'SCRIPT_DEBUG' ) || false === SCRIPT_DEBUG ) {
-//		$min = 'min.';
-//	}
-
-	return $min;
-}
