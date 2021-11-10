@@ -173,7 +173,7 @@ jQuery(
 			);
 
 			$( 'body' ).on(
-				'click', '#wp_mainwp_stream_uninstall', function( e ) {
+				'click', '#wp_mainwp_stream_advanced_wp_mainwp_stream_uninstall, #wp_mainwp_stream_uninstall', function( e ) {
 					if ( ! window.confirm( wp_mainwp_stream.i18n.confirm_uninstall ) ) {
 						e.preventDefault();
 					}

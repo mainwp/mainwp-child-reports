@@ -88,13 +88,7 @@ class Alert_Type_Highlight extends Alert_Type {
 				'enqueue_scripts',
 			)
 		);
-		add_action(
-			'wp_ajax_' . self::REMOVE_ACTION, array(
-				$this,
-				'ajax_remove_highlight',
-			)
-		);
-
+		
 		if ( ! empty( $this->plugin->connectors->connectors ) && is_array( $this->plugin->connectors->connectors ) ) {
 			foreach ( $this->plugin->connectors->connectors as $connector ) {
 				add_filter(
@@ -256,54 +250,6 @@ class Alert_Type_Highlight extends Alert_Type {
 		}
 
 		return $actions;
-	}
-
-	/**
-	 * Ajax action to remove highlight.
-	 *
-	 * This is fired from the "Remove Highlight"
-	 * action links on the Records list page.
-	 *
-	 * First, we validate and sanitize.
-	 *
-	 * Then, we get the Record meta and remove
-	 * the "highlight" array from the
-	 * "Alerts triggered" meta field.
-	 *
-	 * Finally, the meta field is updated.
-	 *
-	 * Note: this removes ALL highlights
-	 * that were triggered by this record, not just
-	 * those triggered on specific Alert (post) IDs.
-	 *
-	 * @action wp_ajax_stream_remove_highlight
-	 *
-	 * @uses \WP_MainWP_Stream\Alerts::ALERTS_TRIGGERED_META_KEY
-	 * @uses \WP_MainWP_Stream\Record
-	 */
-	public function ajax_remove_highlight() {
-		check_ajax_referer( self::REMOVE_ACTION_NONCE, 'security' );
-
-		$failure_message = __( 'Removing Highlight Failed', 'mainwp-child-reports' );
-
-		if ( empty( $_POST['recordId'] ) ) {
-			wp_send_json_error( $failure_message );
-		}
-
-		$record_id = sanitize_text_field( wp_unslash( $_POST['recordId'] ) );
-
-		if ( ! is_numeric( $record_id ) ) {
-			wp_send_json_error( $failure_message );
-		}
-		$record_obj       = new \stdClass();
-		$record_obj->ID   = $record_id;
-		$record           = new Record( $record_obj );
-		$alerts_triggered = $record->get_meta( Alerts::ALERTS_TRIGGERED_META_KEY, true );
-		if ( isset( $alerts_triggered[ $this->slug ] ) ) {
-			unset( $alerts_triggered[ $this->slug ] );
-		}
-		$record->update_meta( Alerts::ALERTS_TRIGGERED_META_KEY, $alerts_triggered );
-		wp_send_json_success();
 	}
 
 	/**

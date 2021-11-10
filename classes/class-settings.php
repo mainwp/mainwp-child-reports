@@ -367,44 +367,28 @@ class Settings {
 						'default' => 0,
 						'sticky'  => 'bottom',
 					),
-//					array(
-//						'name'    => 'convert_old_data',
-//						'title'   => esc_html__( 'Convert Old Data', 'mainwp-child-reports' ),
-//						'type'    => 'link',
-//						'href'    => add_query_arg(
-//							array(
-//								'action'                => 'wp_mainwp_stream_convert',
-//								'wp_mainwp_stream_nonce_convert' => wp_create_nonce( 'stream_nonce_convert' ),
-//							),
-//							admin_url( 'admin-ajax.php' )
-//						),
-//						'class'   => 'warning',
-//						'desc'    => esc_html__( 'Warning: This will convert old data.', 'mainwp-child-reports' ),
-//						'default' => 0,
-//						'sticky'  => 'bottom',
-//					),
 				),
 			),
 		);
 		
-		if ( isset( $_GET['try_repair'] ) && $_GET['try_repair'] == 'yes') {
-			$repair_data = array(
-				'name'    => 'try_repair',
-				'title'   => esc_html__( 'Repair Data', 'mainwp-child-reports' ),
+		if ( isset( $_GET['try_uninstall'] ) && $_GET['try_uninstall'] == 'yes') {
+			$uninstall_data = array(
+				'name'    => 'wp_mainwp_stream_uninstall',
+				'title'   => esc_html__( 'Uninstall ' . $branding_name . ' Reports Database', 'mainwp-child-reports' ),
 				'type'    => 'link',
 				'href'    => add_query_arg(
 					array(
-						'action'                => 'wp_mainwp_stream_try_repair',
-						'wp_mainwp_stream_nonce_try_repair' => wp_create_nonce( 'mainwp_stream_nonce_repair' )						
+						'action'                => 'wp_mainwp_stream_uninstall',
+						'wp_mainwp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
 					),
 					admin_url( 'admin-ajax.php' )
 				),
 				'class'   => 'warning',
-				'desc'    => '',
+				'desc'    => esc_html__( 'Warning: This will Uninstall all reports data from the database.', 'mainwp-child-reports' ),
 				'default' => 0,
 				'sticky'  => 'bottom',
 			);
-			array_push( $fields['advanced']['fields'], $repair_data );
+			array_push( $fields['advanced']['fields'], $uninstall_data );
 		}
 
 		// If Akismet is active, allow Admins to opt-in to Akismet tracking

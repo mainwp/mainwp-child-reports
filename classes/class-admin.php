@@ -101,12 +101,12 @@ class Admin {
 		add_filter( 'admin_body_class', array( $this, 'admin_body_class' ) );
 
 		// Plugin action links.
-		add_filter(
-			'plugin_action_links', array(
-				$this,
-				'plugin_action_links',
-			), 10, 2
-		);
+		// add_filter(
+		// 	'plugin_action_links', array(
+		// 		$this,
+		// 		'plugin_action_links',
+		// 	), 10, 2
+		// );
 
 		// Load admin scripts and styles.
 		add_action(
@@ -132,14 +132,6 @@ class Admin {
 				'wp_ajax_try_repair',
 			)
 		);
-		
-		// Reset Streams database.
-//		add_action(
-//			'wp_ajax_wp_mainwp_stream_convert', array(
-//				$this,
-//				'wp_ajax_convert',
-//			)
-//		);
 
 		// Uninstall Streams and Deactivate plugin.
 		$uninstall = $this->plugin->db->driver->purge_storage( $this->plugin );
@@ -408,7 +400,7 @@ class Admin {
 					'i18n'       => array(
 						'confirm_purge'     => esc_html__( 'Are you sure you want to delete all Reports activity records from the database? This cannot be undone.', 'mainwp-child-reports' ),
 						'confirm_defaults'  => esc_html__( 'Are you sure you want to reset all site settings to default? This cannot be undone.', 'mainwp-child-reports' ),
-						'confirm_uninstall' => esc_html__( 'Are you sure you want to uninstall and deactivate Stream? This will delete all Reports tables from the database and cannot be undone.', 'mainwp-child-reports' ),
+						'confirm_uninstall' => esc_html__( 'Are you sure you want to uninstall and deactivate MainWP Child Reports? This will delete all Reports tables from the database and cannot be undone.', 'mainwp-child-reports' ),
 					),
 					'locale'     => esc_js( $locale ),
 					'gmt_offset' => get_option( 'gmt_offset' ),
@@ -590,137 +582,6 @@ class Admin {
 
 		\wp_add_inline_style( 'wp-admin', $css );
 	}
-
-	/**
-	 * Handle the convert AJAX request to convert logs.
-	 *
-	 * @return bool
-	 */
-//	public function wp_ajax_convert() {
-//		check_ajax_referer( 'stream_nonce_convert', 'wp_mainwp_stream_nonce_convert' );
-//
-//		if ( ! current_user_can( $this->settings_cap ) ) {
-//			wp_die(
-//				esc_html__( "You don't have sufficient privileges to do this action.", 'mainwp-child-reports' )
-//			);
-//		}
-//
-//		$this->convert_old_records();
-//
-//		if ( defined( 'WP_MAINWP_STREAM_TESTS' ) && WP_MAINWP_STREAM_TESTS ) {
-//			return true;
-//		}
-//
-//		wp_redirect(
-//			add_query_arg(
-//				array(
-//					'page'    => is_network_admin() ? $this->network->network_settings_page_slug : $this->settings_page_slug,
-//					'message' => 'data_converted',
-//				),
-//				self_admin_url( $this->admin_parent_page )
-//			)
-//		);
-//
-//		exit;
-//	}
-
-    /**
-     * Convert old records.
-     *
-     * @return mixed
-     * @throws \Exception
-     */
-    private function convert_old_records() {
-
-        /** @global object $wpdb WordPress database object. */
-		global $wpdb;
-
-		// Get only the author_meta values that are double-serialized.
-		$wpdb->query( "RENAME TABLE {$wpdb->base_prefix}mainwp_stream TO {$wpdb->base_prefix}mainwp_stream_tmp, {$wpdb->base_prefix}mainwp_stream_context TO {$wpdb->base_prefix}mainwp_stream_context_tmp" );
-
-//		$plugin = wp_mainwp_stream_get_instance();
-//		$plugin->install->install( $current_version );
-
-		$date = new DateTime( 'now', $timezone = new DateTimeZone( 'UTC' ) );
-		$date->modify('-3 month');
-		//$where = " AND `created` < STR_TO_DATE(" . $wpdb->prepare('%s', $date->format( 'Y-m-d H:i:s' )) . ", '%Y-%m-%d %H:%i:%s') ";
-		$where = "";
-		$orderby = ' ORDER BY ID DESC ';
-
-		$starting_row   = 0;
-		$rows_per_round = 2;	
-
-		$stream_entries = $wpdb->get_results( "SELECT * FROM {$wpdb->base_prefix}mainwp_stream_tmp WHERE 1 = 1 " . $where . $orderby . $wpdb->prepare( " LIMIT %d, %d", $starting_row, $rows_per_round ) );
-
-		while ( ! empty( $stream_entries ) ) {
-			foreach ( $stream_entries as $entry ) {
-				$context = $wpdb->get_row(
-					$wpdb->prepare( "SELECT * FROM {$wpdb->base_prefix}mainwp_stream_context_tmp WHERE record_id = %s LIMIT 1", $entry->ID )
-				);
-
-				$new_entry = array(
-					'site_id'   => $entry->site_id,
-					'blog_id'   => $entry->blog_id,
-					'user_id'   => $entry->author,
-					'user_role' => $entry->author_role,
-					'summary'   => $entry->summary,
-					'created'   => $entry->created,
-					'connector' => $context->connector,
-					'context'   => $context->context,
-					'action'    => $context->action,
-					'ip'        => $entry->ip,
-				);
-
-				if ( $entry->object_id && 0 !== $entry->object_id ) {
-					$new_entry['object_id'] = $entry->object_id;
-				}
-
-				$wpdb->insert( $wpdb->base_prefix . 'mainwp_stream', $new_entry );			
-
-			}
-			$starting_row += $rows_per_round;
-			$stream_entries = $wpdb->get_results( "SELECT * FROM {$wpdb->base_prefix}mainwp_stream_tmp WHERE 1 = 1 " . $where . $orderby . $wpdb->prepare( "LIMIT %d, %d", $starting_row, $rows_per_round ) );
-			
-		}
-
-//		$wpdb->query( "DROP TABLE {$wpdb->base_prefix}mainwp_stream_tmp, {$wpdb->base_prefix}mainwp_stream_context_tmp" );
-		return $current_version;
-	}
-	
-	/**
-	 * Handle the reset AJAX request to reset logs.
-	 *
-	 * @return bool
-	 */
-	public function wp_ajax_try_repair() {
-		check_ajax_referer( 'mainwp_stream_nonce_repair', 'wp_mainwp_stream_nonce_try_repair' );
-
-		if ( ! current_user_can( $this->settings_cap ) ) {
-			wp_die(
-				esc_html__( "You don't have sufficient privileges to do this action.", 'mainwp-child-reports' )
-			);
-		}
-		include_once $this->plugin->locations['inc_dir'] . 'db-updates.php';
-
-		// force to repair.
-		if ( function_exists( 'wp_mainwp_stream_update_auto_352')) {
-			
-			wp_mainwp_stream_update_auto_352( true, true );
-			
-		}
-		
-		wp_redirect(
-			add_query_arg(
-				array(
-					'page'    => is_network_admin() ? $this->network->network_settings_page_slug : $this->settings_page_slug,
-					'message' => 'data_repaired',
-					//'try_repair' => 'yes'
-				),
-				self_admin_url( $this->admin_parent_page )
-			)
-		);
-		exit;
-	}
 	
 	/**
 	 * Handle the reset AJAX request to reset logs.
@@ -853,7 +714,7 @@ class Admin {
 	 * @return array Plugin action links array.
 	 */
 	public function plugin_action_links( $links, $file ) {
-		if ( plugin_basename( $this->plugin->locations['dir'] . 'stream.php' ) !== $file ) {
+		if ( plugin_basename( $this->plugin->locations['dir'] . 'mainwp-child-reports.php' ) !== $file ) {
 			return $links;
 		}
 
