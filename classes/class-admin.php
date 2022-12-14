@@ -11,6 +11,7 @@ use \WP_Roles;
 
 /**
  * Class Admin.
+ *
  * @package WP_MainWP_Stream
  */
 class Admin {
@@ -62,8 +63,8 @@ class Admin {
 
 	/**
 	 * Admin constructor.
-     *
-     * Run each time the class is called.
+	 *
+	 * Run each time the class is called.
 	 *
 	 * @param Plugin $plugin The main Plugin class.
 	 */
@@ -78,8 +79,8 @@ class Admin {
 		}
 
 		// User and role caps.
-		//add_filter( 'user_has_cap', array( $this, 'filter_user_caps' ), 10, 4 );
-		//add_filter( 'role_has_cap', array( $this, 'filter_role_caps' ), 10, 3 );
+		// add_filter( 'user_has_cap', array( $this, 'filter_user_caps' ), 10, 4 );
+		// add_filter( 'role_has_cap', array( $this, 'filter_role_caps' ), 10, 3 );
 
 		if ( is_multisite() && is_plugin_active_for_network( $this->plugin->locations['plugin'] ) && ! is_network_admin() ) {
 			$options = (array) get_site_option( 'wp_mainwp_stream_network', array() );
@@ -90,7 +91,7 @@ class Admin {
 
 		// Register settings page.
 		if ( ! $this->disable_access ) {
-			//add_action( 'admin_menu', array( $this, 'register_menu' ) );
+			// add_action( 'admin_menu', array( $this, 'register_menu' ) );
 		}
 
 		// Admin notices.
@@ -102,15 +103,16 @@ class Admin {
 
 		// Plugin action links.
 		// add_filter(
-		// 	'plugin_action_links', array(
-		// 		$this,
-		// 		'plugin_action_links',
-		// 	), 10, 2
+		// 'plugin_action_links', array(
+		// $this,
+		// 'plugin_action_links',
+		// ), 10, 2
 		// );
 
 		// Load admin scripts and styles.
 		add_action(
-			'admin_enqueue_scripts', array(
+			'admin_enqueue_scripts',
+			array(
 				$this,
 				'admin_enqueue_scripts',
 			)
@@ -119,15 +121,17 @@ class Admin {
 
 		// Reset Streams database.
 		add_action(
-			'wp_ajax_wp_mainwp_stream_reset', array(
+			'wp_ajax_wp_mainwp_stream_reset',
+			array(
 				$this,
 				'wp_ajax_reset',
 			)
 		);
-		
+
 		// Reset Streams database.
 		add_action(
-			'wp_ajax_wp_mainwp_stream_try_repair', array(
+			'wp_ajax_wp_mainwp_stream_try_repair',
+			array(
 				$this,
 				'wp_ajax_try_repair',
 			)
@@ -139,7 +143,8 @@ class Admin {
 		// Auto purge setup.
 		add_action( 'wp_loaded', array( $this, 'purge_schedule_setup' ) );
 		add_action(
-			'wp_mainwp_stream_auto_purge', array(
+			'wp_mainwp_stream_auto_purge',
+			array(
 				$this,
 				'purge_scheduled_action',
 			)
@@ -147,21 +152,22 @@ class Admin {
 
 		// Ajax users list.
 		add_action(
-			'wp_ajax_wp_mainwp_stream_filters', array(
+			'wp_ajax_wp_mainwp_stream_filters',
+			array(
 				$this,
 				'ajax_filters',
 			)
-		);		
+		);
 	}
 
 	/**
 	 * Load admin classes.
 	 *
 	 * @action init
-     *
-     * @uses \WP_MainWP_Stream\Export
-     * @uses \WP_MainWP_Stream\Live_Update
-     * @uses \WP_MainWP_Stream\Network
+	 *
+	 * @uses \WP_MainWP_Stream\Export
+	 * @uses \WP_MainWP_Stream\Live_Update
+	 * @uses \WP_MainWP_Stream\Network
 	 */
 	public function init() {
 		$this->network     = new Network( $this->plugin );
@@ -223,9 +229,8 @@ class Admin {
 		/**
 		 * WordPress core white list of html tags and attributes
 		 * that WordPress allows in posts used for sanitizing post_content.
-         *
-		 * @global object $allowedposttags
 		 *
+		 * @global object $allowedposttags
 		 */
 		global $allowedposttags;
 
@@ -257,9 +262,9 @@ class Admin {
 	 * @action admin_menu
 	 *
 	 * @return void
-     * @deprecated Disabled.
+	 * @deprecated Disabled.
 	 */
-    public function register_menu() {
+	public function register_menu() {
 
 		/**
 		 * Filter the main admin menu title.
@@ -329,7 +334,8 @@ class Admin {
 
 			// Register the list table early, so it associates the column headers with 'Screen settings'.
 			add_action(
-				'load-' . $this->screen_id['main'], array(
+				'load-' . $this->screen_id['main'],
+				array(
 					$this,
 					'register_list_table',
 				)
@@ -347,7 +353,7 @@ class Admin {
 	 * @return void
 	 */
 	public function admin_enqueue_scripts( $hook ) {
-				
+
 		wp_register_script( 'wp-mainwp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/js/select2.full.min.js', array( 'jquery' ), '3.5.2', true );
 		wp_register_style( 'wp-mainwp-stream-select2', $this->plugin->locations['url'] . 'ui/lib/select2/css/select2.min.css', array(), '3.5.2' );
 		wp_register_script( 'wp-mainwp-stream-timeago', $this->plugin->locations['url'] . 'ui/lib/timeago/jquery.timeago.js', array(), '1.4.1', true );
@@ -364,8 +370,8 @@ class Admin {
 		wp_enqueue_style( 'wp-mainwp-stream-admin', $this->plugin->locations['url'] . 'ui/css/admin.css', array(), $this->plugin->get_version() );
 
 		$script_screens = array( 'plugins.php' );
-		
-		//if ( in_array( $hook, $this->screen_id, true ) || in_array( $hook, $script_screens, true ) ) {
+
+		// if ( in_array( $hook, $this->screen_id, true ) || in_array( $hook, $script_screens, true ) ) {
 		if ( $hook == 'settings_page_mainwp-reports-page' || $hook == 'settings_page_mainwp-reports-settings' || in_array( $hook, $script_screens, true ) ) {
 			wp_enqueue_script( 'wp-mainwp-stream-select2' );
 			wp_enqueue_style( 'wp-mainwp-stream-select2' );
@@ -374,22 +380,31 @@ class Admin {
 			wp_enqueue_script( 'wp-mainwp-stream-timeago-locale' );
 
 			wp_enqueue_script(
-				'wp-mainwp-stream-admin', $this->plugin->locations['url'] . 'ui/js/admin.js', array(
+				'wp-mainwp-stream-admin',
+				$this->plugin->locations['url'] . 'ui/js/admin.js',
+				array(
 					'jquery',
 					'wp-mainwp-stream-select2',
-				), $this->plugin->get_version()
+				),
+				$this->plugin->get_version()
 			);
 			wp_enqueue_script(
-				'wp-mainwp-stream-admin-exclude', $this->plugin->locations['url'] . 'ui/js/exclude.js', array(
+				'wp-mainwp-stream-admin-exclude',
+				$this->plugin->locations['url'] . 'ui/js/exclude.js',
+				array(
 					'jquery',
 					'wp-mainwp-stream-select2',
-				), $this->plugin->get_version()
+				),
+				$this->plugin->get_version()
 			);
 			wp_enqueue_script(
-				'wp-mainwp-stream-live-updates', $this->plugin->locations['url'] . 'ui/js/live-updates.js', array(
+				'wp-mainwp-stream-live-updates',
+				$this->plugin->locations['url'] . 'ui/js/live-updates.js',
+				array(
 					'jquery',
 					'heartbeat',
-				), $this->plugin->get_version()
+				),
+				$this->plugin->get_version()
 			);
 
 			wp_localize_script(
@@ -460,7 +475,17 @@ class Admin {
 	 * @return bool TRUE|FALSE.
 	 */
 	public function is_stream_screen() {
-		if ( is_admin() && false !== strpos( wp_mainwp_stream_filter_input( INPUT_GET, 'page' ), $this->records_page_slug ) ) {
+		if ( ! isset( $_GET['page'] ) ) {
+			return false;
+		}
+
+		$page = wp_mainwp_stream_filter_input( INPUT_GET, 'page' );
+
+		if ( empty( $page ) ) {
+			return false;
+		}
+
+		if ( is_admin() && false !== strpos( $page, $this->records_page_slug ) ) {
 			return true;
 		}
 
@@ -573,7 +598,7 @@ class Admin {
 
 		\wp_add_inline_style( 'wp-admin', $css );
 	}
-	
+
 	/**
 	 * Handle the reset AJAX request to reset logs.
 	 *
@@ -589,8 +614,8 @@ class Admin {
 		}
 
 		$this->erase_stream_records();
-		
-		do_action( 'wp_mainwp_child_reposts_recreate_tables_if_not_exist' );		
+
+		do_action( 'wp_mainwp_child_reposts_recreate_tables_if_not_exist' );
 
 		if ( defined( 'WP_MAINWP_STREAM_TESTS' ) && WP_MAINWP_STREAM_TESTS ) {
 			return true;
@@ -610,12 +635,12 @@ class Admin {
 	}
 
 
-    /**
-     * Erase stream records.
-     */
-    private function erase_stream_records() {
+	/**
+	 * Erase stream records.
+	 */
+	private function erase_stream_records() {
 
-        /** @global object $wpdb WordPress database object. */
+		/** @global object $wpdb WordPress database object. */
 		global $wpdb;
 
 		$where = '';
@@ -633,22 +658,23 @@ class Admin {
 		);
 	}
 
-    /**
-     * Purge Schedule Setup.
-     */
-    public function purge_schedule_setup() {
+	/**
+	 * Purge Schedule Setup.
+	 */
+	public function purge_schedule_setup() {
 		if ( ! wp_next_scheduled( 'wp_mainwp_stream_auto_purge' ) ) {
 			wp_schedule_event( time(), 'twicedaily', 'wp_mainwp_stream_auto_purge' );
 		}
 	}
 
-    /**
-     * Purge Scheduled action.
-     * @throws \Exception
-     */
-    public function purge_scheduled_action() {
+	/**
+	 * Purge Scheduled action.
+	 *
+	 * @throws \Exception
+	 */
+	public function purge_scheduled_action() {
 
-	    /** @global object $wpdb WordPress database object. */
+		/** @global object $wpdb WordPress database object. */
 		global $wpdb;
 
 		// Don't purge when in Network Admin unless Stream is network activated.
@@ -668,17 +694,27 @@ class Admin {
 			$options = (array) get_option( 'wp_mainwp_stream', array() );
 		}
 
-		if ( ! empty( $options['general_keep_records_indefinitely'] ) || ! isset( $options['general_records_ttl'] ) ) {
+		if ( ! empty( $options['general_keep_records_indefinitely'] ) ) {
 			return;
 		}
 
-		$days     = $options['general_records_ttl'];
+		if ( ! isset( $options['general_records_ttl'] ) ) {
+			$days = 100;
+		} else {
+			$days = $options['general_records_ttl'];
+		}
+
+		if ( empty( $days ) ) {
+			$days = 1;
+		}
+
 		$timezone = new DateTimeZone( 'UTC' );
 		$date     = new DateTime( 'now', $timezone );
 
 		$date->sub( DateInterval::createFromDateString( "$days days" ) );
 
-		$where = $wpdb->prepare( ' AND `stream`.`created` < %s', $date->format( 'Y-m-d H:i:s' ) );
+		// $where = $wpdb->prepare( ' AND `stream`.`created` < %s', $date->format( 'Y-m-d H:i:s' ) );
+		$where = ' AND `stream`.`created` < STR_TO_DATE(' . $wpdb->prepare( '%s', $date->format( 'Y-m-d H:i:s' ) ) . ", '%Y-%m-%d %H:%i:%s') ";
 
 		// Multisite but NOT network activated, only purge the current blog
 		if ( is_multisite() && ! is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
@@ -695,8 +731,8 @@ class Admin {
 	}
 
 	/**
-     * Plugin action links.
-     *
+	 * Plugin action links.
+	 *
 	 * @param array  $links Action links array.
 	 * @param string $file Plugin file URL.
 	 *
@@ -718,13 +754,15 @@ class Admin {
 			$admin_page_url = add_query_arg(
 				array(
 					'page' => $this->network->network_settings_page_slug,
-				), network_admin_url( $this->admin_parent_page )
+				),
+				network_admin_url( $this->admin_parent_page )
 			);
 		} else {
 			$admin_page_url = add_query_arg(
 				array(
 					'page' => $this->settings_page_slug,
-				), admin_url( $this->admin_parent_page )
+				),
+				admin_url( $this->admin_parent_page )
 			);
 		}
 
@@ -732,7 +770,7 @@ class Admin {
 
 		$url = add_query_arg(
 			array(
-				'action'          => 'wp_mainwp_stream_uninstall',
+				'action'                 => 'wp_mainwp_stream_uninstall',
 				'wp_mainwp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
 			),
 			admin_url( 'admin-ajax.php' )
@@ -743,12 +781,12 @@ class Admin {
 		return $links;
 	}
 
-    /**
-     * Render main page.
-     *
-     * @deprecated Disabled.
-     */
-    public function render_list_table() {
+	/**
+	 * Render main page.
+	 *
+	 * @deprecated Disabled.
+	 */
+	public function render_list_table() {
 		$this->list_table->prepare_items();
 		?>
 		<div class="wrap">
@@ -760,10 +798,10 @@ class Admin {
 
 	/**
 	 * Render settings page.
-     *
-     * @deprecated Disabled.
+	 *
+	 * @deprecated Disabled.
 	 */
-    public function render_settings_page() {
+	public function render_settings_page() {
 		$option_key  = $this->plugin->settings->option_key;
 		$form_action = apply_filters( 'wp_mainwp_stream_settings_form_action', admin_url( 'options.php' ) );
 
@@ -821,12 +859,13 @@ class Admin {
 
 	/**
 	 * Instantiate the list table.
-     *
-     * @uses \WP_MainWP_Stream\List_Table
+	 *
+	 * @uses \WP_MainWP_Stream\List_Table
 	 */
-    public function register_list_table() {
+	public function register_list_table() {
 		$this->list_table = new List_Table(
-			$this->plugin, array(
+			$this->plugin,
+			array(
 				'screen' => $this->screen_id['main'],
 			)
 		);
@@ -838,9 +877,9 @@ class Admin {
 	 * @param string $role User role.
 	 *
 	 * @return bool TRUE|FALSE
-     * @deprecated Disabled.
+	 * @deprecated Disabled.
 	 */
-    private function role_can_view( $role ) {
+	private function role_can_view( $role ) {
 		if ( in_array( $role, $this->plugin->settings->options['general_role_access'], true ) ) {
 			return true;
 		}
@@ -851,20 +890,20 @@ class Admin {
 	/**
 	 * Filter user caps to dynamically grant our view cap based on allowed roles.
 	 *
-	 * @param array $allcaps All capabilities.
-	 * @param array $caps Capabilities.
-	 * @param array $args Arguments.
+	 * @param array  $allcaps All capabilities.
+	 * @param array  $caps Capabilities.
+	 * @param array  $args Arguments.
 	 * @param string $user User.
 	 *
 	 * @filter user_has_cap
 	 *
-     * @return array All capabilities.
-     *
-     * @deprecated Disabled.
+	 * @return array All capabilities.
+	 *
+	 * @deprecated Disabled.
 	 */
-    public function filter_user_caps($allcaps, $caps, $args, $user = null ) {
+	public function filter_user_caps( $allcaps, $caps, $args, $user = null ) {
 
-        /** @global object $wp_roles Core class used to implement a user roles API. */
+		/** @global object $wp_roles Core class used to implement a user roles API. */
 		global $wp_roles;
 
 		$_wp_roles = isset( $wp_roles ) ? $wp_roles : new WP_Roles();
@@ -905,14 +944,14 @@ class Admin {
 	 *
 	 * @filter role_has_cap
 	 *
-	 * @param array $allcaps All capabilities.
-	 * @param array $cap Capabilities.
+	 * @param array  $allcaps All capabilities.
+	 * @param array  $cap Capabilities.
 	 * @param string $role User role.
 	 *
 	 * @return array All capabilities.
-     * @deprecated Disabled.
+	 * @deprecated Disabled.
 	 */
-    public function filter_role_caps($allcaps, $cap, $role ) {
+	public function filter_role_caps( $allcaps, $cap, $role ) {
 		$stream_view_caps = array( $this->view_cap );
 
 		if ( in_array( $cap, $stream_view_caps, true ) && $this->role_can_view( $role ) ) {
@@ -923,8 +962,8 @@ class Admin {
 	}
 
 	/**
-     * Ajax stream filters.
-     *
+	 * Ajax stream filters.
+	 *
 	 * @action wp_ajax_wp_mainwp_stream_filters
 	 */
 	public function ajax_filters() {
@@ -973,16 +1012,16 @@ class Admin {
 		die();
 	}
 
-    /**
-     * Get users record meta.
-     *
-     * @param array $authors Authors array.
-     *
-     * @return array Return author records.
-     *
-     * @uses \WP_MainWP_Stream\Author
-     */
-    public function get_users_record_meta($authors ) {
+	/**
+	 * Get users record meta.
+	 *
+	 * @param array $authors Authors array.
+	 *
+	 * @return array Return author records.
+	 *
+	 * @uses \WP_MainWP_Stream\Author
+	 */
+	public function get_users_record_meta( $authors ) {
 		$authors_records = array();
 
 		foreach ( $authors as $user_id => $args ) {
@@ -1020,8 +1059,8 @@ class Admin {
 	/**
 	 * Update user meta in a way that is also safe for VIP.
 	 *
-     * @param int    $user_id User ID.
-     * @param string $meta_key Meta Key.
+	 * @param int    $user_id User ID.
+	 * @param string $meta_key Meta Key.
 	 * @param mixed  $meta_value Meta value.
 	 * @param mixed  $prev_value Previouse Meta value. (optional).
 	 *
@@ -1038,9 +1077,9 @@ class Admin {
 	/**
 	 * Delete user meta in a way that is also safe for VIP.
 	 *
-     * @param int $user_id User ID.
-     * @param string $meta_key Meta Key.
-     * @param mixed  $meta_value Meta value (optional).
+	 * @param int    $user_id User ID.
+	 * @param string $meta_key Meta Key.
+	 * @param mixed  $meta_value Meta value (optional).
 	 *
 	 * @return bool TRUE|FALSE.
 	 */

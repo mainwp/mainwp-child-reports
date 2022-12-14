@@ -63,14 +63,6 @@ class DB {
 		 */
 		$record = apply_filters( 'wp_mainwp_stream_record_array', $record );
 
-		array_walk(
-			$record, function( &$value ) {
-				if ( ! is_array( $value ) ) {
-					$value = strip_tags( $value );
-				}
-			}
-		);
-
 		if ( empty( $record ) ) {
 			return false;
 		}

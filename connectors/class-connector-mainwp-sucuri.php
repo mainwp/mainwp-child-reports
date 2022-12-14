@@ -100,7 +100,7 @@ class Connector_MainWP_Sucuri extends Connector {
 			$scan_status = 'failed';
 		}
 
-		$scan_result = maybe_unserialize( base64_decode( $data ) );
+		$scan_result = json_decode( base64_decode( $data ), true );
 		$status      = $webtrust = '';
 		if ( is_array( $scan_result ) ) {
 			$status   = isset( $scan_result['status'] ) ? $scan_result['status'] : '';

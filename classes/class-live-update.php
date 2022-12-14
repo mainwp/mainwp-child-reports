@@ -5,11 +5,13 @@ namespace WP_MainWP_Stream;
 
 /**
  * Class Live_Update.
+ *
  * @package WP_MainWP_Stream
  */
 class Live_Update {
 	/**
 	 * Hold Plugin class
+	 *
 	 * @var Plugin
 	 */
 	public $plugin;
@@ -54,9 +56,9 @@ class Live_Update {
 		check_ajax_referer( $this->user_meta_key . '_nonce', 'nonce' );
 
 		$input = array(
-			'checked'   => FILTER_SANITIZE_STRING,
-			'user'      => FILTER_SANITIZE_STRING,
-			'heartbeat' => FILTER_SANITIZE_STRING,
+			'checked'   => FILTER_SANITIZE_FULL_SPECIAL_CHARS, // FILTER_SANITIZE_STRING.
+			'user'      => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+			'heartbeat' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
 		);
 
 		$input = filter_input_array( INPUT_POST, $input );
@@ -136,7 +138,7 @@ class Live_Update {
 	/**
 	 * Sends Updated Actions to the List Table View
 	 *
-	 * @param int $last_time Timestamp of last update
+	 * @param int   $last_time Timestamp of last update
 	 * @param array $args    Query args
 	 *
 	 * @return array Array of recently updated items
@@ -187,7 +189,8 @@ class Live_Update {
 
 		// Register list table
 		$this->list_table = new List_Table(
-			$this->plugin, array(
+			$this->plugin,
+			array(
 				'screen' => 'settings_page_' . $this->plugin->admin->records_page_slug,
 			)
 		);

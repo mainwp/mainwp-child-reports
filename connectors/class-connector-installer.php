@@ -188,6 +188,11 @@ class Connector_Installer extends Connector {
 
 			$logs[] = compact( 'slug', 'name', 'version', 'message', 'action' );
 		} elseif ( 'update' === $action ) {
+
+			if ( is_object( $upgrader ) && property_exists( $upgrader, 'skin' ) && 'Automatic_Upgrader_Skin' == get_class( $upgrader->skin ) ) {
+				return false;
+			}
+
 			$action = 'updated';
 			// translators: Placeholders refer to a plugin/theme type, a plugin/theme name, and a plugin/theme version (e.g. "plugin", "Stream", "4.2").
 			$message = _x(

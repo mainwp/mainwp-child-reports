@@ -472,6 +472,13 @@ class Settings {
 		);
 	}
 
+	
+	public function get_delete_logs_by_select() {
+		return array(
+
+		);
+	}
+
 	/**
 	 * Iterate through registered fields and extract default values
 	 *
@@ -1154,7 +1161,7 @@ class Settings {
 		$ttl_before = isset( $old_value['general_records_ttl'] ) ? (int) $old_value['general_records_ttl'] : - 1;
 		$ttl_after  = isset( $new_value['general_records_ttl'] ) ? (int) $new_value['general_records_ttl'] : - 1;
 
-		if ( $ttl_after < $ttl_before ) {
+		if ( $ttl_after != $ttl_before ) {
 			/**
 			 * Action assists in purging when TTL is shortened
 			 */
