@@ -4,10 +4,10 @@ Tags: MainWP Child Reports, MainWP, MainWP Child, MainWP Client Reports Extensio
 Author: mainwp
 Author URI: https://mainwp.com
 Plugin URI: https://mainwp.com
-Requires at least: 3.6
-Tested up to: 6.1.1
+Requires at least: 6.0
+Tested up to: 6.2
 Requires PHP: 7.0
-Stable tag: 2.1
+Stable tag: 2.1.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -35,6 +35,10 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 2. The MainWP Child Reports Settings Screen
 
 == Changelog ==
+
+= 2.1.1 - 12-14-2022 =
+* Added: Support for logging actions performed via WP CLI
+* Added: Support for logging iThemes Secuirty actions
 
 = 2.1 - 12-14-2022 =
 * Updated: PHP 8.1 compatibility improvements
