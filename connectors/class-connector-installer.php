@@ -41,6 +41,8 @@ class Connector_Installer extends Connector {
 
 	public $register_cron = true;
 
+	public $register_cli = true;
+
 	/**
 	 * Return translated connector label.
 	 *

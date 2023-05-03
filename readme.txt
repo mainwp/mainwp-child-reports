@@ -16,7 +16,7 @@ The MainWP Child Report plugin tracks changes to Child sites for the Client Repo
 
 == Description ==
 
-**Note: This plugin requires PHP 5.6 or higher to be activated and is only useful if you are using [MainWP](https://wordpress.org/plugins/mainwp/) and the [MainWP Client Reports Extension](https://mainwp.com/extension/client-reports/).**
+**Note: This plugin requires PHP 7.0 or higher to be activated and is only useful if you are using [MainWP](https://wordpress.org/plugins/mainwp/) and the [MainWP Client Reports Extension](https://mainwp.com/extension/client-reports/).**
 
 Install the [MainWP Child Plugin](https://wordpress.org/plugins/mainwp-child/) plugin first.
 

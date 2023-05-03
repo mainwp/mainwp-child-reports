@@ -59,6 +59,13 @@ abstract class Connector {
 	public $register_cron = false;
 
 	/**
+	 * Register connector in the WP CRON
+	 *
+	 * @var bool
+	 */
+	public $register_cli = false;
+
+	/**
 	 * Register all context hooks
 	 */
 	public function register() {
@@ -169,6 +176,7 @@ abstract class Connector {
 				'mainwp_maintenances',
 				'mainwp_sucuri',
 				'mainwp_wordfence',
+				'mainwp_ithemes'
 			);
 
 			if ( in_array( $connector, $mainwp_addition_connector ) ) {

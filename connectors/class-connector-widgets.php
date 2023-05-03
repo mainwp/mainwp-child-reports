@@ -487,7 +487,9 @@ class Connector_Widgets extends Connector {
 					continue;
 				}
 
-				assert( $old_sidebar_id !== $new_sidebar_id );
+				if( $old_sidebar_id === $new_sidebar_id ){
+					continue;
+				}
 
 				$name             = $this->get_widget_name( $widget_id );
 				$title            = $this->get_widget_title( $widget_id );

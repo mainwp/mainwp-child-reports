@@ -94,10 +94,16 @@ class Connectors {
 			'mainwp-backups',
 			'mainwp-maintenance',
 			'mainwp-sucuri',			
-			'mainwp-wordfence',				
+			'mainwp-wordfence',
+			'mainwp-ithemes',			
 		);
 
 		$is_dashboard_request = wp_mainwp_stream_is_dashboard_request(); 
+
+		$is_wp_cli = false;
+		if ( defined( '\WP_CLI' ) && \WP_CLI ) {
+			$is_wp_cli = true;
+		}
 		
 		$classes = array();
 		foreach ( $connectors as $connector ) {
@@ -126,7 +132,7 @@ class Connectors {
 			}
 
 			// Check if the Connector is allowed to be registered in the WP Frontend
-			if ( ! is_admin() && ! $class->register_frontend && ! $is_dashboard_request ) {
+			if ( ! is_admin() && ! $class->register_frontend && ! $is_dashboard_request && ( $is_wp_cli && ! $class->register_cli ) ) {
 				continue;
 			}
 
