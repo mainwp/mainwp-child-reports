@@ -36,7 +36,7 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 
 == Changelog ==
 
-= 2.1.1 - 12-14-2022 =
+= 2.1.1 - 5-9-2022 =
 * Added: Support for logging actions performed via WP CLI
 * Added: Support for logging iThemes Secuirty actions
 
