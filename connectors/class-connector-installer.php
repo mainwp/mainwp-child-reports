@@ -34,7 +34,9 @@ class Connector_Installer extends Connector {
 	);
 
 	/** @var array Old plugins array. */
-	public $old_plugins = array();
+	public $current_plugins_info = array();
+
+	public $current_themes_info = array();
 
 	/** @var bool Register connector in the WP Frontend. */
 	public $register_frontend = false;
@@ -107,6 +109,57 @@ class Connector_Installer extends Connector {
 
 		return $links;
 	}
+
+	/**
+	 * Register log data.
+	 *
+	 * @uses \WP_MainWP_Stream\Connector::register()
+	 */
+	public function register() {
+		parent::register();
+		add_filter( 'upgrader_pre_install', array( $this, 'upgrader_pre_install' ), 10, 2 );
+	}
+
+	public function upgrader_pre_install() {
+
+		if ( empty( $this->current_themes_info ) ) {
+			$this->current_themes_info = array();
+
+			if ( ! function_exists( '\wp_get_themes' ) ) {
+				require_once ABSPATH . '/wp-admin/includes/theme.php';
+			}
+
+			$themes = wp_get_themes();
+
+			if ( is_array( $themes ) ) {
+				$theme_name  = wp_get_theme()->get( 'Name' );
+				$parent_name = '';
+				$parent      = wp_get_theme()->parent();
+				if ( $parent ) {
+					$parent_name = $parent->get( 'Name' );
+				}
+				foreach ( $themes as $theme ) {
+
+					$_slug = $theme->get_stylesheet();
+					if ( isset( $this->current_themes_info[ $_slug ] ) ) {
+						continue;
+					}
+
+					$out                  = array();
+					$out['name']          = $theme->get( 'Name' );
+					$out['title']         = $theme->display( 'Name', true, false );
+					$out['version']       = $theme->display( 'Version', true, false );
+					$out['active']        = ( $theme->get( 'Name' ) === $theme_name ) ? 1 : 0;
+					$out['slug']          = $_slug;
+					$out['parent_active'] = ( $parent_name == $out['name'] ) ? 1 : 0;
+
+					$this->current_themes_info[ $_slug ] = $out;
+				}
+			}
+		}
+
+	}
+
 
 	/**
 	 * Wrapper method for calling get_plugins().
@@ -219,8 +272,8 @@ class Connector_Installer extends Connector {
 					// $old_version = $_plugins[ $slug ]['Version'];
 
 					// ( Net-Concept - Xavier NUEL ) : get old versions.
-					if ( isset( $this->old_plugins[ $slug ] ) ) {
-						$old_version = $this->old_plugins[ $slug ]['Version'];
+					if ( isset( $this->current_plugins_info[ $slug ] ) ) {
+						$old_version = $this->current_plugins_info[ $slug ]['Version'];
 					} else {
 						// $old_version = ''; // Hummm... will this happen ?
 						$old_version = $upgrader->skin->plugin_info['Version']; // to fix old version
@@ -249,11 +302,24 @@ class Connector_Installer extends Connector {
 						)
 					);
 					$name       = $theme['Name'];
-					// $old_version = $theme['Version'];
-					$old_version = $upgrader->skin->theme_info->get( 'Version' ); // to fix old version  //$theme['Version'];
-					$version     = $theme_data['Version'];
 
-					$logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action' );
+					$old_version = '';
+
+					if ( isset( $this->current_themes_info[ $slug ] ) ) {
+						$old_theme = $this->current_themes_info[ $slug ];
+
+						if ( isset( $old_theme['version'] ) ) {
+							$old_version = $old_theme['version'];
+						}
+					} else {
+						$old_version = $upgrader->skin->theme_info->get( 'Version' ); // to fix old version  //$theme['Version'];
+					}
+					// $old_version = $theme['Version'];
+					$version = $theme_data['Version'];
+
+					if ( ! empty( $old_version ) && version_compare( $version, $old_version, '>' ) ) {
+						$logs[] = compact( 'slug', 'name', 'old_version', 'version', 'message', 'action' );
+					}
 				}
 			}
 		} else {
@@ -512,7 +578,7 @@ class Connector_Installer extends Connector {
 	 * @param array $args Success message.
 	 * @return bool|void Return FALSE on failure.
 	 */
-	public function callback_mainwp_child_installPluginTheme( $args ) {
+	public function callback_mainwp_child_install_plugin_theme( $args ) {
 
 		$logs    = array();
 		$success = isset( $args['success'] ) ? $args['success'] : 0;
@@ -635,6 +701,8 @@ class Connector_Installer extends Connector {
 	 * Upgrader pre-instaler callback.
 	 */
 	public function callback_upgrader_pre_install() {
-		$this->old_plugins = $this->get_plugins();
+		if ( empty( $this->current_plugins_info ) ) {
+			$this->current_plugins_info = $this->get_plugins();
+		}
 	}
 }

@@ -15,11 +15,14 @@ class Connector_MainWP_iThemes extends Connector {
 	/** @var string Connector slug. */
 	public $name = 'mainwp_ithemes';
 
+	public $register_cron = true;
+
 	/** @var string[] Actions registered for this connector. */
-	public $actions = array();
+	public $actions = array(
+		'itsec_site_scanner_scan_complete'
+	);
 
 	public function __construct() {
-		 add_action( 'itsec_site_scanner_scan_complete', array( $this, 'itsec_site_scanner_scan_complete' ), 10, 3 ); // to log ithemes scans.
 	}
 
 	/**
@@ -62,7 +65,7 @@ class Connector_MainWP_iThemes extends Connector {
 		parent::register();
 	}
 
-	public function itsec_site_scanner_scan_complete( $scan, $site_id, $cached ) {
+	public function callback_itsec_site_scanner_scan_complete( $scan, $site_id, $cached ) {
 		if ( ! is_wp_error( $scan ) ) {
 
 			$scan_time = $scan->get_time()->getTimestamp();
