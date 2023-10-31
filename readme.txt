@@ -5,7 +5,7 @@ Author: mainwp
 Author URI: https://mainwp.com
 Plugin URI: https://mainwp.com
 Requires at least: 6.0
-Tested up to: 6.2
+Tested up to: 6.3.2
 Requires PHP: 7.0
 Stable tag: 2.2
 License: GPLv3 or later
@@ -35,6 +35,14 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 2. The MainWP Child Reports Settings Screen
 
 == Changelog ==
+
+= 2.2 - 10-31-2023 =
+* Fixed: An issue with logging Solid Security scans.
+* Fixed: An issue where the theme version number was not correctly logged when specific themes were updated.
+* Enhanced: Security by adding nonce verification.
+* Removed: Unused code for optimization and cleaner codebase.
+
+[See Video Changelog](https://www.youtube.com/watch?v=Kz_P3sNJuaw)
 
 = 2.1.1 - 5-9-2022 =
 * Added: Support for logging actions performed via WP CLI
