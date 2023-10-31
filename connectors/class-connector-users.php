@@ -61,8 +61,6 @@ class Connector_Users extends Connector {
 			'deleted'         => esc_html__( 'Deleted', 'mainwp-child-reports' ),
 			'password-reset'  => esc_html__( 'Password Reset', 'mainwp-child-reports' ),
 			'forgot-password' => esc_html__( 'Lost Password', 'mainwp-child-reports' ),
-			'login'           => esc_html__( 'Log In', 'mainwp-child-reports' ),
-			'logout'          => esc_html__( 'Log Out', 'mainwp-child-reports' ),
 			'switched-to'     => esc_html__( 'Switched To', 'mainwp-child-reports' ),
 			'switched-back'   => esc_html__( 'Switched Back', 'mainwp-child-reports' ),
 			'switched-off'    => esc_html__( 'Switched Off', 'mainwp-child-reports' ),

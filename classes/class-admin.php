@@ -101,14 +101,6 @@ class Admin {
 		// Add admin body class.
 		add_filter( 'admin_body_class', array( $this, 'admin_body_class' ) );
 
-		// Plugin action links.
-		// add_filter(
-		// 'plugin_action_links', array(
-		// $this,
-		// 'plugin_action_links',
-		// ), 10, 2
-		// );
-
 		// Load admin scripts and styles.
 		add_action(
 			'admin_enqueue_scripts',
@@ -128,14 +120,6 @@ class Admin {
 			)
 		);
 
-		// Reset Streams database.
-		add_action(
-			'wp_ajax_wp_mainwp_stream_try_repair',
-			array(
-				$this,
-				'wp_ajax_try_repair',
-			)
-		);
 
 		// Uninstall Streams and Deactivate plugin.
 		$uninstall = $this->plugin->db->driver->purge_storage( $this->plugin );
@@ -730,56 +714,7 @@ class Admin {
 		);
 	}
 
-	/**
-	 * Plugin action links.
-	 *
-	 * @param array  $links Action links array.
-	 * @param string $file Plugin file URL.
-	 *
-	 * @filter plugin_action_links
-	 *
-	 * @return array Plugin action links array.
-	 */
-	public function plugin_action_links( $links, $file ) {
-		if ( plugin_basename( $this->plugin->locations['dir'] . 'mainwp-child-reports.php' ) !== $file ) {
-			return $links;
-		}
-
-		// Also don't show links in Network Admin if Stream isn't network enabled.
-		if ( is_network_admin() && is_multisite() && ! is_plugin_active_for_network( $this->plugin->locations['plugin'] ) ) {
-			return $links;
-		}
-
-		if ( is_network_admin() ) {
-			$admin_page_url = add_query_arg(
-				array(
-					'page' => $this->network->network_settings_page_slug,
-				),
-				network_admin_url( $this->admin_parent_page )
-			);
-		} else {
-			$admin_page_url = add_query_arg(
-				array(
-					'page' => $this->settings_page_slug,
-				),
-				admin_url( $this->admin_parent_page )
-			);
-		}
-
-		$links[] = sprintf( '<a href="%s">%s</a>', esc_url( $admin_page_url ), esc_html__( 'Settings', 'default' ) );
-
-		$url = add_query_arg(
-			array(
-				'action'                 => 'wp_mainwp_stream_uninstall',
-				'wp_mainwp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
-			),
-			admin_url( 'admin-ajax.php' )
-		);
-
-		$links[] = sprintf( '<span id="wp_mainwp_stream_uninstall" class="delete"><a href="%s">%s</a></span>', esc_url( $url ), esc_html__( 'Uninstall', 'mainwp-child-reports' ) );
-
-		return $links;
-	}
+	
 
 	/**
 	 * Render main page.

@@ -49,8 +49,8 @@ class Uninstall {
 	/**
 	 * Uninstall Stream by deleting its data
 	 */
-	public function uninstall() {
-		//check_ajax_referer( 'stream_nonce', 'wp_mainwp_stream_nonce' );
+	public function ajax_uninstall() {
+		check_ajax_referer( 'child_reports_uninstall_nonce', 'wp_mainwp_stream_nonce' );
 
 		$this->options = array(
 			$this->plugin->install->option_key,

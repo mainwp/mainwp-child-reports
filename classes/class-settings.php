@@ -9,12 +9,14 @@ use \WP_User_Query;
 
 /**
  * Class Settings.
+ *
  * @package WP_MainWP_Stream
  */
 class Settings {
 
 	/**
 	 * Hold Plugin class
+	 *
 	 * @var Plugin
 	 */
 	public $plugin;
@@ -65,15 +67,19 @@ class Settings {
 
 		// Remove records when records TTL is shortened
 		add_action(
-			'update_option_' . $this->option_key, array(
+			'update_option_' . $this->option_key,
+			array(
 				$this,
 				'updated_option_ttl_remove_records',
-			), 10, 2
+			),
+			10,
+			2
 		);
 
 		// Apply label translations for settings
 		add_filter(
-			'wp_mainwp_stream_serialized_labels', array(
+			'wp_mainwp_stream_serialized_labels',
+			array(
 				$this,
 				'get_settings_translations',
 			)
@@ -118,10 +124,13 @@ class Settings {
 		);
 
 		add_filter(
-			'user_search_columns', array(
+			'user_search_columns',
+			array(
 				$this,
 				'add_display_name_search_columns',
-			), 10, 3
+			),
+			10,
+			3
 		);
 
 		$users = new WP_User_Query(
@@ -139,10 +148,12 @@ class Settings {
 		);
 
 		remove_filter(
-			'user_search_columns', array(
+			'user_search_columns',
+			array(
 				$this,
 				'add_display_name_search_columns',
-			), 10
+			),
+			10
 		);
 
 		if ( 0 === $users->get_total() ) {
@@ -289,34 +300,34 @@ class Settings {
 	 * @return array
 	 */
 	public function get_fields() {
-		
+
 		$branding_text = wp_mainwp_stream_get_instance()->child_helper->get_branding_title();
-		$branding_name = !empty($branding_text) ? $branding_text : 'MainWP Child';
-			
+		$branding_name = ! empty( $branding_text ) ? $branding_text : 'MainWP Child';
+
 		$fields = array(
 			'general'  => array(
 				'title'  => esc_html__( 'General', 'mainwp-child-reports' ),
 				'fields' => array(
-//					array(
-//						'name'    => 'role_access',
-//						'title'   => esc_html__( 'Role Access', 'mainwp-child-reports' ),
-//						'type'    => 'multi_checkbox',
-//						'desc'    => esc_html__( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'mainwp-child-reports' ),
-//						'choices' => $this->get_roles(),
-//						'default' => array( 'administrator' ),
-//					),
-					array(
-						'name'        => 'records_ttl',
-						'title'       => esc_html__( 'Keep Records for', 'mainwp-child-reports' ),
-						'type'        => 'number',
-						'class'       => 'small-text',
-						'desc'        => esc_html__( 'Maximum number of days to keep activity records.', 'mainwp-child-reports' ),
-						'default'     => 100,
-						'min'         => 1,
-						'max'         => 999,
-						'step'        => 1,
-						'after_field' => esc_html__( 'days', 'mainwp-child-reports' ),
-					),
+					// array(
+					// 'name'    => 'role_access',
+					// 'title'   => esc_html__( 'Role Access', 'mainwp-child-reports' ),
+					// 'type'    => 'multi_checkbox',
+					// 'desc'    => esc_html__( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'mainwp-child-reports' ),
+					// 'choices' => $this->get_roles(),
+					// 'default' => array( 'administrator' ),
+					// ),
+								array(
+									'name'        => 'records_ttl',
+									'title'       => esc_html__( 'Keep Records for', 'mainwp-child-reports' ),
+									'type'        => 'number',
+									'class'       => 'small-text',
+									'desc'        => esc_html__( 'Maximum number of days to keep activity records.', 'mainwp-child-reports' ),
+									'default'     => 100,
+									'min'         => 1,
+									'max'         => 999,
+									'step'        => 1,
+									'after_field' => esc_html__( 'days', 'mainwp-child-reports' ),
+								),
 					array(
 						'name'        => 'keep_records_indefinitely',
 						'title'       => esc_html__( 'Keep Records Indefinitely', 'mainwp-child-reports' ),
@@ -357,7 +368,7 @@ class Settings {
 						'type'    => 'link',
 						'href'    => add_query_arg(
 							array(
-								'action'                => 'wp_mainwp_stream_reset',
+								'action' => 'wp_mainwp_stream_reset',
 								'wp_mainwp_stream_nonce_reset' => wp_create_nonce( 'stream_nonce_reset' ),
 							),
 							admin_url( 'admin-ajax.php' )
@@ -370,16 +381,17 @@ class Settings {
 				),
 			),
 		);
-		
-		if ( isset( $_GET['try_uninstall'] ) && $_GET['try_uninstall'] == 'yes') {
+
+		// to support uninstall report data.
+		if ( isset( $_GET['try_uninstall'] ) && $_GET['try_uninstall'] == 'yes' ) {
 			$uninstall_data = array(
 				'name'    => 'wp_mainwp_stream_uninstall',
 				'title'   => esc_html__( 'Uninstall ' . $branding_name . ' Reports Database', 'mainwp-child-reports' ),
 				'type'    => 'link',
 				'href'    => add_query_arg(
 					array(
-						'action'                => 'wp_mainwp_stream_uninstall',
-						'wp_mainwp_stream_nonce' => wp_create_nonce( 'stream_nonce' ),
+						'action'                 => 'wp_mainwp_stream_uninstall',
+						'wp_mainwp_stream_nonce' => wp_create_nonce( 'child_reports_uninstall_nonce' ),
 					),
 					admin_url( 'admin-ajax.php' )
 				),
@@ -392,7 +404,7 @@ class Settings {
 		}
 
 		// If Akismet is active, allow Admins to opt-in to Akismet tracking
-		if ( class_exists( 'Akismet' ) ) {			
+		if ( class_exists( 'Akismet' ) ) {
 			$akismet_tracking = array(
 				'name'        => 'akismet_tracking',
 				'title'       => esc_html__( 'Akismet Tracking', 'mainwp-child-reports' ),
@@ -472,11 +484,9 @@ class Settings {
 		);
 	}
 
-	
-	public function get_delete_logs_by_select() {
-		return array(
 
-		);
+	public function get_delete_logs_by_select() {
+		return array();
 	}
 
 	/**
@@ -506,7 +516,9 @@ class Settings {
 		$sections = $this->get_fields();
 
 		register_setting(
-			$this->option_key, $this->option_key, array(
+			$this->option_key,
+			$this->option_key,
+			array(
 				$this,
 				'sanitize_settings',
 			)
@@ -582,7 +594,8 @@ class Settings {
 
 							// Support all values in multidimentional arrays too.
 							array_walk_recursive(
-								$output[ $name ], function ( &$v, $k ) {
+								$output[ $name ],
+								function ( &$v, $k ) {
 									$v = trim( $v );
 								}
 							);
@@ -921,7 +934,8 @@ class Settings {
 					}
 
 					$author_or_role_input = $form->render_field(
-						'select2', array(
+						'select2',
+						array(
 							'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'author_or_role' ) ),
 							'options' => $author_or_role_values,
 							'classes' => 'author_or_role',
@@ -966,7 +980,8 @@ class Settings {
 					}
 
 					$connector_or_context_input = $form->render_field(
-						'select2', array(
+						'select2',
+						array(
 							'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'connector_or_context' ) ),
 							'options' => $context_values,
 							'classes' => 'connector_or_context',
@@ -978,7 +993,8 @@ class Settings {
 					);
 
 					$connector_input = $form->render_field(
-						'hidden', array(
+						'hidden',
+						array(
 							'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'connector' ) ),
 							'value'   => $connector,
 							'classes' => 'connector',
@@ -986,7 +1002,8 @@ class Settings {
 					);
 
 					$context_input = $form->render_field(
-						'hidden', array(
+						'hidden',
+						array(
 							'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'context' ) ),
 							'value'   => $context,
 							'classes' => 'context',
@@ -1004,7 +1021,8 @@ class Settings {
 					}
 
 					$action_input = $form->render_field(
-						'select2', array(
+						'select2',
+						array(
 							'name'    => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'action' ) ),
 							'value'   => $action,
 							'options' => $action_values,
@@ -1017,7 +1035,8 @@ class Settings {
 
 					// IP Address input
 					$ip_address_input = $form->render_field(
-						'select2', array(
+						'select2',
+						array(
 							'name'     => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'ip_address' ) ),
 							'value'    => $ip_address,
 							'classes'  => 'ip_address',
@@ -1174,7 +1193,7 @@ class Settings {
 	 *
 	 * @filter wp_mainwp_stream_serialized_labels
 	 * @param array $labels Labels array.
-     *
+	 *
 	 * @return array Multidimensional array of fields
 	 */
 	public function get_settings_translations( $labels ) {

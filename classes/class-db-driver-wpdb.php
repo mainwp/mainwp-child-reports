@@ -185,7 +185,7 @@ class DB_Driver_WPDB implements DB_Driver {
 	 */
 	public function purge_storage( $plugin ) {
 		$uninstall = new Uninstall( $plugin );
-		add_action( 'wp_ajax_wp_mainwp_stream_uninstall', array( $uninstall, 'uninstall' ) );
+		add_action( 'wp_ajax_wp_mainwp_stream_uninstall', array( $uninstall, 'ajax_uninstall' ) );
 
 		return $uninstall;
 	}
