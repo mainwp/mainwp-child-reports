@@ -82,7 +82,7 @@ class Connector_Posts extends Connector {
 	 *
 	 * @filter wp_mainwp_stream_action_links_{connector}
 	 *
-	 * @param array $links   Previous links registered
+	 * @param array  $links   Previous links registered
 	 * @param Record $record Stream record
 	 *
 	 * @return array Action links
@@ -163,12 +163,13 @@ class Connector_Posts extends Connector {
 	 *
 	 * @action transition_post_status
 	 *
-	 * @param mixed $new
-	 * @param mixed $old
+	 * @param mixed    $new
+	 * @param mixed    $old
 	 * @param \WP_Post $post
 	 */
 	public function callback_transition_post_status( $new, $old, $post ) {
-		if ( in_array( $post->post_type, $this->get_excluded_post_types(), true ) ) {
+
+		if ( ! in_array( $post->post_type, $this->get_allow_post_types(), true ) ) {
 			return;
 		}
 
@@ -271,20 +272,9 @@ class Connector_Posts extends Connector {
 					'1: Post title, 2: Post type singular name',
 					'mainwp-child-reports'
 				);
-				$action = 'created';
-			}			
-		
-//		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {			
-//			if ( 'auto-draft' === $old && 'auto-draft' !== $new ) {
-//				$summary = _x(
-//					'"%1$s" %2$s created',
-//					'1: Post title, 2: Post type singular name',
-//					'mainwp-child-reports'
-//				);
-//				$action = 'created';
-//			}						
-//		}		
-		
+				$action  = 'created';
+		}
+
 		if ( empty( $action ) ) {
 			$action = 'updated';
 		}
@@ -339,7 +329,11 @@ class Connector_Posts extends Connector {
 		$post = get_post( $post_id );
 
 		// We check if post is an instance of WP_Post as it doesn't always resolve in unit testing
-		if ( ! ( $post instanceof \WP_Post ) || in_array( $post->post_type, $this->get_excluded_post_types(), true ) ) {
+		if ( ! ( $post instanceof \WP_Post ) ) {
+			return;
+		}
+
+		if ( ! in_array( $post->post_type, $this->get_allow_post_types(), true ) ) {
 			return;
 		}
 
@@ -381,7 +375,23 @@ class Connector_Posts extends Connector {
 				'revision',
 				'seopress_404',
 				'seopress_bot',
-				'seopress_schemas'
+				'seopress_schemas',
+			)
+		);
+	}
+
+	/**
+	 * Constructs list of excluded post types for the Posts connector
+	 *
+	 * @return array List of excluded post types
+	 */
+	public function get_allow_post_types() {
+		return apply_filters(
+			'wp_mainwp_stream_posts_allow_post_types',
+			array(
+				'page',
+				'post',
+				'shop_order',
 			)
 		);
 	}
@@ -407,7 +417,7 @@ class Connector_Posts extends Connector {
 	/**
 	 * Get an adjacent post revision ID
 	 *
-	 * @param int $revision_id
+	 * @param int  $revision_id
 	 * @param bool $previous
 	 *
 	 * @return int $revision_id

@@ -5,6 +5,7 @@ namespace WP_MainWP_Stream;
 
 /**
  * Class DB.
+ *
  * @package WP_MainWP_Stream
  */
 class DB {
@@ -24,7 +25,7 @@ class DB {
 
 	/** @var $wpdb wpdb */
 	private $wpdb;
-	
+
 	/**
 	 * DB constructor.
 	 *
@@ -38,8 +39,7 @@ class DB {
 		/** @global object $wpdb WordPress Database instance. */
 		global $wpdb;
 
-		$this->wpdb	= &$wpdb;
-		
+		$this->wpdb = &$wpdb;
 	}
 
 	/**
@@ -208,10 +208,10 @@ class DB {
 		 * @return array  Array of query arguments
 		 */
 		$args = apply_filters( 'wp_mainwp_stream_query_args', $args );
-		
+
 		$result                    = (array) $this->driver->get_records( $args );
 		$this->found_records_count = isset( $result['count'] ) ? $result['count'] : 0;
-		
+
 		return empty( $result['items'] ) ? array() : $result['items'];
 	}
 
@@ -243,70 +243,4 @@ class DB {
 	public function get_table_names() {
 		return $this->driver->get_table_names();
 	}
-	
-//	public static function _query( $query, $link ) {
-//		if ( self::use_mysqli() ) {
-//			return mysqli_query( $link, $query );
-//		} else {
-//			return mysql_query( $query, $link );
-//		}
-//	}
-	
-//	public static function num_rows( $result ) {
-//		if ( $result === false ) {
-//			return 0;
-//		}
-//
-//		if ( self::use_mysqli() ) {
-//			return mysqli_num_rows( $result );
-//		} else {
-//			return mysql_num_rows( $result );
-//		}
-//	}
-	
-//	public function db_query( $sql ) {
-//		if ( $sql == null ) {
-//			return false;
-//		}
-//
-//		$result = @self::_query( $sql, $this->wpdb->dbh );
-//
-//		if ( !$result || ( @self::num_rows( $result ) == 0 ) ) {
-//			return false;
-//		}
-//
-//		return $result;
-//	}
-	
-	
-//	public function fetch_object( $result ) {
-//		if ( $result === false ) {
-//			return false;
-//		}
-//
-//		if ( self::use_mysqli() ) {
-//			return mysqli_fetch_object( $result );
-//		} else {
-//			return mysql_fetch_object( $result );
-//		}
-//	}
-	
-//	public function free_result( $result ) {
-//		if ( $result === false ) {
-//			return false;
-//		}
-//
-//		if ( self::use_mysqli() ) {		
-//			return mysqli_free_result( $result );
-//		} else {
-//			return mysql_free_result( $result );
-//		}
-//	}
-	
-//	public static function use_mysqli() {		
-//		if ( function_exists( 'mysqli_connect' ) ) {
-//			return true;
-//		}		
-//		return false;
-//	}								
 }

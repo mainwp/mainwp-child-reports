@@ -5,6 +5,7 @@ namespace WP_MainWP_Stream;
 
 /**
  * Class Connector_Media.
+ *
  * @package WP_MainWP_Stream
  *
  * @uses \WP_MainWP_Stream\Connector
@@ -23,11 +24,11 @@ class Connector_Media extends Connector {
 	 * @var array
 	 */
 	public $actions = array(
-		'add_attachment',
-		'edit_attachment',
+		// 'add_attachment',
+		// 'edit_attachment',
 		'delete_attachment',
-		'wp_save_image_editor_file',
-		'wp_save_image_file',
+		// 'wp_save_image_editor_file',
+		// 'wp_save_image_file',
 	);
 
 	/**
@@ -222,7 +223,7 @@ class Connector_Media extends Connector {
 	 * @param string $filename
 	 * @param string $image
 	 * @param string $mime_type
-	 * @param int $post_id
+	 * @param int    $post_id
 	 */
 	public function callback_wp_save_image_editor_file( $dummy, $filename, $image, $mime_type, $post_id ) {
 		unset( $dummy );
@@ -244,15 +245,15 @@ class Connector_Media extends Connector {
 		);
 	}
 
-    /**
-     * WP save image file callback.
-     *
-     * @param $dummy
-     * @param $filename
-     * @param $image
-     * @param $mime_type
-     * @param $post_id
-     */
+	/**
+	 * WP save image file callback.
+	 *
+	 * @param $dummy
+	 * @param $filename
+	 * @param $image
+	 * @param $mime_type
+	 * @param $post_id
+	 */
 	public function callback_wp_save_image_file( $dummy, $filename, $image, $mime_type, $post_id ) {
 		return $this->callback_wp_save_image_editor_file( $dummy, $filename, $image, $mime_type, $post_id );
 	}
