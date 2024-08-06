@@ -7,7 +7,7 @@ Plugin URI: https://mainwp.com
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.0
-Stable tag: 2.2
+Stable tag: 2.2.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -35,6 +35,10 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 2. The MainWP Child Reports Settings Screen
 
 == Changelog ==
+
+= 2.2.1 - 8-6-2024 =
+* Fixed: An issue with adding multiple exclusion rules.
+* Enhanced: Security by adding nonce verification.
 
 = 2.2 - 10-31-2023 =
 * Fixed: An issue with logging Solid Security scans.

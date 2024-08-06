@@ -92,7 +92,7 @@ jQuery(
 										find: term,
 										limit: 10,
 										pager: page,
-										action: 'stream_get_users',
+										action: 'mainwp_stream_get_users',
 										nonce: $input_user.data('nonce')
 									};
 								},
@@ -192,7 +192,7 @@ jQuery(
 									return {
 										find: term,
 										limit: 10,
-										action: 'stream_get_ips',
+										action: 'mainwp_stream_get_ips',
 										nonce: $input_ip.data('nonce')
 									};
 								},
@@ -260,13 +260,13 @@ jQuery(
 				}
 			);
 
-			$('ul.select2-choices, ul.select2-choices li, input.select2-input', '.mainwp-stream-exclude-list tr:not(.hidden) .ip_address').on(
+			$('ul.select2-choices, ul.select2-choices li, input.select2-input, .mainwp-stream-exclude-list tr:not(.hidden) .ip_address').on(
 				'mousedown click focus', function () {
 					var $container = $(this).closest('.select2-container'),
 						$input = $container.find('input.select2-input'),
 						value = $container.select2('data');
 
-					if (value.length >= 1) {
+					if (value && value.length >= 1) {
 						$input.blur();
 						return false;
 					}
@@ -310,11 +310,10 @@ jQuery(
 		$('#exclude_rules_new_rule').on(
 			'click', function () {
 				var $excludeList = $('table.mainwp-stream-exclude-list');
-
 				$('tr:not(.hidden) select.select2-select', $excludeList).each(
 					function () {
 						try {
-							if ($(this).data('select2')){
+							if ($(this).data('select2')) {
 								$(this).select2('destroy');
 							}
 						} catch (e) {
@@ -407,8 +406,9 @@ jQuery(
 			trigger_action.append(placeholder);
 
 			var data = {
-				'action': 'get_actions',
-				'connector': connector
+				'action': 'mainwp_stream_get_actions',
+				'connector': connector,
+				'action_nonce': $('#child_reports_settings_nonce').val()
 			};
 
 			$.post(

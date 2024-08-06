@@ -43,11 +43,6 @@ class Network {
 
 		// Actions.
 		add_action( 'init', array( $this, 'ajax_network_admin' ) );
-		
-		// DISABLED
-		//add_action( 'network_admin_menu', array( $this->plugin->admin, 'register_menu' ) );
-		//add_action( 'network_admin_menu', array( $this, 'admin_menu_screens' ) );
-		//add_action( 'admin_menu', array( $this, 'admin_menu_screens' ) );
 
 		add_action( 'network_admin_notices', array( $this->plugin->admin, 'admin_notices' ) );
 		add_action( 'wpmuadminedit', array( $this, 'network_options_action' ) );
@@ -61,7 +56,6 @@ class Network {
 		add_filter( 'wp_mainwp_stream_list_table_columns', array( $this, 'network_admin_columns' ) );
 		add_filter( 'wp_mainwp_stream_settings_form_action', array( $this, 'settings_form_action' ) );
 		add_filter( 'wp_mainwp_stream_settings_form_description', array( $this, 'settings_form_description' ) );
-		//add_filter( 'wp_mainwp_stream_settings_option_fields', array( $this, 'get_network_admin_fields' ) );
 		add_filter( 'wp_mainwp_stream_serialized_labels', array( $this, 'get_settings_translations' ) );
 		add_filter( 'wp_mainwp_stream_connectors', array( $this, 'hide_blogs_connector' ) );
 	}
@@ -155,7 +149,7 @@ class Network {
 		}
 
 		remove_submenu_page( $this->plugin->admin->records_page_slug, 'wp_mainwp_stream_settings' );
-	
+
 		$this->plugin->admin->screen_id['network_settings'] = add_submenu_page(
 			$this->plugin->admin->records_page_slug,
 			__( 'Reports Network Settings', 'mainwp-child-reports' ),
@@ -353,9 +347,14 @@ class Network {
 			return;
 		}
 
+
 		$options = isset( $_POST['option_page'] ) ? explode( ',', stripslashes( $_POST['option_page'] ) ) : null; // CSRF okay
 
 		if ( $options ) {
+
+			if ( ! isset( $_POST['child_reports_settings_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['child_reports_settings_nonce'] ), 'settings_nonce' )){
+				wp_die( 'Invalid request!' );
+			}
 
 			foreach ( $options as $option ) {
 				$option   = trim( $option );
@@ -385,7 +384,7 @@ class Network {
 		}
 
 		if ( ! count( get_settings_errors() ) ) {
-			add_settings_error( 'general', 'settings_updated', __( 'Settings saved.', 'mainwp-child-reports' ), 'updated' );
+			add_settings_error( 'general', 'settings_updated', __( 'Settings save.', 'mainwp-child-reports' ), 'updated' );
 		}
 
 		set_transient( 'settings_errors', get_settings_errors(), 30 );

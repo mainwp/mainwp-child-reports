@@ -3,9 +3,9 @@
 
 namespace WP_MainWP_Stream;
 
-use \WP_Roles;
-use \WP_User;
-use \WP_User_Query;
+use WP_Roles;
+use WP_User;
+use WP_User_Query;
 
 /**
  * Class Settings.
@@ -86,10 +86,11 @@ class Settings {
 		);
 
 		// Ajax callback function to search users
-		add_action( 'wp_ajax_stream_get_users', array( $this, 'get_users' ) );
+		add_action( 'wp_ajax_mainwp_stream_get_users', array( $this, 'get_users' ) );
 
 		// Ajax callback function to search IPs
-		add_action( 'wp_ajax_stream_get_ips', array( $this, 'get_ips' ) );
+		add_action( 'wp_ajax_mainwp_stream_get_ips', array( $this, 'get_ips' ) );
+		add_action( 'wp_ajax_mainwp_stream_get_actions', array( $this, 'get_actions' ) );
 	}
 
 	/**
@@ -105,7 +106,7 @@ class Settings {
 			return;
 		}
 
-		check_ajax_referer( 'stream_get_users', 'nonce' );
+		check_ajax_referer( 'mainwp_stream_get_users', 'nonce' );
 
 		$response = (object) array(
 			'status'  => false,
@@ -234,7 +235,7 @@ class Settings {
 			return;
 		}
 
-		check_ajax_referer( 'stream_get_ips', 'nonce' );
+		check_ajax_referer( 'mainwp_stream_get_ips', 'nonce' );
 
 		$ips  = $this->plugin->db->existing_records( 'ip' );
 		$find = wp_mainwp_stream_filter_input( INPUT_POST, 'find' );
@@ -254,6 +255,33 @@ class Settings {
 			wp_send_json_error();
 		}
 	}
+
+
+	/**
+	 * Update actions dropdown options based on the connector selected.
+	 */
+	public function get_actions() {
+
+		if ( ! isset( $_POST['action_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['action_nonce'] ), 'settings_nonce' ) ) {
+			wp_die( 'Invalid request!' );
+		}
+
+		$connector_name    = wp_mainwp_stream_filter_input( INPUT_POST, 'connector' );
+		$stream_connectors = wp_mainwp_stream_get_instance()->connectors;
+		if ( ! empty( $connector_name ) ) {
+			if ( isset( $stream_connectors->connectors[ $connector_name ] ) ) {
+				$connector = $stream_connectors->connectors[ $connector_name ];
+				if ( method_exists( $connector, 'get_action_labels' ) ) {
+					$actions = $connector->get_action_labels();
+				}
+			}
+		} else {
+			$actions = $stream_connectors->term_labels['stream_action'];
+		}
+		ksort( $actions );
+		wp_send_json_success( $actions );
+	}
+
 
 	/**
 	 * Filter the columns to search in a WP_User_Query search.
@@ -308,26 +336,18 @@ class Settings {
 			'general'  => array(
 				'title'  => esc_html__( 'General', 'mainwp-child-reports' ),
 				'fields' => array(
-					// array(
-					// 'name'    => 'role_access',
-					// 'title'   => esc_html__( 'Role Access', 'mainwp-child-reports' ),
-					// 'type'    => 'multi_checkbox',
-					// 'desc'    => esc_html__( 'Users from the selected roles above will have permission to view Stream Records. However, only site Administrators can access Stream Settings.', 'mainwp-child-reports' ),
-					// 'choices' => $this->get_roles(),
-					// 'default' => array( 'administrator' ),
-					// ),
-								array(
-									'name'        => 'records_ttl',
-									'title'       => esc_html__( 'Keep Records for', 'mainwp-child-reports' ),
-									'type'        => 'number',
-									'class'       => 'small-text',
-									'desc'        => esc_html__( 'Maximum number of days to keep activity records.', 'mainwp-child-reports' ),
-									'default'     => 100,
-									'min'         => 1,
-									'max'         => 999,
-									'step'        => 1,
-									'after_field' => esc_html__( 'days', 'mainwp-child-reports' ),
-								),
+					array(
+						'name'        => 'records_ttl',
+						'title'       => esc_html__( 'Keep Records for', 'mainwp-child-reports' ),
+						'type'        => 'number',
+						'class'       => 'small-text',
+						'desc'        => esc_html__( 'Maximum number of days to keep activity records.', 'mainwp-child-reports' ),
+						'default'     => 100,
+						'min'         => 1,
+						'max'         => 999,
+						'step'        => 1,
+						'after_field' => esc_html__( 'days', 'mainwp-child-reports' ),
+					),
 					array(
 						'name'        => 'keep_records_indefinitely',
 						'title'       => esc_html__( 'Keep Records Indefinitely', 'mainwp-child-reports' ),
@@ -347,7 +367,7 @@ class Settings {
 						'type'    => 'rule_list',
 						'desc'    => esc_html__( 'Create rules to exclude certain kinds of activity from being recorded by ' . $branding_name . ' Reports.', 'mainwp-child-reports' ),
 						'default' => array(),
-						'nonce'   => 'stream_get_ips',
+						'nonce'   => 'mainwp_stream_get_ips',
 					),
 				),
 			),
@@ -639,12 +659,10 @@ class Settings {
 
 		if ( isset( $field['value'] ) ) {
 			$current_value = $field['value'];
-		} else {
-			if ( isset( $this->options[ $section . '_' . $name ] ) ) {
+		} elseif ( isset( $this->options[ $section . '_' . $name ] ) ) {
 				$current_value = $this->options[ $section . '_' . $name ];
-			} else {
-				$current_value = null;
-			}
+		} else {
+			$current_value = null;
 		}
 
 		$option_key = $this->option_key;
@@ -941,7 +959,7 @@ class Settings {
 							'classes' => 'author_or_role',
 							'data'    => array(
 								'placeholder'   => esc_html__( 'Any Author or Role', 'mainwp-child-reports' ),
-								'nonce'         => esc_attr( wp_create_nonce( 'stream_get_users' ) ),
+								'nonce'         => esc_attr( wp_create_nonce( 'mainwp_stream_get_users' ) ),
 								'selected-id'   => isset( $author_or_role_selected['value'] ) ? esc_attr( $author_or_role_selected['value'] ) : '',
 								'selected-text' => isset( $author_or_role_selected['text'] ) ? esc_attr( $author_or_role_selected['text'] ) : '',
 							),
@@ -1042,7 +1060,7 @@ class Settings {
 							'classes'  => 'ip_address',
 							'data'     => array(
 								'placeholder' => esc_attr__( 'Any IP Address', 'mainwp-child-reports' ),
-								'nonce'       => esc_attr( wp_create_nonce( 'stream_get_ips' ) ),
+								'nonce'       => esc_attr( wp_create_nonce( 'mainwp_stream_get_ips' ) ),
 							),
 							'multiple' => true,
 						)
@@ -1090,6 +1108,8 @@ class Settings {
 				$output .= '<tbody>' . $no_rules_found_row . implode( '', $exclude_rows ) . '</tbody>';
 
 				$output .= '</table>';
+
+				$output .= '<input type="hidden" id="child_reports_settings_nonce" name="child_reports_settings_nonce" value="' . esc_attr( wp_create_nonce( 'settings_nonce' ) ) . '">';
 
 				$output .= sprintf( '<div class="tablenav bottom">%1$s</div>', $actions_bottom );
 
@@ -1145,6 +1165,8 @@ class Settings {
 	public function get_terms_labels( $column ) {
 		$return_labels = array();
 
+		static $_child_reports_logged_contexts;
+
 		if ( isset( $this->plugin->connectors->term_labels[ 'stream_' . $column ] ) ) {
 			if ( 'context' === $column && isset( $this->plugin->connectors->term_labels['stream_connector'] ) ) {
 				$connectors = $this->plugin->connectors->term_labels['stream_connector'];
@@ -1155,6 +1177,33 @@ class Settings {
 					foreach ( $contexts as $context => $context_label ) {
 						if ( isset( $this->plugin->connectors->contexts[ $connector ] ) && array_key_exists( $context, $this->plugin->connectors->contexts[ $connector ] ) ) {
 							$return_labels[ $connector ]['children'][ $context ] = $context_label;
+						}
+					}
+				}
+
+				// to support exclude extra context.
+				global $wpdb;
+				if ( null === $_child_reports_logged_contexts ) {
+					$_child_reports_logged_contexts = (array) $wpdb->get_results(
+						"SELECT DISTINCT context,connector FROM $wpdb->mainwp_stream GROUP BY context", // @codingStandardsIgnoreLine can't prepare column name
+						'ARRAY_A'
+					);
+				}
+
+				if ( ! empty( $_child_reports_logged_contexts ) && is_array( $_child_reports_logged_contexts ) ) {
+					foreach ( $_child_reports_logged_contexts as $log_context ) {
+						if ( is_array( $log_context ) && ! empty( $log_context['connector'] ) && ! empty( $log_context['context'] ) ) {
+							$connector = $log_context['connector'];
+							$context   = $log_context['context'];
+							if ( ! isset( $return_labels[ $connector ] ) ) {
+								$return_labels[ $connector ] = array(
+									'label'    => ucfirst( $connector ),
+									'children' => array(),
+								);
+							}
+							if ( empty( $return_labels[ $connector ]['children'][ $context ] ) ) {
+								$return_labels[ $connector ]['children'][ $context ] = ucfirst( $context );
+							}
 						}
 					}
 				}

@@ -714,7 +714,7 @@ class Admin {
 		);
 	}
 
-	
+
 
 	/**
 	 * Render main page.

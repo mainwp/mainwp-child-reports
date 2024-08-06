@@ -82,9 +82,9 @@ class Log {
 		$author           = new Author( $user_id );
 		$agent            = $author->get_current_agent();
 
-		$backup_logging = ( is_string( $connector ) && 'mainwp_backups' == $connector ) ? true : false;					
+		$backup_logging = ( is_string( $connector ) && 'mainwp_backups' == $connector ) ? true : false;
 		// WP Cron tracking requires opt-in and WP Cron to be enabled.
-		if ( ! $wp_cron_tracking && 'wp_cron' === $agent && ! $backup_logging && ! $forced_log ) {			 
+		if ( ! $wp_cron_tracking && 'wp_cron' === $agent && ! $backup_logging && ! $forced_log ) {
 				return false;
 		}
 
@@ -227,12 +227,12 @@ class Log {
 				$ip_address     = isset( $exclude_settings['ip_address'][ $key ] ) ? $exclude_settings['ip_address'][ $key ] : '';
 
 				$exclude = array(
-					'connector'  => ! empty( $connector ) ? $connector : null,
-					'context'    => ! empty( $context ) ? $context : null,
-					'action'     => ! empty( $action ) ? $action : null,
-					'ip_address' => ! empty( $ip_address ) ? $ip_address : null,
-					'author'     => is_numeric( $author_or_role ) ? absint( $author_or_role ) : null,
-					'role'       => ( ! empty( $author_or_role ) && ! is_numeric( $author_or_role ) ) ? $author_or_role : null,
+					'connector'  => ! empty( $connector ) ? $connector : '',
+					'context'    => ! empty( $context ) ? $context : '',
+					'action'     => ! empty( $action ) ? $action : '',
+					'ip_address' => ! empty( $ip_address ) ? $ip_address : '',
+					'author'     => is_numeric( $author_or_role ) ? absint( $author_or_role ) : '',
+					'role'       => ( ! empty( $author_or_role ) && ! is_numeric( $author_or_role ) ) ? $author_or_role : '',
 				);
 
 				$exclude_rules = array_filter( $exclude, 'strlen' );
