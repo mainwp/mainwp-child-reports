@@ -347,15 +347,13 @@ class Network {
 			return;
 		}
 
+		if ( ! isset( $_POST['child_reports_settings_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['child_reports_settings_nonce'] ), 'settings_nonce' )){
+			return; // do nothing if does not verify nonce.
+		}
 
 		$options = isset( $_POST['option_page'] ) ? explode( ',', stripslashes( $_POST['option_page'] ) ) : null; // CSRF okay
 
 		if ( $options ) {
-
-			if ( ! isset( $_POST['child_reports_settings_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['child_reports_settings_nonce'] ), 'settings_nonce' )){
-				wp_die( 'Invalid request!' );
-			}
-
 			foreach ( $options as $option ) {
 				$option   = trim( $option );
 				$value    = null;
