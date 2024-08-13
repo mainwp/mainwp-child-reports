@@ -601,7 +601,7 @@ class Connector_Woocommerce extends Connector {
 		$this->log(
 			// translators: Placeholder refers to a tax rate name (e.g. "GST").
 			_x(
-				'"%4$s" tax rate updated',
+				'"%1$s" tax rate updated',
 				'Tax rate name',
 				'mainwp-child-reports'
 			),
