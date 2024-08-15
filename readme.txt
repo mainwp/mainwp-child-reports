@@ -36,6 +36,12 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 
 == Changelog ==
 
+= 2.2.2 - 8-15-2024 =
+
+* Fixed: Conflict with the WooCommerce plugin that caused issues with editing tax rates.
+* Updated: Plugin description in the `readme.txt` file for better clarity and information.
+* Updated: Adjusted the nonce verification in the network options saving process to occur earlier.
+
 = 2.2.1 - 8-6-2024 =
 * Fixed: An issue with adding multiple exclusion rules.
 * Enhanced: Security by adding nonce verification.
