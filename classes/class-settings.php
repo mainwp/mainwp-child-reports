@@ -599,35 +599,51 @@ class Settings {
 				if ( empty( $type ) || ! isset( $input[ $name ] ) || '' === $input[ $name ] ) {
 					continue;
 				}
-
-				// Sanitize depending on the type of field.
-				switch ( $type ) {
-					case 'number':
-						$output[ $name ] = is_numeric( $input[ $name ] ) ? intval( trim( $input[ $name ] ) ) : '';
-						break;
-					case 'checkbox':
-						$output[ $name ] = is_numeric( $input[ $name ] ) ? absint( trim( $input[ $name ] ) ) : '';
-						break;
-					default:
-						if ( is_array( $input[ $name ] ) ) {
-							$output[ $name ] = $input[ $name ];
-
-							// Support all values in multidimentional arrays too.
-							array_walk_recursive(
-								$output[ $name ],
-								function ( &$v, $k ) {
-									$v = trim( $v );
-								}
-							);
-						} else {
-							$output[ $name ] = trim( $input[ $name ] );
-						}
-				}
+				$output[ $name ] = $this->sanitize_setting_by_field_type( $input[ $name ], $type );
 			}
 		}
 
 		return $output;
 	}
+
+
+	/**
+	 * Sanitizes a setting value based on the field type.
+	 *
+	 * @param mixed  $value      The value to be sanitized.
+	 * @param string $field_type The type of field.
+	 *
+	 * @return mixed The sanitized value.
+	 */
+	public function sanitize_setting_by_field_type( $value, $field_type ) {
+
+		// Sanitize depending on the type of field.
+		switch ( $field_type ) {
+			case 'number':
+				$sanitized_value = is_numeric( $value ) ? intval( trim( $value ) ) : '';
+				break;
+			case 'checkbox':
+				$sanitized_value = is_numeric( $value ) ? absint( trim( $value ) ) : '';
+				break;
+			default:
+				if ( is_array( $value ) ) {
+					$sanitized_value = $value;
+
+					// Support all values in multidimentional arrays too.
+					array_walk_recursive(
+						$sanitized_value,
+						function ( &$v ) {
+							$v = sanitize_text_field( trim( $v ) );
+						}
+					);
+				} else {
+					$sanitized_value = sanitize_text_field( trim( $value ) );
+				}
+		}
+
+		return $sanitized_value;
+	}
+
 
 	/**
 	 * Compile HTML needed for displaying the field
@@ -909,6 +925,7 @@ class Settings {
 				// Prepend an empty row.
 				$current_value['exclude_row'] = array( 'helper' => '' ) + ( isset( $current_value['exclude_row'] ) ? $current_value['exclude_row'] : array() );
 
+				$i = 0;
 				foreach ( $current_value['exclude_row'] as $key => $value ) {
 					// Prepare values.
 					$author_or_role = isset( $current_value['author_or_role'][ $key ] ) ? $current_value['author_or_role'][ $key ] : '';
@@ -1058,6 +1075,7 @@ class Settings {
 							'name'     => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][]', $option_key, $section, $name, 'ip_address' ) ),
 							'value'    => $ip_address,
 							'classes'  => 'ip_address',
+							'id'       => esc_attr( sprintf( '%1$s[%2$s_%3$s][%4$s][%5$s]', $option_key, $section, $name, 'ip_address', $i ) ),
 							'data'     => array(
 								'placeholder' => esc_attr__( 'Any IP Address', 'mainwp-child-reports' ),
 								'nonce'       => esc_attr( wp_create_nonce( 'mainwp_stream_get_ips' ) ),
@@ -1096,6 +1114,7 @@ class Settings {
 						$ip_address_input,
 						'<a href="#" class="exclude_rules_remove_rule_row">Delete</a>'
 					);
+					++$i;
 				}
 
 				$no_rules_found_row = sprintf(

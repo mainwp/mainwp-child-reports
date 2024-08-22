@@ -175,9 +175,10 @@ jQuery(
 				}
 			);
 
+
 			$('.mainwp-stream-exclude-list tr:not(.hidden) select.select2-select.ip_address').each(
 				function (k, el) {
-					var $input_ip = $(el),
+					let $input_ip = $(el),
 						searchTerm = '';
 
 					$input_ip.select2(

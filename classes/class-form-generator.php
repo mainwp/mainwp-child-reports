@@ -5,6 +5,7 @@ namespace WP_MainWP_Stream;
 
 /**
  * Class Form_Generator.
+ *
  * @package WP_MainWP_Stream
  */
 class Form_Generator {
@@ -71,7 +72,8 @@ class Form_Generator {
 	 */
 	public function render_field( $field_type, $args ) {
 		$args = wp_parse_args(
-			$args, array(
+			$args,
+			array(
 				'name'        => '',
 				'value'       => '',
 				'options'     => array(),
@@ -123,9 +125,12 @@ class Form_Generator {
 				$values = array();
 
 				$multiple = ( $args['multiple'] ) ? 'multiple ' : '';
-				$output   = sprintf(
-					'<select name="%1$s" id="%1$s" class="select2-select %2$s" %3$s%4$s>',
+				$id       = !empty( $args['id'] ) ? $args['id'] : $args['name'];
+
+				$output = sprintf(
+					'<select name="%1$s" id="%2$s" class="select2-select %3$s" %4$s%5$s>',
 					esc_attr( $args['name'] ),
+					esc_attr( $id ),
 					esc_attr( $args['classes'] ),
 					$this->prepare_data_attributes_string( $args['data'] ),
 					$multiple
@@ -137,7 +142,8 @@ class Form_Generator {
 
 				foreach ( $args['options'] as $parent ) {
 					$parent = wp_parse_args(
-						$parent, array(
+						$parent,
+						array(
 							'value'    => '',
 							'text'     => '',
 							'children' => array(),

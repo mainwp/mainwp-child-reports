@@ -5,6 +5,7 @@ namespace WP_MainWP_Stream;
 
 /**
  * Class Network.
+ *
  * @package WP_MainWP_Stream
  */
 class Network {
@@ -12,22 +13,23 @@ class Network {
 	/** @var Plugin Hold Plugin class */
 	public $plugin;
 
-    /** @var string Network settings page slug. */
-    public $network_settings_page_slug = 'wp_mainwp_stream_network_settings';
+	/** @var string Network settings page slug. */
+	public $network_settings_page_slug = 'wp_mainwp_stream_network_settings';
 
-    /** @var string Default settings page slug. */
-    public $default_settings_page_slug = 'wp_mainwp_stream_default_settings';
+	/** @var string Default settings page slug. */
+	public $network_settings_option = 'wp_mainwp_stream_default_settings';
 
-    /**
-     * Network constructor.
-     *
-     * Run each time the class is called.
-     *
-     * @param Plugin $plugin Plugin class.
-     *
-     * @uses \WP_MainWP_Stream\Network::is_network_activated()
-     */
-    public function __construct( $plugin ) {
+
+	/**
+	 * Network constructor.
+	 *
+	 * Run each time the class is called.
+	 *
+	 * @param Plugin $plugin Plugin class.
+	 *
+	 * @uses \WP_MainWP_Stream\Network::is_network_activated()
+	 */
+	public function __construct( $plugin ) {
 
 		$this->plugin = $plugin;
 
@@ -66,9 +68,9 @@ class Network {
 	 * @return bool TRUE|FASLE.
 	 *
 	 * @action init
-     *
+	 *
 	 * @return bool|WP_NETWORK_ADMIN Return FALSE or WP_NETWORK_ADMIN global variable.
-     *
+	 *
 	 * @see https://core.trac.wordpress.org/ticket/22589
 	 */
 	public function ajax_network_admin() {
@@ -103,8 +105,8 @@ class Network {
 	 * Check if Stream Network activated.
 	 *
 	 * @return bool Returns true if Stream is network activated, otherwise false.
-     *
-     * @uses \WP_MainWP_Stream\Network::is_mustuse()
+	 *
+	 * @uses \WP_MainWP_Stream\Network::is_mustuse()
 	 */
 	public function is_network_activated() {
 		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
@@ -140,10 +142,10 @@ class Network {
 	 * Add Network Settings and Default Settings menu items.
 	 *
 	 * @return array|void Returns render settings page or does nothing.
-     *
-     * @deprecated DISABLED
+	 *
+	 * @deprecated DISABLED
 	 */
-    public function admin_menu_screens() {
+	public function admin_menu_screens() {
 		if ( ! is_network_admin() ) {
 			return;
 		}
@@ -165,7 +167,7 @@ class Network {
 	 *
 	 * @param string $option_key Option Key to remove.
 	 * @param array  $new_value New Option Key value.
-     * @param array  $old_value Old Option Key value.
+	 * @param array  $old_value Old Option Key value.
 	 *
 	 * @action update_option_wp_stream
 	 */
@@ -187,7 +189,8 @@ class Network {
 			$action       = add_query_arg(
 				array(
 					'action' => $current_page,
-				), 'edit.php'
+				),
+				'edit.php'
 			);
 		}
 
@@ -208,13 +211,8 @@ class Network {
 
 		$current_page = wp_mainwp_stream_filter_input( INPUT_GET, 'page' );
 
-		switch ( $current_page ) {
-			case $this->network_settings_page_slug:
-				$description = __( 'These settings apply to all sites on the network.', 'mainwp-child-reports' );
-				break;
-			case $this->default_settings_page_slug:
-				$description = __( 'These default settings will apply to new sites created on the network. These settings do not alter existing sites.', 'mainwp-child-reports' );
-				break;
+		if ( $this->network_settings_page_slug === $current_page ) {
+			$description = __( 'These settings apply to all sites on the network.', 'stream' );
 		}
 
 		return $description;
@@ -226,8 +224,8 @@ class Network {
 	 * @param array $fields Settings fields.
 	 *
 	 * @return array $fields Return adjusted settings fields.
-     *
-     * @uses \WP_MainWP_Stream\Network::is_network_activated()
+	 *
+	 * @uses \WP_MainWP_Stream\Network::is_network_activated()
 	 */
 	public function get_network_admin_fields( $fields ) {
 		if ( ! $this->is_network_activated() ) {
@@ -312,11 +310,11 @@ class Network {
 	 *
 	 * @filter wp_mainwp_stream_serialized_labels
 	 *
-     * @param array $labels Filed labels.
-     *
+	 * @param array $labels Filed labels.
+	 *
 	 * @return array $labels Multidimensional array of fields
-     *
-     * @uses \WP_MainWP_Stream\Network::$plugin::settings::get_fields()
+	 *
+	 * @uses \WP_MainWP_Stream\Network::$plugin::settings::get_fields()
 	 */
 	public function get_settings_translations( $labels ) {
 		$network_key = $this->plugin->settings->network_options_key;
@@ -338,47 +336,42 @@ class Network {
 	 * Wrapper for the settings API to work on the network settings page.
 	 */
 	public function network_options_action() {
-		$allowed_referers = array(
-			$this->network_settings_page_slug,
-			$this->default_settings_page_slug,
-		);
 
-		if ( ! isset( $_GET['action'] ) || ! in_array( $_GET['action'], $allowed_referers, true ) ) { // CSRF okay
-			return;
-		}
-
-		if ( ! isset( $_POST['child_reports_settings_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['child_reports_settings_nonce'] ), 'settings_nonce' )){
+		// Check the nonce.
+		if ( ! isset( $_POST['child_reports_settings_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['child_reports_settings_nonce'] ), 'settings_nonce' ) ) {
 			return; // do nothing if does not verify nonce.
 		}
 
-		$options = isset( $_POST['option_page'] ) ? explode( ',', stripslashes( $_POST['option_page'] ) ) : null; // CSRF okay
+		// Check the user capability.
+		if ( ! current_user_can( $this->plugin->admin->settings_cap ) ) {
+			return;
+		}
 
-		if ( $options ) {
-			foreach ( $options as $option ) {
-				$option   = trim( $option );
-				$value    = null;
-				$sections = $this->plugin->settings->get_fields();
+		// Check the action.
+		if ( ! isset( $_GET['action'] ) || $this->network_settings_page_slug !== $_GET['action'] ) {
+			return;
+		}
 
-				foreach ( $sections as $section_name => $section ) {
-					foreach ( $section['fields'] as $field_idx => $field ) {
+		$option = ! empty( $_POST['option_page'] ) ? $_POST['option_page'] : false;
+
+		if ( $option && $this->network_settings_option === $option ) {
+
+			$value    = array();
+			$sections = $this->plugin->settings->get_fields();
+
+			foreach ( $sections as $section_name => $section ) {
+				foreach ( $section['fields'] as $field_idx => $field ) {
 						$option_key = $section_name . '_' . $field['name'];
 
-						// @codingStandardsIgnoreStart
-						if ( isset( $_POST[ $option ][ $option_key ] ) ) {
-							$value[ $option_key ] = $_POST[ $option ][ $option_key ];
-						} else {
+					if ( isset( $_POST[ $option ][ $option_key ] ) ) {
+						$value[ $option_key ] = $this->plugin->settings->sanitize_setting_by_field_type( $_POST[ $option ][ $option_key ], $field['type'] );
+					} else {
 							$value[ $option_key ] = false;
-						}
-						// @codingStandardsIgnoreEnd
 					}
 				}
-
-				if ( ! is_array( $value ) ) {
-					$value = trim( $value );
-				}
-
-				update_site_option( $option, $value );
 			}
+
+			update_site_option( $this->network_settings_option, $value );
 		}
 
 		if ( ! count( get_settings_errors() ) ) {
@@ -402,8 +395,8 @@ class Network {
 	 * @param array $filters Site filter.
 	 *
 	 * @return array $filters Return site filters.
-     *
-     * @uses \WP_MainWP_Stream\Network::get_network_blog()
+	 *
+	 * @uses \WP_MainWP_Stream\Network::get_network_blog()
 	 */
 	public function list_table_filters( $filters ) {
 		if ( ! is_network_admin() || wp_is_large_network() ) {
@@ -473,8 +466,8 @@ class Network {
 	/**
 	 * Set blog_id for network admin activity.
 	 *
-     * @param int $blog_id Blog ID.
-     *
+	 * @param int $blog_id Blog ID.
+	 *
 	 * @return int $blog_id Blog ID.
 	 */
 	public function blog_id_logged( $blog_id ) {
