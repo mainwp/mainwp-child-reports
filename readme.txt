@@ -7,7 +7,7 @@ Plugin URI: https://mainwp.com
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 2.2.2
+Stable tag: 2.2.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -35,6 +35,10 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 2. The MainWP Child Reports Settings Screen
 
 == Changelog ==
+
+= 2.2.3 - 8-22-2024 =
+
+* Added: Value sanitization during the process of saving Network settings to enhance security and data integrity.
 
 = 2.2.2 - 8-15-2024 =
 
