@@ -169,7 +169,7 @@ class Connector_Posts extends Connector {
 	 */
 	public function callback_transition_post_status( $new, $old, $post ) {
 
-		if ( ! in_array( $post->post_type, $this->get_allow_post_types(), true ) ) {
+		if ( in_array( $post->post_type, $this->get_excluded_post_types(), true ) ) {
 			return;
 		}
 
@@ -329,11 +329,7 @@ class Connector_Posts extends Connector {
 		$post = get_post( $post_id );
 
 		// We check if post is an instance of WP_Post as it doesn't always resolve in unit testing
-		if ( ! ( $post instanceof \WP_Post ) ) {
-			return;
-		}
-
-		if ( ! in_array( $post->post_type, $this->get_allow_post_types(), true ) ) {
+		if ( ! ( $post instanceof \WP_Post ) || in_array( $post->post_type, $this->get_excluded_post_types(), true ) ) {
 			return;
 		}
 
