@@ -377,8 +377,13 @@ class Connector_WordPress_SEO extends Connector {
 			return;
 		}
 
-		$post            = get_post( $object_id );
-		$post_type_label = get_post_type_labels( get_post_type_object( $post->post_type ) )->singular_name;
+		$post   = get_post( $object_id );
+		$pt_obj = get_post_type_object( $post->post_type );
+		if ( $pt_obj ) {
+			$post_type_label = get_post_type_labels( $pt_obj )->singular_name;
+		} else {
+			return;
+		}
 
 		$message = sprintf(
 			// translators: Placeholders refer to a meta field title, a post title, and a post type (e.g. "Description", "Hello World", "Post")

@@ -311,7 +311,7 @@ class Connector_Installer extends Connector {
 							$old_version = $old_theme['version'];
 						}
 					} else {
-						$old_version = $upgrader->skin->theme_info->get( 'Version' ); // to fix old version  //$theme['Version'];
+						$old_version = ! empty( $upgrader->skin ) && ! empty( $upgrader->skin->theme_info ) ? $upgrader->skin->theme_info->get( 'Version' ) : ''; // to fix old version  //$theme['Version'];
 					}
 					// $old_version = $theme['Version'];
 					$version = $theme_data['Version'];
