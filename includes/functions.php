@@ -148,3 +148,24 @@ function wp_mainwp_stream_is_cron_enabled() {
 function wp_mainwp_stream_is_cron_doing() {
 	return ( defined( 'DOING_CRON' ) && DOING_CRON ) ? true : false;
 }
+
+/**
+ * Get current WordPress version.
+ *
+ * @return string $wp_version Current WordPress version.
+ */
+function wp_mainwp_stream_get_wordpress_version() {
+
+	/**
+	 * The installed version of WordPress.
+	 *
+	 * @global string $wp_version The installed version of WordPress.
+	 */
+	global $wp_version;
+
+	if ( function_exists( '\wp_get_wp_version' ) ) {
+		return \wp_get_wp_version();
+	}
+
+	return $wp_version;
+}

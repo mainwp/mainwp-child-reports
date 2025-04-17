@@ -95,12 +95,11 @@ class Connector_Installer extends Connector {
 	public function action_links( $links, $record ) {
 		if ( 'WordPress' === $record->context && 'updated' === $record->action ) {
 
-			/** @global string $wp_version WordPress verison. */
-			global $wp_version;
+            $wp_ver = wp_mainwp_stream_get_wordpress_version();
 
 			$version = $record->get_meta( 'new_version', true );
 
-			if ( $version === $wp_version ) {
+			if ( $version === $wp_ver ) {
 				$links[ esc_html__( 'About', 'mainwp-child-reports' ) ] = admin_url( 'about.php?updated' );
 			}
 
@@ -514,7 +513,9 @@ class Connector_Installer extends Connector {
 	 * @return void
 	 */
 	public function callback_automatic_updates_complete( $update_results ) {
-		global $pagenow, $wp_version;
+		global $pagenow;
+
+        $wp_ver = wp_mainwp_stream_get_wordpress_version();
 
 		if ( ! is_array( $update_results ) || ! isset( $update_results['core'] ) ) {
 			$this->automatic_updates_complete_plugin_theme( $update_results );
@@ -523,7 +524,7 @@ class Connector_Installer extends Connector {
 
 		$info = $update_results['core'][0];
 
-		$old_version  = $wp_version;
+		$old_version  = $wp_ver;
 		$new_version  = $info->item->version;
 		$auto_updated = true;
 
@@ -633,11 +634,12 @@ class Connector_Installer extends Connector {
 
 		/**
 		 * @global string $pagenow Current page.
-		 * @global string $wp_version WordPress version.
 		 */
-		global $pagenow, $wp_version;
+		global $pagenow;
 
-		$old_version  = $wp_version;
+        $wp_ver = wp_mainwp_stream_get_wordpress_version();
+
+		$old_version  = $wp_ver;
 		$auto_updated = ( 'update-core.php' !== $pagenow );
 
 		if ( $auto_updated ) {
