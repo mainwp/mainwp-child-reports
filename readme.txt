@@ -7,7 +7,7 @@ Plugin URI: https://mainwp.com
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.2.3
+Stable tag: 2.2.4
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -35,6 +35,12 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 2. The MainWP Child Reports Settings Screen
 
 == Changelog ==
+
+= 2.2.4 - 4-22-2025 =
+
+* Fixed: Resolved PHP Warning that occurred due to conflict with the WP Pusher plugin.
+* Fixed: Eliminated PHP Error caused by compatibility issues with the WP All Import plugin.
+* Updated: Implemented `wp_get_wp_version()` method to retrieve WordPress version instead of using the global `$wp_version` variable for improved reliability. (#762)[https://github.com/mainwp/mainwp/issues/762]
 
 = 2.2.3 - 8-22-2024 =
 
