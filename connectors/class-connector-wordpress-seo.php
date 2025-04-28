@@ -356,55 +356,7 @@ class Connector_WordPress_SEO extends Connector {
 	 * @param string $meta_value Meta value.
 	 */
 	private function meta( $object_id, $meta_key, $meta_value ) {
-		$prefix = \WPSEO_Meta::$meta_prefix;
-
-		\WPSEO_Metabox::translate_meta_boxes();
-
-		if ( 0 !== strpos( $meta_key, $prefix ) ) {
-			return;
-		}
-
-		$key = str_replace( $prefix, '', $meta_key );
-
-		foreach ( \WPSEO_Meta::$meta_fields as $tab => $fields ) {
-			if ( isset( $fields[ $key ] ) ) {
-				$field = $fields[ $key ];
-				break;
-			}
-		}
-
-		if ( ! isset( $field, $field['title'], $tab ) || '' === $field['title'] ) {
-			return;
-		}
-
-		$post   = get_post( $object_id );
-		$pt_obj = get_post_type_object( $post->post_type );
-		if ( $pt_obj ) {
-			$post_type_label = get_post_type_labels( $pt_obj )->singular_name;
-		} else {
-			return;
-		}
-
-		$message = sprintf(
-			// translators: Placeholders refer to a meta field title, a post title, and a post type (e.g. "Description", "Hello World", "Post")
-			__( 'Updated "%1$s" of "%2$s" %3$s', 'mainwp-child-reports' ),
-			$field['title'],
-			$post->post_title,
-			$post_type_label
-		);
-		$message = str_replace( '%', 'o/o', $message ); // to prevent unknow format specifier.
-
-		$this->log(
-			$message,
-			array(
-				'meta_key'   => $meta_key,
-				'meta_value' => $meta_value,
-				'post_type'  => $post->post_type,
-			),
-			$object_id,
-			'wpseo_meta',
-			'updated'
-		);
+		//compatible method.
 	}
 
 	/**
