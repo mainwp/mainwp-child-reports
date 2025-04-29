@@ -7,7 +7,7 @@ Plugin URI: https://mainwp.com
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.2.4
+Stable tag: 2.2.5
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -35,6 +35,10 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 2. The MainWP Child Reports Settings Screen
 
 == Changelog ==
+
+= 2.2.5 - 4-29-2025 =
+
+* Fixed: Resolved deprecation warning related to the `translate_meta_boxes` function
 
 = 2.2.4 - 4-22-2025 =
 
