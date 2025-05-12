@@ -5,6 +5,7 @@ namespace WP_MainWP_Stream;
 
 /**
  * Class Log.
+ *
  * @package WP_MainWP_Stream
  */
 class Log {
@@ -40,6 +41,31 @@ class Log {
 		}
 	}
 
+
+	/**
+	 * Log hook handler.
+	 *
+	 * @param Connector $connector         Connector responsible for logging the event.
+	 * @param string    $message           sprintf-ready error message string.
+	 * @param array     $args              sprintf (and extra) arguments to use.
+	 * @param int       $object_id         Target object id.
+	 * @param string    $context           Context of the event.
+	 * @param string    $action            Action of the event.
+	 * @param int       $user_id           User responsible for the event.
+	 * @param int       $created_timestamp 1|0 Whether or not the timestamp was created.
+	 *
+	 * @return bool|WP_Error True if updated, otherwise false|WP_Error
+	 */
+	public function hook_log( $connector, $message, $args, $object_id, $context, $action, $extra_params = array() ) {
+		if ( ! is_array( $extra_params ) ) {
+			$extra_params = array();
+		}
+		$user_id           = isset( $extra_params['user_id'] ) ? $extra_params['user_id'] : null;
+		$created_timestamp = isset( $extra_params['created_timestamp'] ) ? $extra_params['created_timestamp'] : 0;
+		$forced_log        = isset( $extra_params['forced_log'] ) ? $extra_params['forced_log'] : false;
+		return $this->log( $connector, $message, $args, $object_id, $context, $action, $user_id, $created_timestamp, $forced_log );
+	}
+
 	/**
 	 * Log handler.
 	 *
@@ -67,8 +93,8 @@ class Log {
 	 */
 	public function log( $connector, $message, $args, $object_id, $context, $action, $user_id = null, $created_timestamp = 0, $forced_log = false ) {
 
-	    /** @global object $wp_roles Wordpress user roles object.  */
-	    global $wp_roles;
+		/** @global object $wp_roles WordPress user roles object.  */
+		global $wp_roles;
 
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
@@ -300,7 +326,8 @@ class Log {
 
 		if ( $stream_meta ) {
 			array_walk(
-				$stream_meta, function ( &$value, $key ) {
+				$stream_meta,
+				function ( &$value, $key ) {
 					$value = sprintf( '%s: %s', $key, ( '' === $value ) ? 'null' : $value );
 				}
 			);
@@ -312,7 +339,8 @@ class Log {
 
 		if ( $user_meta ) {
 			array_walk(
-				$user_meta, function ( &$value, $key ) {
+				$user_meta,
+				function ( &$value, $key ) {
 					$value = sprintf( '%s: %s', $key, ( '' === $value ) ? 'null' : $value );
 				}
 			);

@@ -5,6 +5,7 @@ namespace WP_MainWP_Stream;
 
 /**
  * Class Plugin.
+ *
  * @package WP_MainWP_Stream
  */
 class Plugin {
@@ -36,7 +37,7 @@ class Plugin {
 	/** @var array URLs and Paths used by the plugin. */
 	public $locations = array();
 
-	
+
 	/** @var \WP_MainWP_Stream\Child_Helper Child_Helper class. */
 	public $child_helper;
 
@@ -103,7 +104,6 @@ class Plugin {
 		// Load settings and connectors after widgets_init and before the default init priority.
 		add_action( 'init', array( $this, 'init' ), 9 );
 
-
 		// Change DB driver after plugin loaded if any add-ons want to replace.
 		add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ), 20 );
 
@@ -115,11 +115,13 @@ class Plugin {
 			$this->admin = new Admin( $this, $driver );
 		}
 		$this->child_helper = new MainWP_Child_Report_Helper( $this );
-		
+
 		// Load WP-CLI command.
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			\WP_CLI::add_command( self::WP_CLI_COMMAND, '\WP_MainWP_Stream\CLI' );
 		}
+
+		add_action( 'mainwp_child_reports_add_log', array( $this->log, 'hook_log' ), 7 );
 	}
 
 	/**
@@ -169,8 +171,8 @@ class Plugin {
 	 * @uses \WP_MainWP_Stream\Settings
 	 */
 	public function init() {
-		$this->settings    = new Settings( $this );
-		$this->connectors  = new Connectors( $this );
+		$this->settings   = new Settings( $this );
+		$this->connectors = new Connectors( $this );
 	}
 
 	/**
@@ -182,8 +184,8 @@ class Plugin {
 	 * @return array
 	 */
 	private function locate_plugin() {
-		$dir_url         = trailingslashit( plugins_url( '', dirname( __FILE__ ) ) );
-		$dir_path        = plugin_dir_path( dirname( __FILE__ ) );
+		$dir_url         = trailingslashit( plugins_url( '', __DIR__ ) );
+		$dir_path        = plugin_dir_path( __DIR__ );
 		$dir_basename    = basename( $dir_path );
 		$plugin_basename = trailingslashit( $dir_basename ) . $dir_basename . '.php';
 
