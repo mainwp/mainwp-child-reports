@@ -368,9 +368,10 @@ jQuery(
 				);
 				$('.mainwp-stream-exclude-list tbody tr:not(.hidden) select.select2-select.connector_or_context', this).each(
 					function () {
-						var parts = $(this).val().split('-');
-						$(this).siblings('.connector').val(parts[0]);
-						$(this).siblings('.context').val(parts[1]);
+                        const str = $(this).val();
+                        const index = str.indexOf('-');
+						$(this).siblings('.connector').val(str.substring(0, index));
+						$(this).siblings('.context').val(str.substring(index + 1));
 						$(this).removeAttr('name');
 					}
 				);

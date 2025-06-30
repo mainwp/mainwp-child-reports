@@ -121,7 +121,7 @@ class Plugin {
 			\WP_CLI::add_command( self::WP_CLI_COMMAND, '\WP_MainWP_Stream\CLI' );
 		}
 
-		add_action( 'mainwp_child_reports_add_log', array( $this->log, 'hook_log' ), 7 );
+		add_action( 'mainwp_child_reports_add_log', array( $this->log, 'hook_log' ), 10, 7 );
 	}
 
 	/**
