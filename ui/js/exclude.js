@@ -368,10 +368,18 @@ jQuery(
 				);
 				$('.mainwp-stream-exclude-list tbody tr:not(.hidden) select.select2-select.connector_or_context', this).each(
 					function () {
-						var parts = $(this).val().split('-');
-						$(this).siblings('.connector').val(parts[0]);
-						$(this).siblings('.context').val(parts[1]);
-						$(this).removeAttr('name');
+                        const str = $(this).val();
+                        const parts = str.split('-');
+                        if(parts.length === 1){
+                            $(this).siblings('.connector').val(parts[0]);
+                            $(this).siblings('.context').val('');
+                        }else {
+                            const index = str.indexOf('-');
+                            $(this).siblings('.connector').val(str.substring(0, index));
+                            $(this).siblings('.context').val(str.substring(index + 1));
+                        }
+                        $(this).removeAttr('name');
+
 					}
 				);
 				$('.mainwp-stream-exclude-list tbody tr:not(.hidden) select.select2-select.ip_address', this).each(
