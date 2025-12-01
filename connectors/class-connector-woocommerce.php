@@ -397,12 +397,14 @@ class Connector_Woocommerce extends Connector {
 	 *
 	 * @param int $post_id Post ID.
 	 */
-	public function callback_deleted_post( $post_id ) {
+	public function callback_deleted_post( $post_id, $post = false ) {
 
-		$post = get_post( $post_id );
+		if ( empty( $post ) ) {
+			$post = get_post( $post_id );
+		}
 
 		// We check if post is an instance of WP_Post as it doesn't always resolve in unit testing.
-		if ( ! ( $post instanceof \WP_Post ) || 'shop_order' !== $post->post_type ) {
+		if ( ! is_object( $post ) || empty( $post->post_type ) || 'shop_order' !== $post->post_type ) {
 			return;
 		}
 
@@ -411,8 +413,14 @@ class Connector_Woocommerce extends Connector {
 			return;
 		}
 
-		$order           = new \WC_Order( $post->ID );
-		$order_title     = esc_html__( 'Order number', 'mainwp-child-reports' ) . ' ' . esc_html( $order->get_order_number() );
+		// to fix error delete trash order.
+		if ( 'trash' === $post->post_status ) {
+			$order_title = esc_html__( 'Order Post ID', 'mainwp-child-reports' ) . ' ' . esc_html( $post->ID );
+		} else {
+			$order       = new \WC_Order( $post->ID );
+			$order_title = esc_html__( 'Order number', 'mainwp-child-reports' ) . ' ' . esc_html( $order->get_order_number() );
+		}
+
 		$order_type_name = esc_html__( 'order', 'mainwp-child-reports' );
 
 		$this->log(
@@ -752,7 +760,7 @@ class Connector_Woocommerce extends Connector {
 
 			foreach ( \WC_Admin_Settings::get_settings_pages() as $page ) {
 
-				if ( ! is_object( $page ) || ! property_exists( $page, 'add_settings_page' )) {
+				if ( ! is_object( $page ) || ! property_exists( $page, 'add_settings_page' ) ) {
 					continue;
 				}
 
@@ -779,7 +787,7 @@ class Connector_Woocommerce extends Connector {
 					if ( is_array( $section_settings ) ) {
 						$_fields = array_filter(
 							$page->get_settings( $section_key ),
-							function( $item ) {
+							function ( $item ) {
 								return isset( $item['id'] ) && ( ! in_array( $item['type'], array( 'title', 'sectionend' ), true ) );
 							}
 						);
@@ -806,7 +814,7 @@ class Connector_Woocommerce extends Connector {
 			// Provide additional context for each of the settings pages.
 			array_walk(
 				$settings_pages,
-				function( &$value ) {
+				function ( &$value ) {
 					$value .= ' ' . esc_html__( 'Settings', 'mainwp-child-reports' );
 				}
 			);
