@@ -64,7 +64,7 @@ class Author {
 		} elseif ( ! empty( $this->user ) && 0 !== $this->user->ID ) {
 			return $this->user->$name;
 		} else {
-			throw new \Exception( "Unrecognized magic '$name'" );
+			throw new \Exception( "Unrecognized magic '" . esc_html( $name ) . "'" );
 		}
 	}
 

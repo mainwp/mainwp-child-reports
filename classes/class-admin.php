@@ -184,12 +184,15 @@ class Admin {
 	 */
 	public function notice( $message, $is_error = true ) {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			$message = strip_tags( $message );
+			$message = (string) $message;
+			if ( $message ) {
+				$message = strip_tags( $message );
 
-			if ( $is_error ) {
-				WP_CLI::warning( $message );
-			} else {
-				WP_CLI::success( $message );
+				if ( $is_error ) {
+					WP_CLI::warning( $message );
+				} else {
+					WP_CLI::success( $message );
+				}
 			}
 		} else {
 			// Trigger admin notices late, so that any notices which occur during page load are displayed.
@@ -605,7 +608,7 @@ class Admin {
 			return true;
 		}
 
-		wp_redirect(
+		wp_safe_redirect(
 			add_query_arg(
 				array(
 					'page'    => is_network_admin() ? $this->network->network_settings_page_slug : $this->settings_page_slug,
@@ -633,12 +636,13 @@ class Admin {
 			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Low-frequency maintenance DELETE; dynamic $where fully prepared and caching irrelevant for destructive queries.
 		$wpdb->query(
 			"DELETE `stream`, `meta`
 			FROM {$wpdb->mainwp_stream} AS `stream`
 			LEFT JOIN {$wpdb->mainwp_streammeta} AS `meta`
 			ON `meta`.`record_id` = `stream`.`ID`
-			WHERE 1=1 {$where};" // @codingStandardsIgnoreLine $where already prepared
+			WHERE 1=1 {$where};"
 		);
 	}
 
@@ -705,13 +709,18 @@ class Admin {
 			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
 		}
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Scheduled maintenance DELETE (cron twicedaily); uses prepared $where clause (lines 705, 709), caching inapplicable for destructive operations; $where is safe; built entirely from $wpdb->prepare() calls at lines 701 and 705. 
 		$wpdb->query(
 			"DELETE `stream`, `meta`
 			FROM {$wpdb->mainwp_stream} AS `stream`
 			LEFT JOIN {$wpdb->mainwp_streammeta} AS `meta`
 			ON `meta`.`record_id` = `stream`.`ID`
-			WHERE 1=1 {$where};" // @codingStandardsIgnoreLine $where already prepared
+			WHERE 1=1 {$where};"
 		);
+
+		// Invalidate caches after purging old records.
+		wp_cache_delete( 'mainwp_stream_contexts_connectors' );
+		wp_cache_delete( 'mainwp_query_child_plugin_records' );
 	}
 
 
@@ -739,8 +748,10 @@ class Admin {
 	public function render_settings_page() {
 		$option_key  = $this->plugin->settings->option_key;
 		$form_action = apply_filters( 'wp_mainwp_stream_settings_form_action', admin_url( 'options.php' ) );
+		$form_action = (string) $form_action;
 
 		$page_description = apply_filters( 'wp_mainwp_stream_settings_form_description', '' );
+		$page_description = (string) $page_description;
 
 		$sections   = $this->plugin->settings->get_fields();
 		$active_tab = wp_mainwp_stream_filter_input( INPUT_GET, 'tab' );
@@ -941,7 +952,8 @@ class Admin {
 		}
 
 		if ( isset( $results ) ) {
-			echo wp_mainwp_stream_json_encode( $results ); // xss ok
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON output is safe; wp_json_encode() properly handles JSON encoding for AJAX responses sent as application/json content type.
+			echo wp_mainwp_stream_json_encode( $results );
 		}
 
 		die();

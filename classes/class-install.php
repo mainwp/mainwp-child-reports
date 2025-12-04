@@ -142,6 +142,7 @@ class Install {
 
 		$missing_tables = array();
 		foreach ( $this->plugin->db->get_table_names() as $table_name ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Schema verification query executed only during table recreation; direct $wpdb access and lack of caching are intentional and appropriate for install/upgrade routines.
 			$table_search = $wpdb->get_var(
 				$wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name )
 			);
@@ -208,6 +209,7 @@ class Install {
 		$missing_tables = array();
 
 		foreach ( $this->plugin->db->get_table_names() as $table_name ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Schema verification query executed only during plugin initialization to verify table existence; direct $wpdb access and lack of caching are intentional and appropriate for install/upgrade verification.
 			$table_search = $wpdb->get_var(
 				$wpdb->prepare( 'SHOW TABLES LIKE %s', $table_name )
 			);

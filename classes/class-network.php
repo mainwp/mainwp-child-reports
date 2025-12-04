@@ -382,7 +382,7 @@ class Network {
 
 		$go_back = add_query_arg( 'settings-updated', 'true', wp_get_referer() );
 
-		wp_redirect( $go_back );
+		wp_safe_redirect( $go_back );
 
 		exit;
 	}
@@ -454,6 +454,8 @@ class Network {
 	 * @return string Return $screen_id the altered screen ID.
 	 */
 	public function list_table_screen_id( $screen_id ) {
+		$screen_id = (string) $screen_id;
+		
 		if ( $screen_id && is_network_admin() ) {
 			if ( '-network' !== substr( $screen_id, -8 ) ) {
 				$screen_id .= '-network';
@@ -505,7 +507,6 @@ class Network {
 			$site_count = sprintf( _n( '%d site', '%d sites', get_blog_count(), 'mainwp-child-reports' ), number_format( get_blog_count() ) );
 			$page_title = sprintf( '%s (%s)', $page_title, $site_count );
 		}
-
 		return $page_title;
 	}
 

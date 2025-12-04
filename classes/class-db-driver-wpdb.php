@@ -75,6 +75,7 @@ class DB_Driver_WPDB implements DB_Driver {
 		$meta = $data['meta'];
 		unset( $data['meta'] );
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Low-level DB driver wrapper; direct $wpdb->insert() is intentional and necessary at this abstraction layer.
 		$result = $wpdb->insert( $this->table, $data );
 		if ( ! $result ) {
 			return false;
@@ -106,6 +107,7 @@ class DB_Driver_WPDB implements DB_Driver {
 		/** @global object $wpdb WordPress Database instance. */
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Low-level DB driver wrapper; direct $wpdb->insert() is intentional and necessary at this abstraction layer.
 		$result = $wpdb->insert(
 			$this->table_meta,
 			array(
@@ -114,6 +116,9 @@ class DB_Driver_WPDB implements DB_Driver {
 				'meta_value' => $val,
 			)
 		);
+
+		// Invalidate query caches after meta insertion.
+		wp_cache_delete( 'mainwp_query_child_plugin_records' );
 
 		return $result;
 	}
@@ -145,8 +150,15 @@ class DB_Driver_WPDB implements DB_Driver {
 		/** @global object $wpdb WordPress Database instance. */
 		global $wpdb;
 
+		// Validate column name against allowed fields to prevent SQL injection.
+		$allowed_columns = array( 'ID', 'site_id', 'blog_id', 'object_id', 'user_id', 'user_role', 'created', 'summary', 'connector', 'context', 'action', 'ip' );
+		if ( ! in_array( $column, $allowed_columns, true ) ) {
+			return array();
+		}
+
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- $column validated against whitelist (lines 149-152); central DB driver where direct $wpdb access and no caching at this layer are intentional. Callers handle caching as needed.
 		return (array) $wpdb->get_results(
-			"SELECT DISTINCT $column FROM $wpdb->mainwp_stream", // @codingStandardsIgnoreLine can't prepare column name
+			"SELECT DISTINCT $column FROM $wpdb->mainwp_stream",
 			'ARRAY_A'
 		);
 	}

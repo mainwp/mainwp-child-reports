@@ -624,6 +624,7 @@ class Connector_Woocommerce extends Connector {
 		/** @global object $wpdb WordPress DB object. */
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Rare logging query on tax rate deletion; uses prepared statement with trusted WooCommerce table, one-time fetch for logging only, caching inapplicable.
 		$tax_rate_name = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT tax_rate_name FROM {$wpdb->prefix}woocommerce_tax_rates

@@ -147,6 +147,7 @@ class Carbon extends DateTime
         $tz = @timezone_open((string) $object);
 
         if ($tz === false) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception message, not output
             throw new InvalidArgumentException('Unknown or bad timezone ('.$object.')');
         }
 
@@ -187,9 +188,9 @@ class Carbon extends DateTime
         }
 
         if ($tz !== null) {
-            parent::__construct($time, static::safeCreateDateTimeZone($tz));
+            parent::__construct($time ?: 'now', static::safeCreateDateTimeZone($tz));
         } else {
-            parent::__construct($time);
+            parent::__construct($time ?: 'now');
         }
     }
 
@@ -369,6 +370,7 @@ class Carbon extends DateTime
      *
      * @throws InvalidArgumentException
      */
+    #[\ReturnTypeWillChange]
     public static function createFromFormat($format, $time, $tz = null)
     {
         if ($tz !== null) {
@@ -382,6 +384,7 @@ class Carbon extends DateTime
         }
 
         $errors = static::getLastErrors();
+        // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception message, not output
         throw new InvalidArgumentException(implode(PHP_EOL, $errors['errors']));
     }
 
@@ -498,6 +501,7 @@ class Carbon extends DateTime
                 return $this->getTimezone()->getName();
 
             default:
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception message, not output
                 throw new InvalidArgumentException(sprintf("Unknown getter '%s'", $name));
         }
     }
@@ -565,6 +569,7 @@ class Carbon extends DateTime
                 break;
 
             default:
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception message, not output
                 throw new InvalidArgumentException(sprintf("Unknown setter '%s'", $name));
         }
     }
@@ -620,6 +625,7 @@ class Carbon extends DateTime
      *
      * @return static
      */
+    #[\ReturnTypeWillChange]
     public function setDate($year, $month, $day)
     {
         parent::setDate($year, $month, $day);
@@ -679,6 +685,7 @@ class Carbon extends DateTime
      *
      * @return static
      */
+    #[\ReturnTypeWillChange]
     public function setTime($hour, $minute, $second = 0, $microseconds = 0 )
     {
         parent::setTime($hour, $minute, $second, $microseconds );
@@ -748,6 +755,7 @@ class Carbon extends DateTime
      *
      * @return static
      */
+    #[\ReturnTypeWillChange]
     public function setTimezone($value)
     {
         parent::setTimezone(static::safeCreateDateTimeZone($value));

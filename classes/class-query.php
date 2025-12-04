@@ -184,8 +184,19 @@ class Query {
 		// exclude child/report plugins from log results
 		if ( isset( $args['hide_child_reports'] ) && $args['hide_child_reports'] ) {
 			$child_record_ids = array();
-			$sql_meta         = "SELECT record_id FROM $wpdb->mainwp_streammeta WHERE meta_key = 'slug' AND (meta_value = 'mainwp-child/mainwp-child.php' OR meta_value = 'mainwp-child-reports/mainwp-child-reports.php')";
-			$ret              = $wpdb->get_results( $sql_meta, 'ARRAY_A' );
+			$cache_key        = 'mainwp_query_child_plugin_records';
+
+			// Attempt to get cached result
+			$ret = wp_cache_get( $cache_key );
+
+			if ( false === $ret ) {
+				$sql_meta = "SELECT record_id FROM $wpdb->mainwp_streammeta WHERE meta_key = 'slug' AND (meta_value = 'mainwp-child/mainwp-child.php' OR meta_value = 'mainwp-child-reports/mainwp-child-reports.php')";
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Safe static query within cached block; fetches child plugin records using hardcoded meta_key/meta_value, part of comprehensive query caching strategy.
+				$ret      = $wpdb->get_results( $sql_meta, 'ARRAY_A' );
+
+				// Store result in cache
+				wp_cache_set( $cache_key, $ret );
+			}
 
 			if ( is_array( $ret ) && count( $ret ) > 0 ) {
 				foreach ( $ret as $val ) {
@@ -278,9 +289,62 @@ class Query {
 
 		$query = apply_filters( 'wp_mainwp_stream_db_query', $query, $args );
 
-		$items = $wpdb->get_results( $query ); // @codingStandardsIgnoreLine $query already prepared		
+		// Build cache key based on all query parameters that affect the main query.
+		$identifier_array = array(
+			'site_id'          => isset( $args['site_id'] ) ? $args['site_id'] : null,
+			'blog_id'          => isset( $args['blog_id'] ) ? $args['blog_id'] : null,
+			'object_id'        => isset( $args['object_id'] ) ? $args['object_id'] : null,
+			'user_id'          => isset( $args['user_id'] ) ? $args['user_id'] : null,
+			'user_role'        => isset( $args['user_role'] ) ? $args['user_role'] : null,
+			'search'           => isset( $args['search'] ) ? $args['search'] : null,
+			'search_field'     => isset( $args['search_field'] ) ? $args['search_field'] : null,
+			'connector'        => isset( $args['connector'] ) ? $args['connector'] : null,
+			'context'          => isset( $args['context'] ) ? $args['context'] : null,
+			'action'           => isset( $args['action'] ) ? $args['action'] : null,
+			'ip'               => isset( $args['ip'] ) ? $args['ip'] : null,
+			'date_from'        => isset( $args['date_from'] ) ? $args['date_from'] : null,
+			'date_to'          => isset( $args['date_to'] ) ? $args['date_to'] : null,
+			'date_after'       => isset( $args['date_after'] ) ? $args['date_after'] : null,
+			'date_before'      => isset( $args['date_before'] ) ? $args['date_before'] : null,
+			'created'          => isset( $args['created'] ) ? $args['created'] : null,
+			'paged'            => isset( $args['paged'] ) ? $args['paged'] : null,
+			'records_per_page' => isset( $args['records_per_page'] ) ? $args['records_per_page'] : null,
+			'order'            => isset( $args['order'] ) ? $args['order'] : null,
+			'orderby'          => isset( $args['orderby'] ) ? $args['orderby'] : null,
+			'fields'           => isset( $args['fields'] ) ? $args['fields'] : null,
+			'hide_child_reports' => isset( $args['hide_child_reports'] ) ? $args['hide_child_reports'] : null,
+		);
 
-		$found_row = $items ? absint( $wpdb->get_var( 'SELECT FOUND_ROWS()' ) ) : 0;
+		// Include __in and __not_in arrays in cache key.
+		foreach ( $args as $arg => $value ) {
+			if ( '__in' === substr( $arg, -4 ) || '__not_in' === substr( $arg, -8 ) ) {
+				$identifier_array[ $arg ] = $value;
+			}
+		}
+
+		$query_identifier = json_encode( $identifier_array );
+		// NOSONAR - MD5 used for cache key generation only, not cryptographic purposes.
+		$cache_key_main = 'mainwp_query_main_' . md5( $query_identifier );
+
+		// Attempt to get cached result.
+		$cached_result = wp_cache_get( $cache_key_main );
+
+		if ( false !== $cached_result ) {
+			$items      = $cached_result['items'];
+			$found_row  = $cached_result['count'];
+		} else {
+			$items = $wpdb->get_results( $query ); // @codingStandardsIgnoreLine $query already prepared
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Safe static query within cached block; retrieves row count from previous query, result cached with main query data.
+			$found_row = $items ? absint( $wpdb->get_var( 'SELECT FOUND_ROWS()' ) ) : 0;
+
+			// Store in cache with 300-second TTL (5 minutes).
+			$query_cache_data = array(
+				'items' => $items,
+				'count' => $found_row,
+			);
+			wp_cache_set( $cache_key_main, $query_cache_data, '', 300 );
+		}
 
 		// mainwp-child custom query
 		if ( isset( $args['with-meta'] ) && $args['with-meta'] && is_array( $items ) && $items ) {
@@ -294,13 +358,30 @@ class Query {
 				$start_slice += $max_slice;
 
 				if ( ! empty( $slice_ids ) ) {
-					$sql_meta = sprintf(
-						"SELECT * FROM $wpdb->mainwp_streammeta WHERE record_id IN ( %s )",
-						implode( ',', $slice_ids )
-					);
+					// Build cache key based on specific record IDs in this batch.
+					$sorted_ids = $slice_ids;
+					sort( $sorted_ids );
+					$meta_identifier = json_encode( array( 'method' => 'meta_batch', 'ids' => $sorted_ids ) );
+					// NOSONAR - MD5 used for cache key generation only, not cryptographic purposes.
+					$cache_key_meta = 'mainwp_query_meta_' . md5( $meta_identifier );
 
-					$meta_records = $wpdb->get_results( $sql_meta );
-					$ids_flip     = array_flip( $ids );
+					// Attempt to get cached meta records.
+					$meta_records = wp_cache_get( $cache_key_meta );
+
+					if ( false === $meta_records ) {
+						$sql_meta = sprintf(
+							"SELECT * FROM $wpdb->mainwp_streammeta WHERE record_id IN ( %s )",
+							implode( ',', $slice_ids )
+						);
+
+						// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery.DirectQuery -- Safe: $slice_ids derived from absint()-sanitized $ids (line 351); values guaranteed integers from wp_list_pluck() result. Safe validated query within cached block.
+						$meta_records = $wpdb->get_results( $sql_meta );
+
+						// Store in cache with 300-second TTL (5 minutes).
+						wp_cache_set( $cache_key_meta, $meta_records, '', 300 );
+					}
+
+					$ids_flip = array_flip( $ids );
 
 					foreach ( $meta_records as $meta_record ) {
 						if ( ! empty( $meta_record->meta_value ) ) {
