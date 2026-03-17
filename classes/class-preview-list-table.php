@@ -3,6 +3,11 @@
 
 namespace WP_MainWP_Stream;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 /**
  * Class Preview_List_Table.
  * @package WP_MainWP_Stream

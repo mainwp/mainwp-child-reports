@@ -2,6 +2,11 @@
 /** MainWP Child Reports export. */
 namespace WP_MainWP_Stream;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 /**
  * Class Export.
  * @package WP_MainWP_Stream

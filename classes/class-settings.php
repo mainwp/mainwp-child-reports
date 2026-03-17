@@ -7,6 +7,12 @@ use WP_Roles;
 use WP_User;
 use WP_User_Query;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+
 /**
  * Class Settings.
  *

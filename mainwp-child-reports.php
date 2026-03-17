@@ -14,27 +14,32 @@
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  */
 
- /**
-  * Credit to the Stream Plugin which the MainWP Child Reports plugin is built on.
-  *
-  * Plugin Name: Stream
-  * Plugin-URI: https://wp-stream.com/
-  * Description: Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
-  * Author: XWP
-  * Author URI: https://xwp.co/
-  * License: GPLv2+
-  */
+/**
+ * Credit to the Stream Plugin which the MainWP Child Reports plugin is built on.
+ *
+ * Plugin Name: Stream
+ * Plugin-URI: https://wp-stream.com/
+ * Description: Stream tracks logged-in user activity so you can monitor every change made on your WordPress site in beautifully organized detail. All activity is organized by context, action and IP address for easy filtering. Developers can extend Stream with custom connectors to log any kind of action.
+ * Author: XWP
+ * Author URI: https://xwp.co/
+ * License: GPLv2+
+ */
+
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
 
 if ( ! version_compare( PHP_VERSION, '5.6', '>=' ) ) {
-	load_plugin_textdomain( 'mainwp-child-reports', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-	add_action( 'shutdown', 'wp_mainwp_stream_fail_php_version' );
+    load_plugin_textdomain( 'mainwp-child-reports', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+    add_action( 'shutdown', 'wp_mainwp_stream_fail_php_version' );
 } else {
-	require __DIR__ . '/classes/class-plugin.php';
-	$plugin_class_name = 'WP_MainWP_Stream\Plugin';
-	if ( class_exists( $plugin_class_name ) ) {
-		define( 'WP_MAINWP_STREAM_PLUGIN', plugin_basename( __FILE__ ) );
-		$GLOBALS['wp_mainwp_stream'] = new $plugin_class_name();
-	}
+    require __DIR__ . '/classes/class-plugin.php';
+    $plugin_class_name = 'WP_MainWP_Stream\Plugin';
+    if ( class_exists( $plugin_class_name ) ) {
+        define( 'WP_MAINWP_STREAM_PLUGIN', plugin_basename( __FILE__ ) );
+        $GLOBALS['wp_mainwp_stream'] = new $plugin_class_name();
+    }
 }
 
 /**
@@ -42,12 +47,12 @@ if ( ! version_compare( PHP_VERSION, '5.6', '>=' ) ) {
  * Load up the translations and add the error message to the admin notices.
  */
 function wp_mainwp_stream_fail_php_version() {
-	load_plugin_textdomain( 'mainwp-child-reports', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+    load_plugin_textdomain( 'mainwp-child-reports', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 
-	$message      = esc_html__( 'MainWP Child Reports requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'mainwp-child-reports' );
-	$html_message = sprintf( '<div class="error">%s</div>', wpautop( $message ) );
+    $message      = esc_html__( 'MainWP Child Reports requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'mainwp-child-reports' );
+    $html_message = sprintf( '<div class="error">%s</div>', wpautop( $message ) );
 
-	echo wp_kses_post( $html_message );
+    echo wp_kses_post( $html_message );
 }
 
 /**
@@ -56,5 +61,17 @@ function wp_mainwp_stream_fail_php_version() {
  * @return WP_MainWP_Stream\Plugin
  */
 function wp_mainwp_stream_get_instance() {
-	return $GLOBALS['wp_mainwp_stream'];
+    return $GLOBALS['wp_mainwp_stream'];
 }
+
+add_filter(
+    'wp_plugin_check_ignore_files',
+    function ( $ignored_files ) {
+        if ( is_array( $ignored_files ) ) {
+            $ignored_files[] = 'includes/feeds/atom.php';
+            $ignored_files[] = 'includes/feeds/json.php';
+            $ignored_files[] = 'includes/feeds/rss-2.0.php';
+        }
+        return $ignored_files;
+    }
+);

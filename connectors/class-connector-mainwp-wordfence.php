@@ -3,6 +3,11 @@
 
 namespace WP_MainWP_Stream;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 /**
  * Class Connector_MainWP_Wordfence.
  * @package WP_MainWP_Stream
@@ -16,7 +21,7 @@ class Connector_MainWP_Wordfence extends Connector {
 
     /** @var string[] Actions registered for this connector. */
     public $actions = array(
-		'mainwp_reports_wordfence_scan',                
+		'mainwp_reports_wordfence_scan',
 	);
 
     /**
@@ -35,7 +40,7 @@ class Connector_MainWP_Wordfence extends Connector {
      */
     public function get_action_labels() {
             return array(
-                'wordfence_scan'    => __( 'Wordfence scan', 'default' ),			
+                'wordfence_scan'    => __( 'Wordfence scan', 'default' ),
             );
 	}
 
@@ -87,7 +92,7 @@ class Connector_MainWP_Wordfence extends Connector {
 			compact('scan_time', 'result', 'details'),
 			0,
 			'wordfence_scan',
-			'wordfence_scan'			
+			'wordfence_scan'
 		);
-	}    
+	}
 }

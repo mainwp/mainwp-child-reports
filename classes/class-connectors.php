@@ -3,6 +3,12 @@
 
 namespace WP_MainWP_Stream;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+
 /**
  * Class Connectors.
  * @package WP_MainWP_Stream
@@ -89,27 +95,27 @@ class Connectors {
 			'user-switching',
 			'woocommerce',
 			'wordpress-seo',
-			
+
 			// MainWP
 			'mainwp-backups',
 			'mainwp-maintenance',
-			'mainwp-sucuri',			
+			'mainwp-sucuri',
 			'mainwp-wordfence',
-			'mainwp-ithemes',			
+			'mainwp-ithemes',
 		);
 
-		$is_dashboard_request = wp_mainwp_stream_is_dashboard_request(); 
+		$is_dashboard_request = wp_mainwp_stream_is_dashboard_request();
 
 		$is_wp_cli = false;
 		if ( defined( '\WP_CLI' ) && \WP_CLI ) {
 			$is_wp_cli = true;
 		}
-		
+
 		$classes = array();
 		foreach ( $connectors as $connector ) {
 			include_once $this->plugin->locations['dir'] . '/connectors/class-connector-' . $connector . '.php';
-			$class_name = sprintf( '\WP_MainWP_Stream\Connector_%s', str_replace( '-', '_', $connector ) );			
-			if ( ! class_exists( $class_name ) ) {			
+			$class_name = sprintf( '\WP_MainWP_Stream\Connector_%s', str_replace( '-', '_', $connector ) );
+			if ( ! class_exists( $class_name ) ) {
 				continue;
 			}
 			$class = new $class_name( $this->plugin->log );
@@ -118,7 +124,7 @@ class Connectors {
 				if ( $class->is_dependency_satisfied() ) {
 					$classes[ $class->name ] = $class;
 					continue; // load it.
-				}				
+				}
 			}
 
 			// Check if the Connector extends WP_MainWP_Stream\Connector
@@ -237,5 +243,5 @@ class Connectors {
 		 * @param Connectors $connectors The Connectors object
 		 */
 		do_action( 'wp_mainwp_stream_after_connectors_registration', $labels, $this );
-	}	
+	}
 }
