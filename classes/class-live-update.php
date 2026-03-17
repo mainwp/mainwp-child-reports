@@ -185,6 +185,11 @@ class Live_Update {
 			return $response;
 		}
 
+        // Add authorization check
+        if ( ! current_user_can( 'manage_options' ) ) {
+            return $response;
+        }
+
 		$enable_stream_update = ( 'off' !== $this->plugin->admin->get_user_meta( get_current_user_id(), $this->user_meta_key ) );
 
 		// Register list table
