@@ -7,7 +7,7 @@
  * Description: The MainWP Child Report plugin tracks Child sites for the MainWP Pro Reports Extension. The plugin is only useful if you are using MainWP and the Pro Reports Extension.
  * Author: MainWP
  * Author URI: https://mainwp.com
- * Version: 2.2.6
+ * Version: 2.3
  * Requires at least: 6.0
  * Text Domain: mainwp-child-reports
  * License: GPLv3 or later
@@ -44,7 +44,7 @@ if ( ! version_compare( PHP_VERSION, '5.6', '>=' ) ) {
 function wp_mainwp_stream_fail_php_version() {
 	load_plugin_textdomain( 'mainwp-child-reports', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 
-	$message      = esc_html__( 'MainWP Child Reports requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'stream' );
+	$message      = esc_html__( 'MainWP Child Reports requires PHP version 5.3+, plugin is currently NOT ACTIVE.', 'mainwp-child-reports' );
 	$html_message = sprintf( '<div class="error">%s</div>', wpautop( $message ) );
 
 	echo wp_kses_post( $html_message );

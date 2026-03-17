@@ -201,6 +201,8 @@ class Plugin {
 		return self::VERSION;
 	}
 
+
+
 	/**
 	 * Change plugin database driver in case driver plugin loaded after stream.
 	 *

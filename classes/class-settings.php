@@ -1155,7 +1155,8 @@ class Settings {
 
 		$output = $this->render_field( $field );
 
-		echo $output; // xss ok
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output is already escaped in render_field() using esc_attr(), esc_textarea(), esc_html()
+		echo $output;
 	}
 
 	/**
@@ -1203,10 +1204,18 @@ class Settings {
 				// to support exclude extra context.
 				global $wpdb;
 				if ( null === $_child_reports_logged_contexts ) {
-					$_child_reports_logged_contexts = (array) $wpdb->get_results(
-						"SELECT DISTINCT context,connector FROM $wpdb->mainwp_stream GROUP BY context", // @codingStandardsIgnoreLine can't prepare column name
-						'ARRAY_A'
-					);
+					$cache_key = 'mainwp_stream_contexts_connectors';
+					$cached    = wp_cache_get( $cache_key );
+					if ( false !== $cached ) {
+						$_child_reports_logged_contexts = $cached;
+					} else {
+						// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Safe static query in cached block for settings UI; direct $wpdb access intentional at this layer.
+						$_child_reports_logged_contexts = (array) $wpdb->get_results(
+							"SELECT DISTINCT context,connector FROM $wpdb->mainwp_stream GROUP BY context", // @codingStandardsIgnoreLine can't prepare column name
+							'ARRAY_A'
+						);
+						wp_cache_set( $cache_key, $_child_reports_logged_contexts );
+					}
 				}
 
 				if ( ! empty( $_child_reports_logged_contexts ) && is_array( $_child_reports_logged_contexts ) ) {

@@ -100,7 +100,9 @@ class Uninstall {
 		/** @global object $wpdb WordPress Database instance. */
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange -- Uninstall-time schema cleanup; DROP TABLE on trusted $wpdb properties, one-time destructive operation.
 		$wpdb->query( "DROP TABLE {$wpdb->mainwp_stream}" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange -- Uninstall-time schema cleanup; DROP TABLE on trusted $wpdb properties, one-time destructive operation.
 		$wpdb->query( "DROP TABLE {$wpdb->mainwp_streammeta}" );
 	}
 
@@ -117,6 +119,7 @@ class Uninstall {
 		/** @global object $wpdb WordPress Database instance. */
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall data cleanup; prepared DELETE with %d placeholder, destructive operation where caching is inapplicable.
 		$wpdb->query(
 			$wpdb->prepare(
 				"DELETE `records`, `meta`
@@ -138,6 +141,7 @@ class Uninstall {
 		global $wpdb;
 
 		// Wildcard matches
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall data cleanup; DELETE with hardcoded LIKE pattern on trusted $wpdb->options table, one-time destructive operation.
 		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '%wp_mainwp_stream%';" );
 
 		// Specific options
@@ -151,6 +155,7 @@ class Uninstall {
 		}
 
 		// Wildcard matches on network options
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall data cleanup; DELETE with hardcoded LIKE pattern on trusted $wpdb->sitemeta table, one-time destructive operation.
 		$wpdb->query( "DELETE FROM {$wpdb->sitemeta} WHERE meta_key LIKE '%wp_mainwp_stream%';" );
 
 		// Delete options from each blog on network
@@ -173,6 +178,7 @@ class Uninstall {
 		global $wpdb;
 
 		// Wildcard matches
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall data cleanup; DELETE with hardcoded LIKE pattern on trusted table, one-time destructive operation.
 		$wpdb->query( "DELETE FROM {$wpdb->prefix}options WHERE option_name LIKE '%wp_mainwp_stream%';" );
 
 		// Specific options
@@ -190,10 +196,12 @@ class Uninstall {
 		global $wpdb;
 
 		// Wildcard matches
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall data cleanup; DELETE with hardcoded LIKE pattern on trusted $wpdb->usermeta table, one-time destructive operation.
 		$wpdb->query( "DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE '%wp_mainwp_stream%';" );
 
 		// Specific user meta
 		foreach ( $this->user_meta as $meta_key ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall data cleanup; prepared DELETE with %s placeholder, destructive operation where caching is inapplicable.
 			$wpdb->query(
 				$wpdb->prepare( "DELETE FROM {$wpdb->usermeta} WHERE meta_key = %s;", $meta_key )
 			);
@@ -214,10 +222,12 @@ class Uninstall {
 		global $wpdb;
 
 		// Wildcard matches
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall data cleanup; DELETE with hardcoded LIKE pattern on trusted table, one-time destructive operation.
 		$wpdb->query( "DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE '{$wpdb->prefix}%wp_mainwp_stream%';" );
 
 		// Specific user meta
 		foreach ( $this->user_meta as $meta_key ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall data cleanup; prepared DELETE with %s placeholder, destructive operation where caching is inapplicable.
 			$wpdb->query(
 				$wpdb->prepare( "DELETE FROM {$wpdb->usermeta} WHERE meta_key = {$wpdb->prefix}%s;", $meta_key )
 			);

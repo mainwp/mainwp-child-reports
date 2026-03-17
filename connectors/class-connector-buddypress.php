@@ -552,7 +552,7 @@ class Connector_BuddyPress extends Connector {
 				sprintf(
 					// translators: Placeholder refers to an activity title (e.g. "Update").
 					__( '"%s" activity deleted', 'mainwp-child-reports' ),
-					strip_tags( $activity->action )
+					strip_tags( (string) ( $activity->action ?? '' ) )
 				),
 				array(
 					'id'      => $activity->id,
@@ -608,7 +608,7 @@ class Connector_BuddyPress extends Connector {
 			sprintf(
 				// translators: Placeholder refers to an activity title (e.g. "Update")
 				__( 'Marked activity "%s" as spam', 'mainwp-child-reports' ),
-				strip_tags( $activity->action )
+				strip_tags( (string) ( $activity->action ?? '' ) )
 			),
 			array(
 				'id'      => $activity->id,
@@ -636,7 +636,7 @@ class Connector_BuddyPress extends Connector {
 			sprintf(
 				// translators: Placeholder refers to an activity title (e.g. "Update").
 				__( 'Unmarked activity "%s" as spam', 'mainwp-child-reports' ),
-				strip_tags( $activity->action )
+				strip_tags( (string) ( $activity->action ?? '' ) )
 			),
 			array(
 				'id'      => $activity->id,
@@ -663,7 +663,7 @@ class Connector_BuddyPress extends Connector {
 			sprintf(
 				// translators: Placeholder refers to an activity title (e.g. "Update")
 				__( '"%s" activity updated', 'mainwp-child-reports' ),
-				strip_tags( $activity->action )
+				strip_tags( (string) ( $activity->action ?? '' ) )
 			),
 			array(
 				'id'      => $activity->id,

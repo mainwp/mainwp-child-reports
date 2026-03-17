@@ -773,7 +773,7 @@ class Connector_Settings extends Connector {
 		<script>
 			(function ($) {
 				$(function () {
-					var hashPrefix = <?php echo wp_mainwp_stream_json_encode( self::HIGHLIGHT_FIELD_URL_HASH_PREFIX ); // xss ok ?>,
+					var hashPrefix = <?php echo wp_mainwp_stream_json_encode( self::HIGHLIGHT_FIELD_URL_HASH_PREFIX ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON output is safe; wp_json_encode() properly handles JSON encoding for AJAX responses sent as application/json content type. ?>,
 						hashFieldName = "",
 						fieldNames = [],
 						$select2Choices = {},

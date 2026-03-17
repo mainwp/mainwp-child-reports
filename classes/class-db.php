@@ -92,6 +92,9 @@ class DB {
 		 */
 		do_action( 'wp_mainwp_stream_record_inserted', $record_id, $record );
 
+		// Invalidate contexts/connectors cache after new record insertion.
+		wp_cache_delete( 'mainwp_stream_contexts_connectors' );
+
 		return absint( $record_id );
 	}
 
