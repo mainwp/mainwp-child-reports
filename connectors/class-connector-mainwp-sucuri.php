@@ -3,6 +3,11 @@
 
 namespace WP_MainWP_Stream;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 /**
  * Class Connector_MainWP_Sucuri
  * @package WP_MainWP_Stream
@@ -66,7 +71,7 @@ class Connector_MainWP_Sucuri extends Connector {
     public function register() {
 		parent::register();
 	}
-	
+
 	/**
 	 * Add action links to Stream drop row in admin list screen
 	 *
@@ -90,7 +95,7 @@ class Connector_MainWP_Sucuri extends Connector {
      * @param int $scan_time      The current time of scan.
      */
     public function callback_mainwp_reports_sucuri_scan($data, $scan_status, $scan_data, $scan_time = 0) {
-		
+
 		$message = '';
 		if ( 'success' === $scan_status ) {
 			$message     = __( 'Sucuri scan successful!', 'mainwp-child' );
@@ -106,16 +111,16 @@ class Connector_MainWP_Sucuri extends Connector {
 			$status   = isset( $scan_result['status'] ) ? $scan_result['status'] : '';
 			$webtrust = isset( $scan_result['webtrust'] ) ? $scan_result['webtrust'] : '';
 		}
-		
+
 		if ( empty($scan_time))
 			$scan_time = time();
-		
+
 		$this->log(
 			$message,
 			compact( 'scan_status', 'status', 'webtrust', 'scan_data', 'scan_time' ),
 			0,
 			'sucuri_scan',
-			'sucuri_scan'			
+			'sucuri_scan'
 		);
 	}
 }

@@ -3,6 +3,12 @@
 
 namespace WP_MainWP_Stream;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+
 /**
  * Class Connector_MainWP_Backups
  * @package WP_MainWP_Stream
@@ -19,8 +25,8 @@ class Connector_MainWP_Backups extends Connector {
 	/** @var array Actions registered for this connector. */
 	public $actions = array(
 		'mainwp_backup',
-		'mainwp_reports_backupbuddy_backup',     
-		'mainwp_reports_backupwordpress_backup', 
+		'mainwp_reports_backupbuddy_backup',
+		'mainwp_reports_backupwordpress_backup',
 		'mainwp_reports_backwpup_backup',
 		'updraftplus_backup', // backup action from updraftplus
 		'mainwp_reports_wptimecapsule_backup',
@@ -45,7 +51,7 @@ class Connector_MainWP_Backups extends Connector {
 		return array(
 			'mainwp_backup' => esc_html__( 'MainWP Backup', 'mainwp-child-reports' ),
 			'backupbuddy_backup' =>  esc_html__( 'BackupBuddy Backup', 'mainwp-child-reports' ),
-			'backupwordpress_backup' => esc_html__( 'BackupWordPress Backup', 'mainwp-child-reports' ),			
+			'backupwordpress_backup' => esc_html__( 'BackupWordPress Backup', 'mainwp-child-reports' ),
 			'backwpup_backup' => __( 'BackWPup Backup', 'mainwp-child-reports' ),
 			'updraftplus_backup' => __( 'Updraftplus Backup', 'mainwp-child-reports' ),
 			'wptimecapsule_backup' => __( 'WP Time Capsule Backup', 'mainwp-child-reports' ),
@@ -60,7 +66,7 @@ class Connector_MainWP_Backups extends Connector {
 	 */
 	public function get_context_labels() {
 		return array(
-			'backups' => __( 'Backups', 'mainwp-child-reports' ),			
+			'backups' => __( 'Backups', 'mainwp-child-reports' ),
 		);
 	}
 
@@ -72,7 +78,7 @@ class Connector_MainWP_Backups extends Connector {
     public function register() {
 		parent::register();
 	}
-	
+
 
 	/**
 	 * Add action links to Stream drop row in admin list screen.
@@ -103,7 +109,7 @@ class Connector_MainWP_Backups extends Connector {
 			compact( 'destination', 'status', 'type', 'size' ),
 			0,
 			'backups',
-			'mainwp_backup'			
+			'mainwp_backup'
 		);
 	}
 
@@ -120,7 +126,7 @@ class Connector_MainWP_Backups extends Connector {
 			compact('type', 'backup_time'),
 			0,
 			'backups',
-			'backupbuddy_backup'			
+			'backupbuddy_backup'
 		);
 	}
 
@@ -139,7 +145,7 @@ class Connector_MainWP_Backups extends Connector {
 			compact('destination', 'status', 'type', 'backup_time'),
 			0,
 			'backups',
-			'backupwordpress_backup'			
+			'backupwordpress_backup'
 		);
 	}
 
@@ -157,7 +163,7 @@ class Connector_MainWP_Backups extends Connector {
 			compact( 'type', 'backup_time' ),
 			0,
 			'backups',
-			'backwpup_backup'			
+			'backwpup_backup'
 		);
 	}
 
@@ -165,7 +171,7 @@ class Connector_MainWP_Backups extends Connector {
      * Record MainWP UpdraftPlus backups log.
      *
 	 * Not used.
-	 * 
+	 *
      * @param string $destination Backup destination.
      * @param strign $message Log message.
      * @param string $status Backup status.
@@ -178,7 +184,7 @@ class Connector_MainWP_Backups extends Connector {
 			compact('destination', 'status', 'type', 'backup_time'),
 			0,
 			'backups',
-			'updraftplus_backup'			
+			'updraftplus_backup'
 		);
 	}
 
@@ -195,7 +201,7 @@ class Connector_MainWP_Backups extends Connector {
 			compact( 'type', 'backup_time' ),
 			0,
 			'backups',
-			'wptimecapsule_backup'			
+			'wptimecapsule_backup'
 		);
 	}
 

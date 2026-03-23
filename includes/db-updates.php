@@ -5,6 +5,11 @@
  * To fix meta data.
  */
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 /**
  * Version 3.0.8
  *

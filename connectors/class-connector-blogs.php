@@ -3,6 +3,12 @@
 
 namespace WP_MainWP_Stream;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+
 /**
  * Class Connector_Blogs.
  * @package WP_MainWP_Stream

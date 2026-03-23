@@ -3,6 +3,11 @@
 
 namespace WP_MainWP_Stream;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 /**
  * Class Connector_Widgets.
  * @package WP_MainWP_Stream
@@ -302,7 +307,7 @@ class Connector_Widgets extends Connector {
 	protected function handle_widget_removal( $old, $new ) {
 		$all_old_widget_ids = array_unique( call_user_func_array( 'array_merge', array_values( $old ) ) );
 		$all_new_widget_ids = array_unique( call_user_func_array( 'array_merge', array_values( $new ) ) );
-		
+
 		// @todo In the customizer, moving widgets to other sidebars is problematic because each sidebar is registered as a separate setting; so we need to make sure that all $_POST['customized'] are applied?
 		// @todo The widget option is getting updated before the sidebars_widgets are updated, so we need to hook into the option update to try to cache any deletions for future lookup
 
@@ -361,7 +366,7 @@ class Connector_Widgets extends Connector {
 	 * @return void
 	 */
 	protected function handle_widget_addition( $old, $new ) {
-		
+
 		$all_old_widget_ids = array_unique( call_user_func_array( 'array_merge', array_values( $old ) ) );
 		$all_new_widget_ids = array_unique( call_user_func_array( 'array_merge', array_values( $new ) ) );
 

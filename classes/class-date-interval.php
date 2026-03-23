@@ -3,6 +3,11 @@
 
 namespace WP_MainWP_Stream;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 // Load Carbon to Handle dates much easier
 if ( ! class_exists( 'Carbon\Carbon' ) ) {
 	require_once wp_mainwp_stream_get_instance()->locations['inc_dir'] . 'lib/Carbon.php';

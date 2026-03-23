@@ -3,6 +3,11 @@
 
 namespace WP_MainWP_Stream;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 /**
  * Class Network.
  *
@@ -455,7 +460,7 @@ class Network {
 	 */
 	public function list_table_screen_id( $screen_id ) {
 		$screen_id = (string) $screen_id;
-		
+
 		if ( $screen_id && is_network_admin() ) {
 			if ( '-network' !== substr( $screen_id, -8 ) ) {
 				$screen_id .= '-network';

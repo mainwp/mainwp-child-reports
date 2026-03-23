@@ -3,6 +3,11 @@
 
 namespace WP_MainWP_Stream;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 /**
  * Class Author.
  * @package WP_MainWP_Stream
@@ -42,7 +47,7 @@ class Author {
 	 *
 	 * @throws \Exception Error message.
 	 *
-	 * @return string $name 
+	 * @return string $name
      *
      * @uses \WP_MainWP_Stream\Author::get_display_name()
      * @uses \WP_MainWP_Stream\Author::get_avatar_img()

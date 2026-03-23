@@ -9,6 +9,12 @@ use DateInterval;
 use \WP_CLI;
 use \WP_Roles;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+
 /**
  * Class Admin.
  *
@@ -709,7 +715,7 @@ class Admin {
 			$where .= $wpdb->prepare( ' AND `blog_id` = %d', get_current_blog_id() );
 		}
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Scheduled maintenance DELETE (cron twicedaily); uses prepared $where clause (lines 705, 709), caching inapplicable for destructive operations; $where is safe; built entirely from $wpdb->prepare() calls at lines 701 and 705. 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,PluginCheck.Security.DirectDB.UnescapedDBParameter -- Scheduled maintenance DELETE (cron twicedaily); uses prepared $where clause (lines 705, 709), caching inapplicable for destructive operations; $where is safe; built entirely from $wpdb->prepare() calls at lines 701 and 705.
 		$wpdb->query(
 			"DELETE `stream`, `meta`
 			FROM {$wpdb->mainwp_stream} AS `stream`

@@ -2,6 +2,11 @@
 /** MainWP Child Reports database driver. */
 namespace WP_MainWP_Stream;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 /**
  * Interface DB_Driver.
  * @package WP_MainWP_Stream

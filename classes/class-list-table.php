@@ -5,6 +5,12 @@ namespace WP_MainWP_Stream;
 
 use JMS\Serializer\Annotation\Type;
 
+// Exit if accessed directly.
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+
 /**
  * Class List_Table.
  * @package WP_MainWP_Stream
@@ -133,7 +139,7 @@ class List_Table extends \WP_List_Table {
 		}
 		// Directly checking the user meta; to check whether user has changed screen option or not.
 		$hidden = $this->plugin->admin->get_user_meta( $user->ID, 'manage' . $this->screen->id . 'columnshidden', true );
-		
+
 		// If user meta is not found; add the default hidden column 'id'.
 		if ( ! $hidden ) {
 			$hidden = array( 'id' );
@@ -692,7 +698,7 @@ class List_Table extends \WP_List_Table {
      */
     public function filters_form() {
 		$filters = $this->get_filters();
-		
+
 		$filters_string  = sprintf( '<input type="hidden" name="page" value="%s" />', $this->plugin->admin->records_page_slug );
 		$filters_string .= sprintf( '<span class="filter_info hidden">%s</span>', esc_html__( 'Show filter controls via the screen options tab above.', 'mainwp-child-reports' ) );
 
