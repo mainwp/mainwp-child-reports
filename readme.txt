@@ -36,8 +36,9 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 
 == Changelog ==
 
-= 2.3 - 12-8-2025 =
+= 2.3 - 3-24-2026 =
 
+* Security: Improved authorization checks in the Heartbeat API to prevent unintended access to Child Reports data by authenticated users with lower-level permissions. Updating to version 2.3 is recommended. [(CVE-2026-4299)](https://www.cve.org/CVERecord?id=CVE-2026-4299)
 * Added: Object caching for main query and meta record lookups to improve performance
 * Updated: Improved output escaping compliance throughout plugin (WordPress Coding Standards)
 * Updated: Translation and echo statements with proper context-aware escaping functions
