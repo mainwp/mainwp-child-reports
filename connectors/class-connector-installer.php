@@ -530,7 +530,7 @@ class Connector_Installer extends Connector {
 		}
 
 		foreach ( $update_results['core'] as $info ) {
-			if ( ! isset( $info->result ) || true !== $info->result || empty( $info->item->current ) ) {
+			if ( ! isset( $info->result ) || true !== $info->result || ! isset( $info->item ) || empty( $info->item->current ) ) {
 				continue;
 			}
 
@@ -572,7 +572,7 @@ class Connector_Installer extends Connector {
 
 		if ( ! empty( $update_results['plugin'] ) && is_array( $update_results['plugin'] ) ) {
 			foreach ( $update_results['plugin'] as $result ) {
-				if ( ! isset( $result->result ) || true !== $result->result || empty( $result->item->plugin ) ) {
+				if ( ! isset( $result->result ) || true !== $result->result || ! isset( $result->item ) || empty( $result->item->plugin ) ) {
 					continue;
 				}
 
@@ -600,7 +600,7 @@ class Connector_Installer extends Connector {
 
 		if ( ! empty( $update_results['theme'] ) && is_array( $update_results['theme'] ) ) {
 			foreach ( $update_results['theme'] as $result ) {
-				if ( ! isset( $result->result ) || true !== $result->result || empty( $result->item->theme ) ) {
+				if ( ! isset( $result->result ) || true !== $result->result || ! isset( $result->item ) || empty( $result->item->theme ) ) {
 					continue;
 				}
 
