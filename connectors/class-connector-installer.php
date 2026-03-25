@@ -339,10 +339,15 @@ class Connector_Installer extends Connector {
 			$old_version = isset( $log['old_version'] ) ? $log['old_version'] : null;
 			$message     = isset( $log['message'] ) ? $log['message'] : null;
 			$action      = isset( $log['action'] ) ? $log['action'] : null;
+			$log_args    = compact( 'type', 'name', 'version', 'slug', 'success', 'error', 'old_version' );
+
+			if ( null === $slug || '' === $slug ) {
+				unset( $log_args['slug'] );
+			}
 
 			$this->log(
 				$message,
-				compact( 'type', 'name', 'version', 'slug', 'success', 'error', 'old_version' ),
+				$log_args,
 				null,
 				$context,
 				$action
