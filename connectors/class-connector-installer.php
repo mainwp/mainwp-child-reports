@@ -36,6 +36,7 @@ class Connector_Installer extends Connector {
 		'mainwp_child_installPluginTheme',
 		'mainwp_child_plugin_action',
 		'mainwp_child_theme_action',
+        'pre_auto_update',
 		'automatic_updates_complete',
 	);
 
@@ -43,6 +44,11 @@ class Connector_Installer extends Connector {
 	public $current_plugins_info = array();
 
 	public $current_themes_info = array();
+
+	/**
+     * @var string WordPress version captured before a core auto-update starts.
+     */
+	public $current_wordpress_version = '';
 
 	/** @var bool Register connector in the WP Frontend. */
 	public $register_frontend = false;
@@ -123,6 +129,20 @@ class Connector_Installer extends Connector {
 	public function register() {
 		parent::register();
 		add_filter( 'upgrader_pre_install', array( $this, 'upgrader_pre_install' ), 10, 2 );
+	}
+
+	/**
+	 * Capture the installed WordPress version before an automatic core update starts.
+	 *
+	 * @param string $type Update type.
+	 * @return void
+	 */
+	public function callback_pre_auto_update( $type ) {
+		if ( 'core' !== $type ) {
+			return;
+		}
+
+		$this->current_wordpress_version = wp_mainwp_stream_get_wordpress_version();
 	}
 
 	public function upgrader_pre_install() {
@@ -530,29 +550,35 @@ class Connector_Installer extends Connector {
 		}
 
 		foreach ( $update_results['core'] as $info ) {
-			if ( ! isset( $info->result ) || true !== $info->result || ! isset( $info->item ) || empty( $info->item->current ) ) {
+			if ( ! is_object( $info ) || empty( $info->item->version ) ) {
 				continue;
 			}
 
-			$old_version  = isset( $info->item->version ) ? $info->item->version : '';
-			$new_version  = $info->item->current;
+			if ( ! isset( $info->result ) || true !== $info->result ) {
+				continue;
+			}
+
+			$old_version  = $this->current_wordpress_version;
+			$new_version  = $info->item->version;
 			$auto_updated = true;
 
-			if ( ! empty( $old_version ) && version_compare( $new_version, $old_version, '<=' ) ) {
-				continue;
-			}
+			if ( empty( $old_version ) || version_compare( $new_version, $old_version, '<=' ) ) {
+                continue;
+            }
 
-			$message = esc_html__( 'WordPress auto-updated to %s', 'mainwp-child-reports' );
+			$message = esc_html__( 'WordPress auto-updated from %1$s to %2$s', 'mainwp-child-reports' );
 
 			$this->log(
 				$message,
-				compact( 'new_version', 'old_version', 'auto_updated' ),
+				compact( 'old_version', 'new_version', 'auto_updated' ),
 				null,
 				'wordpress', // phpcs:ignore -- fix format text.
 				'updated',
 				null,
 				true // forced log - $forced_log.
 			);
+
+			$this->current_wordpress_version = '';
 		}
 	}
 
@@ -665,26 +691,26 @@ class Connector_Installer extends Connector {
 		 */
 		global $pagenow;
 
-        $wp_ver = wp_mainwp_stream_get_wordpress_version();
-
-		$old_version  = $wp_ver;
+		$old_version  = ! empty( $this->current_wordpress_version ) ? $this->current_wordpress_version : wp_mainwp_stream_get_wordpress_version();
 		$auto_updated = ( 'update-core.php' !== $pagenow );
 
 		if ( $auto_updated ) {
 			// translators: Placeholder refers to a version number (e.g. "4.2")
-			$message = esc_html__( 'WordPress auto-updated to %s', 'mainwp-child-reports' );
+			$message = esc_html__( 'WordPress auto-updated from %1$s to %2$s', 'mainwp-child-reports' );
 		} else {
 			// translators: Placeholder refers to a version number (e.g. "4.2")
-			$message = esc_html__( 'WordPress updated to %s', 'mainwp-child-reports' );
+			$message = esc_html__( 'WordPress updated from %1$s to %2$s', 'mainwp-child-reports' );
 		}
 
 		$this->log(
 			$message,
-			compact( 'new_version', 'old_version', 'auto_updated' ),
+			compact( 'old_version', 'new_version', 'auto_updated' ),
 			null,
 			'wordpress', // phpcs:ignore -- fix format text.
 			'updated'
 		);
+
+		$this->current_wordpress_version = '';
 	}
 
 	/**
