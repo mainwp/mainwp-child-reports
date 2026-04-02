@@ -89,6 +89,29 @@ class Connector_Installer extends Connector {
 	}
 
 	/**
+	 * Normalize a theme reference into a stylesheet slug.
+	 *
+	 * @param mixed $theme Theme slug or WP_Theme instance.
+	 *
+	 * @return string|null
+	 */
+	private function normalize_theme_slug( $theme ) {
+		if ( $theme instanceof \WP_Theme ) {
+			$theme = $theme->get_stylesheet();
+		}
+
+		if ( is_scalar( $theme ) ) {
+			$theme = (string) $theme;
+		}
+
+		if ( ! is_string( $theme ) || '' === $theme ) {
+			return null;
+		}
+
+		return $theme;
+	}
+
+	/**
 	 * Add action links to Stream drop row in admin list screen.
 	 *
 	 * @filter wp_mainwp_stream_action_links_{connector}.
@@ -224,7 +247,7 @@ class Connector_Installer extends Connector {
 				$name    = $data['Name'];
 				$version = $data['Version'];
 			} else { // theme
-				$slug = $upgrader->theme_info();
+				$slug = $this->normalize_theme_slug( $upgrader->theme_info() );
 
 				if ( ! $slug ) {
 					return false;
@@ -708,7 +731,7 @@ class Connector_Installer extends Connector {
 				$name    = $args['Name'];
 				$version = $args['Version'];
 			} else { // theme
-				$slug = $args['slug'];
+				$slug = $this->normalize_theme_slug( $args['slug'] );
 				if ( ! $slug ) {
 					return;
 				}
