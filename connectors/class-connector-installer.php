@@ -731,7 +731,8 @@ class Connector_Installer extends Connector {
 				$name    = $args['Name'];
 				$version = $args['Version'];
 			} else { // theme
-				$slug = $this->normalize_theme_slug( $args['slug'] );
+                $raw_slug = ! empty( $args['slug'] ) ? $args['slug'] : null;
+				$slug = $this->normalize_theme_slug( $raw_slug );
 				if ( ! $slug ) {
 					return;
 				}
