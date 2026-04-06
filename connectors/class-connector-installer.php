@@ -129,6 +129,7 @@ class Connector_Installer extends Connector {
 	public function register() {
 		parent::register();
 		add_filter( 'upgrader_pre_install', array( $this, 'upgrader_pre_install' ), 10, 2 );
+		add_action( 'load-update-core.php', array( $this, 'callback_load_update_core_php' ) );
 	}
 
 	/**
@@ -139,6 +140,25 @@ class Connector_Installer extends Connector {
 	 */
 	public function callback_pre_auto_update( $type ) {
 		if ( 'core' !== $type ) {
+			return;
+		}
+
+		$this->current_wordpress_version = wp_mainwp_stream_get_wordpress_version();
+	}
+
+	/**
+	 * Capture the installed WordPress version before a manual core update starts.
+	 *
+	 * @return void
+	 */
+	public function callback_load_update_core_php() {
+		$action = isset( $_GET['action'] ) ? sanitize_key( wp_unslash( $_GET['action'] ) ) : '';
+
+		if ( ! in_array( $action, array( 'do-core-upgrade', 'do-core-reinstall' ), true ) ) {
+			return;
+		}
+
+		if ( ! isset( $_POST['upgrade'] ) ) {
 			return;
 		}
 
@@ -693,6 +713,12 @@ class Connector_Installer extends Connector {
 
 		$old_version  = ! empty( $this->current_wordpress_version ) ? $this->current_wordpress_version : wp_mainwp_stream_get_wordpress_version();
 		$auto_updated = ( 'update-core.php' !== $pagenow );
+
+        // Check if the old version is smaller than the new version.
+        if ( version_compare( $new_version, $old_version, '<=' ) ) {
+			$this->current_wordpress_version = '';
+			return;
+		}
 
 		if ( $auto_updated ) {
 			// translators: Placeholder refers to a version number (e.g. "4.2")
