@@ -36,6 +36,7 @@ class Connector_Installer extends Connector {
 		'mainwp_child_installPluginTheme',
 		'mainwp_child_plugin_action',
 		'mainwp_child_theme_action',
+        'pre_auto_update',
 		'automatic_updates_complete',
 	);
 
@@ -43,6 +44,11 @@ class Connector_Installer extends Connector {
 	public $current_plugins_info = array();
 
 	public $current_themes_info = array();
+
+	/**
+     * @var string WordPress version captured before a core auto-update starts.
+     */
+	public $current_wordpress_version = '';
 
 	/** @var bool Register connector in the WP Frontend. */
 	public $register_frontend = false;
@@ -146,6 +152,40 @@ class Connector_Installer extends Connector {
 	public function register() {
 		parent::register();
 		add_filter( 'upgrader_pre_install', array( $this, 'upgrader_pre_install' ), 10, 2 );
+		add_action( 'load-update-core.php', array( $this, 'callback_load_update_core_php' ) );
+	}
+
+	/**
+	 * Capture the installed WordPress version before an automatic core update starts.
+	 *
+	 * @param string $type Update type.
+	 * @return void
+	 */
+	public function callback_pre_auto_update( $type ) {
+		if ( 'core' !== $type ) {
+			return;
+		}
+
+		$this->current_wordpress_version = wp_mainwp_stream_get_wordpress_version();
+	}
+
+	/**
+	 * Capture the installed WordPress version before a manual core update starts.
+	 *
+	 * @return void
+	 */
+	public function callback_load_update_core_php() {
+		$action = isset( $_GET['action'] ) ? sanitize_key( wp_unslash( $_GET['action'] ) ) : '';
+
+		if ( ! in_array( $action, array( 'do-core-upgrade', 'do-core-reinstall' ), true ) ) {
+			return;
+		}
+
+		if ( ! isset( $_POST['upgrade'] ) ) {
+			return;
+		}
+
+		$this->current_wordpress_version = wp_mainwp_stream_get_wordpress_version();
 	}
 
 	public function upgrader_pre_install() {
@@ -543,36 +583,51 @@ class Connector_Installer extends Connector {
 	 *
 	 * @action automatic_updates_complete
 	 *
-	 * @param string $update_results  Update results.
+	 * @param array $update_results  Update results.
 	 * @return void
 	 */
 	public function callback_automatic_updates_complete( $update_results ) {
-		global $pagenow;
-
-        $wp_ver = wp_mainwp_stream_get_wordpress_version();
-
-		if ( ! is_array( $update_results ) || ! isset( $update_results['core'] ) ) {
-			$this->automatic_updates_complete_plugin_theme( $update_results );
+		if ( ! is_array( $update_results ) || empty( $update_results ) ) {
 			return;
 		}
 
-		$info = $update_results['core'][0];
+		$this->automatic_updates_complete_plugin_theme( $update_results );
 
-		$old_version  = $wp_ver;
-		$new_version  = $info->item->version;
-		$auto_updated = true;
+		if ( empty( $update_results['core'] ) || ! is_array( $update_results['core'] ) ) {
+			return;
+		}
 
-		$message = esc_html__( 'WordPress auto-updated to %s', 'stream' );
+		foreach ( $update_results['core'] as $info ) {
+			if ( ! is_object( $info ) || empty( $info->item->version ) ) {
+				continue;
+			}
 
-		$this->log(
-			$message,
-			compact( 'new_version', 'old_version', 'auto_updated' ),
-			null,
-			'wordpress', // phpcs:ignore -- fix format text.
-			'updated',
-			null,
-			true // forced log - $forced_log.
-		);
+			if ( ! isset( $info->result ) || true !== $info->result ) {
+				continue;
+			}
+
+			$old_version  = $this->current_wordpress_version;
+			$new_version  = $info->item->version;
+			$auto_updated = true;
+
+			if ( empty( $old_version ) || version_compare( $new_version, $old_version, '<=' ) ) {
+                continue;
+            }
+
+			$message = esc_html__( 'WordPress auto-updated from %1$s to %2$s', 'mainwp-child-reports' );
+
+			$this->log(
+				$message,
+				compact( 'old_version', 'new_version', 'auto_updated' ),
+				null,
+				'wordpress', // phpcs:ignore -- fix format text.
+				'updated',
+				null,
+				true // forced log - $forced_log.
+			);
+
+			$this->current_wordpress_version = '';
+		}
 	}
 
 
@@ -583,78 +638,91 @@ class Connector_Installer extends Connector {
 	 */
 	public function automatic_updates_complete_plugin_theme( $update_results ) {
 
-		if ( is_array( $update_results ) ) {
-			$logs = array();
-			foreach ( $update_results as $_type => $result ) {
-				if ( is_object( $result ) && property_exists( $result, 'result' ) && true === $result->result ) {
-					$type = $_type;
-					if ( 'plugin' === $_type ) {
-						$action = 'updated';
-						// translators: Placeholders refer to a plugin/theme type, a plugin/theme name, and a plugin/theme version (e.g. "plugin", "Stream", "4.2").
-						$message = _x(
-							'Updated %1$s: %2$s %3$s',
-							'Plugin/theme update. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
-							'mainwp-child-reports'
-						);
+		if ( ! is_array( $update_results ) || empty( $update_results ) ) {
+			return;
+		}
 
-						$slug        = $result->item->slug;
-						$old_version = $result->item->current_version;
+		$logs = array();
 
-						$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $slug );
-						$name        = $plugin_data['Name'];
-						$version     = $plugin_data['Version'];
-						if ( version_compare( $version, $old_version, '>' ) ) {
-							$logs[] = compact( 'type', 'slug', 'name', 'old_version', 'version', 'message', 'action' );
-						}
-					} elseif ( 'theme' === $_type ) {
-						$action  = 'updated';
-						$message = _x(
-							'Updated %1$s: %2$s %3$s',
-							'Plugin/theme update. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
-							'mainwp-child-reports'
-						);
+		if ( ! empty( $update_results['plugin'] ) && is_array( $update_results['plugin'] ) ) {
+			foreach ( $update_results['plugin'] as $result ) {
+				if ( ! isset( $result->result ) || true !== $result->result || ! isset( $result->item ) || empty( $result->item->plugin ) ) {
+					continue;
+				}
 
-						$old_version = $result->item->current_version;
-						$slug        = $result->item->theme;
-						$theme       = wp_get_theme( $slug );
-						$stylesheet  = $theme['Stylesheet Dir'] . '/style.css';
-						$theme_data  = get_file_data(
-							$stylesheet,
-							array(
-								'Version' => 'Version',
-							)
-						);
-						$version     = $theme_data['Version'];
-						$name        = $theme['Name'];
-						if ( ! empty( $old_version ) && version_compare( $version, $old_version, '>' ) ) {
-							$logs[] = compact( 'type', 'slug', 'name', 'old_version', 'version', 'message', 'action' );
-						}
-					}
+				$type         = 'plugin';
+				$action       = 'updated';
+				$auto_updated = true;
+				// translators: Placeholders refer to a plugin/theme type, a plugin/theme name, and a plugin/theme version (e.g. "plugin", "Stream", "4.2").
+				$message = _x(
+					'Updated %1$s: %2$s %3$s',
+					'Plugin/theme update. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
+					'mainwp-child-reports'
+				);
+
+				$slug        = $result->item->plugin;
+				$old_version = isset( $result->item->current_version ) ? $result->item->current_version : '';
+				$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $slug );
+				$name        = isset( $plugin_data['Name'] ) ? $plugin_data['Name'] : '';
+				$version     = isset( $plugin_data['Version'] ) ? $plugin_data['Version'] : '';
+
+				if ( ! empty( $name ) && ! empty( $version ) && ( empty( $old_version ) || version_compare( $version, $old_version, '>' ) ) ) {
+					$logs[] = compact( 'type', 'slug', 'name', 'old_version', 'version', 'message', 'action', 'auto_updated' );
 				}
 			}
+		}
 
-			if ( ! empty( $logs ) ) {
-				foreach ( $logs as $log ) {
-					$type = isset( $log['type'] ) ? $log['type'] : null;
-					if ( ! empty( $type ) ) {
-						$context     = $type . 's';
-						$name        = isset( $log['name'] ) ? $log['name'] : null;
-						$version     = isset( $log['version'] ) ? $log['version'] : null;
-						$slug        = isset( $log['slug'] ) ? $log['slug'] : null;
-						$old_version = isset( $log['old_version'] ) ? $log['old_version'] : null;
-						$message     = isset( $log['message'] ) ? $log['message'] : null;
-						$action      = isset( $log['action'] ) ? $log['action'] : null;
+		if ( ! empty( $update_results['theme'] ) && is_array( $update_results['theme'] ) ) {
+			foreach ( $update_results['theme'] as $result ) {
+				if ( ! isset( $result->result ) || true !== $result->result || ! isset( $result->item ) || empty( $result->item->theme ) ) {
+					continue;
+				}
 
-						$this->log(
-							$message,
-							compact( 'type', 'name', 'version', 'slug', 'success', 'error', 'old_version' ),
-							null,
-							$context,
-							$action
-						);
-					}
+				$type         = 'theme';
+				$action       = 'updated';
+				$auto_updated = true;
+				$message      = _x(
+					'Updated %1$s: %2$s %3$s',
+					'Plugin/theme update. 1: Type (plugin/theme), 2: Plugin/theme name, 3: Plugin/theme version',
+					'mainwp-child-reports'
+				);
+
+				$slug        = $result->item->theme;
+				$old_version = isset( $result->item->current_version ) ? $result->item->current_version : '';
+				$theme       = wp_get_theme( $slug );
+				$name        = $theme->get( 'Name' );
+				$version     = $theme->get( 'Version' );
+
+				if ( ! empty( $name ) && ! empty( $version ) && ( empty( $old_version ) || version_compare( $version, $old_version, '>' ) ) ) {
+					$logs[] = compact( 'type', 'slug', 'name', 'old_version', 'version', 'message', 'action', 'auto_updated' );
 				}
 			}
+		}
+
+		foreach ( $logs as $log ) {
+			$type = isset( $log['type'] ) ? $log['type'] : null;
+			if ( empty( $type ) ) {
+				continue;
+			}
+
+			$context      = $type . 's';
+			$name         = isset( $log['name'] ) ? $log['name'] : null;
+			$version      = isset( $log['version'] ) ? $log['version'] : null;
+			$slug         = isset( $log['slug'] ) ? $log['slug'] : null;
+			$old_version  = isset( $log['old_version'] ) ? $log['old_version'] : null;
+			$message      = isset( $log['message'] ) ? $log['message'] : null;
+			$action       = isset( $log['action'] ) ? $log['action'] : null;
+			$auto_updated = isset( $log['auto_updated'] ) ? $log['auto_updated'] : null;
+
+			$this->log(
+				$message,
+				compact( 'type', 'name', 'version', 'slug', 'old_version', 'auto_updated' ),
+				null,
+				$context,
+				$action,
+				null,
+				true
+			);
 		}
 	}
 
@@ -671,26 +739,32 @@ class Connector_Installer extends Connector {
 		 */
 		global $pagenow;
 
-        $wp_ver = wp_mainwp_stream_get_wordpress_version();
-
-		$old_version  = $wp_ver;
+		$old_version  = ! empty( $this->current_wordpress_version ) ? $this->current_wordpress_version : wp_mainwp_stream_get_wordpress_version();
 		$auto_updated = ( 'update-core.php' !== $pagenow );
+
+        // Check if the old version is smaller than the new version.
+        if ( version_compare( $new_version, $old_version, '<=' ) ) {
+			$this->current_wordpress_version = '';
+			return;
+		}
 
 		if ( $auto_updated ) {
 			// translators: Placeholder refers to a version number (e.g. "4.2")
-			$message = esc_html__( 'WordPress auto-updated to %s', 'mainwp-child-reports' );
+			$message = esc_html__( 'WordPress auto-updated from %1$s to %2$s', 'mainwp-child-reports' );
 		} else {
 			// translators: Placeholder refers to a version number (e.g. "4.2")
-			$message = esc_html__( 'WordPress updated to %s', 'mainwp-child-reports' );
+			$message = esc_html__( 'WordPress updated from %1$s to %2$s', 'mainwp-child-reports' );
 		}
 
 		$this->log(
 			$message,
-			compact( 'new_version', 'old_version', 'auto_updated' ),
+			compact( 'old_version', 'new_version', 'auto_updated' ),
 			null,
 			'wordpress', // phpcs:ignore -- fix format text.
 			'updated'
 		);
+
+		$this->current_wordpress_version = '';
 	}
 
 	/**

@@ -109,7 +109,10 @@ class Log {
 			$object_id = 0;
 		}
 
-		$wp_cron_tracking = isset( $this->plugin->settings->options['advanced_wp_cron_tracking'] ) ? $this->plugin->settings->options['advanced_wp_cron_tracking'] : false;
+		$wp_cron_tracking = isset( $this->plugin->settings->options['wp_cron_tracking'] ) ? $this->plugin->settings->options['wp_cron_tracking'] : false;
+		if ( ! $wp_cron_tracking && isset( $this->plugin->settings->options['advanced_wp_cron_tracking'] ) ) {
+			$wp_cron_tracking = $this->plugin->settings->options['advanced_wp_cron_tracking'];
+		}
 		$author           = new Author( $user_id );
 		$agent            = $author->get_current_agent();
 
