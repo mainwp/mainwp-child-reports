@@ -5,9 +5,9 @@ Author: mainwp
 Author URI: https://mainwp.com
 Plugin URI: https://mainwp.com
 Requires at least: 6.0
-Tested up to: 6.9
+Tested up to: 6.9.4
 Requires PHP: 7.4
-Stable tag: 2.3
+Stable tag: 2.3.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -35,6 +35,11 @@ Credit to the [Stream Plugin](https://wordpress.org/plugins/stream/) which the M
 2. The MainWP Child Reports Settings Screen
 
 == Changelog ==
+
+= 2.3.1 - 4-15-2026 =
+
+* Fixed: Prevented null metadata from being saved during record insertion, improving data integrity and avoiding PHP warnings.,
+* Added: Support for logging updates performed by the WordPress auto-updater.
 
 = 2.3 - 3-24-2026 =
 
