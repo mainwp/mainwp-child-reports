@@ -89,6 +89,29 @@ class Connector_Installer extends Connector {
 	}
 
 	/**
+	 * Normalize a theme reference into a stylesheet slug.
+	 *
+	 * @param mixed $theme Theme slug or WP_Theme instance.
+	 *
+	 * @return string|null
+	 */
+	private function normalize_theme_slug( $theme ) {
+		if ( $theme instanceof \WP_Theme ) {
+			$theme = $theme->get_stylesheet();
+		}
+
+		if ( is_scalar( $theme ) ) {
+			$theme = (string) $theme;
+		}
+
+		if ( ! is_string( $theme ) || '' === $theme ) {
+			return null;
+		}
+
+		return $theme;
+	}
+
+	/**
 	 * Add action links to Stream drop row in admin list screen.
 	 *
 	 * @filter wp_mainwp_stream_action_links_{connector}.
@@ -224,7 +247,7 @@ class Connector_Installer extends Connector {
 				$name    = $data['Name'];
 				$version = $data['Version'];
 			} else { // theme
-				$slug = $upgrader->theme_info();
+				$slug = $this->normalize_theme_slug( $upgrader->theme_info() );
 
 				if ( ! $slug ) {
 					return false;
@@ -339,10 +362,15 @@ class Connector_Installer extends Connector {
 			$old_version = isset( $log['old_version'] ) ? $log['old_version'] : null;
 			$message     = isset( $log['message'] ) ? $log['message'] : null;
 			$action      = isset( $log['action'] ) ? $log['action'] : null;
+			$log_args    = compact( 'type', 'name', 'version', 'slug', 'success', 'error', 'old_version' );
+
+			if ( null === $slug || '' === $slug ) {
+				unset( $log_args['slug'] );
+			}
 
 			$this->log(
 				$message,
-				compact( 'type', 'name', 'version', 'slug', 'success', 'error', 'old_version' ),
+				$log_args,
 				null,
 				$context,
 				$action
@@ -703,7 +731,8 @@ class Connector_Installer extends Connector {
 				$name    = $args['Name'];
 				$version = $args['Version'];
 			} else { // theme
-				$slug = $args['slug'];
+                $raw_slug = ! empty( $args['slug'] ) ? $args['slug'] : null;
+				$slug = $this->normalize_theme_slug( $raw_slug );
 				if ( ! $slug ) {
 					return;
 				}

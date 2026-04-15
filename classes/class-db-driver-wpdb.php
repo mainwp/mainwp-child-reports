@@ -91,6 +91,11 @@ class DB_Driver_WPDB implements DB_Driver {
 		// Insert record meta
 		foreach ( (array) $meta as $key => $vals ) {
 			foreach ( (array) $vals as $val ) {
+				$val = $this->normalize_meta_value( $val );
+				if ( null === $val ) {
+					continue;
+				}
+
 				$this->insert_meta( $record_id, $key, $val );
 			}
 		}
@@ -127,6 +132,37 @@ class DB_Driver_WPDB implements DB_Driver {
 
 		return $result;
 	}
+
+	/**
+	 * Normalize meta values before inserting them into the DB.
+	 *
+	 * @param mixed $value Meta value.
+	 *
+	 * @return scalar|string|null
+	 */
+	private function normalize_meta_value( $value ) {
+        if ( null === $value || is_resource( $value ) ) {
+            return null;
+        }
+
+        if ( is_bool( $value ) ) {
+            return $value ? '1' : '0';
+        }
+
+        if ( is_scalar( $value ) ) {
+            if ( is_string( $value ) && is_email( $value ) ) {
+                return sanitize_email( $value );
+            }
+
+            return $value;
+        }
+
+        if ( is_array( $value ) || is_object( $value ) ) {
+            return maybe_serialize( $value );
+        }
+
+        return null;
+    }
 
 	/**
 	 * Retrieve records
