@@ -17,6 +17,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Connector_MainWP_Backups extends Connector {
 
+    /**
+     * Option name for storing backup fingerprints.
+     */
+	const FINGERPRINT_OPTION = 'mainwp_reports_backup_fingerprints';
+
 	/** @var string Connector slug. */
 	public $name = 'mainwp_backups';
 
@@ -101,7 +106,7 @@ class Connector_MainWP_Backups extends Connector {
      * @param string $message Log message.
      * @param string $size Size of backup.
      * @param string $status Backup status.
-     * @param sting $type Type of backup.
+     * @param string $type Type of backup.
      */
     public function callback_mainwp_backup($destination, $message, $size, $status, $type ) {
 		$this->log(
@@ -117,16 +122,18 @@ class Connector_MainWP_Backups extends Connector {
      * Record MainWP BackupBuddy backup log.
      *
      * @param $message Log message.
-     * @param sting $type Type of backup.
+     * @param string $type Type of backup.
      * @param int $backup_time Backup time.
      */
-    public function callback_mainwp_reports_backupbuddy_backup($message, $type , $backup_time = 0) {
-		$this->log(
+	public function callback_mainwp_reports_backupbuddy_backup($message, $type , $backup_time = 0) {
+		$fingerprint = func_num_args() > 3 ? func_get_arg( 3 ) : '';
+		$this->log_backup(
 			$message,
 			compact('type', 'backup_time'),
 			0,
 			'backups',
-			'backupbuddy_backup'
+			'backupbuddy_backup',
+			$fingerprint
 		);
 	}
 
@@ -136,16 +143,18 @@ class Connector_MainWP_Backups extends Connector {
      * @param string $destination Backup destination.
      * @param string $message Log message.
      * @param string $status Backup status.
-     * @param sting $type Type of backup.
+     * @param string $type Type of backup.
      * @param int $backup_time Bakcup time.
      */
-    public function callback_mainwp_reports_backupwordpress_backup($destination, $message, $status, $type, $backup_time = 0) {
-		$this->log(
+	public function callback_mainwp_reports_backupwordpress_backup($destination, $message, $status, $type, $backup_time = 0) {
+		$fingerprint = func_num_args() > 5 ? func_get_arg( 5 ) : '';
+		$this->log_backup(
 			$message,
 			compact('destination', 'status', 'type', 'backup_time'),
 			0,
 			'backups',
-			'backupwordpress_backup'
+			'backupwordpress_backup',
+			$fingerprint
 		);
 	}
 
@@ -154,16 +163,18 @@ class Connector_MainWP_Backups extends Connector {
      * Record MainWP BackupWPup backup log.
      *
      * @param string $message Log message.
-     * @param sting $type Type of backup.
+     * @param string $type Type of backup.
      * @param int $backup_time Bakcup time.
+     * @param string $fingerprint Backup fingerprint to use for deduplication.
      */
-    public function callback_mainwp_reports_backwpup_backup($message, $type, $backup_time ) {
-		$this->log(
+    public function callback_mainwp_reports_backwpup_backup($message, $type, $backup_time, $fingerprint = '' ) {
+		$this->log_backup(
 			$message,
 			compact( 'type', 'backup_time' ),
 			0,
 			'backups',
-			'backwpup_backup'
+			'backwpup_backup',
+			$fingerprint
 		);
 	}
 
@@ -173,35 +184,39 @@ class Connector_MainWP_Backups extends Connector {
 	 * Not used.
 	 *
      * @param string $destination Backup destination.
-     * @param strign $message Log message.
+     * @param string $message Log message.
      * @param string $status Backup status.
      * @param string $type Backup type.
      * @param int $backup_time Backup time.
+     * @param string $fingerprint Backup fingerprint to use for deduplication.
      */
-    public function callback_updraftplus_backup($destination, $message, $status, $type, $backup_time) {
-		$this->log(
+    public function callback_updraftplus_backup($destination, $message, $status, $type, $backup_time, $fingerprint = '') {
+		$this->log_backup(
 			$message,
 			compact('destination', 'status', 'type', 'backup_time'),
 			0,
 			'backups',
-			'updraftplus_backup'
+			'updraftplus_backup',
+			$fingerprint
 		);
 	}
 
     /**
      * Record MainWP WPTimeCapsule backups log.
      *
-     * @param strign $message Log message.
+     * @param string $message Log message.
      * @param string $type Backup type.
      * @param int $backup_time Backup time.
+     * @param string $fingerprint Backup fingerprint to use for deduplication.
      */
-    public function callback_mainwp_reports_wptimecapsule_backup($message, $type, $backup_time ) {
-		$this->log(
+    public function callback_mainwp_reports_wptimecapsule_backup($message, $type, $backup_time, $fingerprint = '' ) {
+		$this->log_backup(
 			$message,
 			compact( 'type', 'backup_time' ),
 			0,
 			'backups',
-			'wptimecapsule_backup'
+			'wptimecapsule_backup',
+			$fingerprint
 		);
 	}
 
@@ -209,20 +224,95 @@ class Connector_MainWP_Backups extends Connector {
      * Record MainWP WPvivid backup log.
      *
      * @param string $destination Backup destination.
-     * @param strign $message Log message.
+     * @param string $message Log message.
      * @param string $status Backup status.
      * @param string $type Backup type.
      * @param int $backup_time Backup time.
+     * @param string $fingerprint Backup fingerprint to use for deduplication.
      */
-    public function callback_wpvivid_backup($destination, $message, $status, $type, $backup_time){
-        $this->log(
+    public function callback_wpvivid_backup($destination, $message, $status, $type, $backup_time, $fingerprint = ''){
+        $this->log_backup(
             $message,
             compact( 'destination', 'status', 'type', 'backup_time' ),
             0,
             'backups',
-            'wpvivid_backup'
+            'wpvivid_backup',
+            $fingerprint
         );
     }
-}
 
+	/**
+	 * Log a backup once, using a stable provider fingerprint.
+	 *
+	 * The fingerprint is stored as Stream metadata and in a small option index.
+	 * The metadata lookup keeps fingerprints created before this index existed
+	 * from being imported a second time.
+     *
+     * @param string $message sprintf-ready error message string.
+     * @param array  $args sprintf (and extra) arguments to use.
+     * @param int    $object_id Target object id.
+     * @param string $context Context of the event.
+     * @param string $action Action of the event.
+     * @param string $fingerprint Backup fingerprint to use for deduplication.
+	 *
+	 * @return bool|int False when the record was skipped or could not be inserted.
+	 */
+	private function log_backup( $message, $args, $object_id, $context, $action, $fingerprint = '' ) {
+		$fingerprint = sanitize_text_field( $fingerprint );
+		if ( '' !== $fingerprint && self::fingerprint_exists( $fingerprint ) ) {
+			return false;
+		}
+
+		if ( '' !== $fingerprint ) {
+			$args['backup_fingerprint'] = $fingerprint;
+		}
+
+		$result = $this->log( $message, $args, $object_id, $context, $action );
+		if ( false !== $result && ! is_wp_error( $result ) && '' !== $fingerprint ) {
+			$fingerprints            = (array) get_option( self::FINGERPRINT_OPTION, array() );
+			$fingerprints[ $fingerprint ] = time();
+			update_option( self::FINGERPRINT_OPTION, $fingerprints, false );
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Check whether a backup fingerprint was already logged.
+     * @param string $fingerprint Backup fingerprint to check.
+     *
+     * @return bool True if the fingerprint was already logged, false otherwise.
+	 */
+	public static function fingerprint_exists( $fingerprint ) {
+		$fingerprint = sanitize_text_field( $fingerprint );
+		if ( '' === $fingerprint ) {
+			return false;
+		}
+
+		$known = (array) get_option( self::FINGERPRINT_OPTION, array() );
+		if ( isset( $known[ $fingerprint ] ) ) {
+			return true;
+		}
+
+		global $wpdb;
+		$meta_table = $wpdb->base_prefix . 'mainwp_stream_meta';
+		return (bool) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT record_id FROM {$meta_table} WHERE meta_key = %s AND meta_value = %s LIMIT 1",
+				'backup_fingerprint',
+				$fingerprint
+			)
+		);
+	}
+
+	/**
+	 * Public bridge for Child Sync code, which must not insert Stream rows itself.
+     * @param  $fingerprint Backup fingerprint to check.
+     *
+     * @return bool True if the fingerprint was already logged, false otherwise.
+	 */
+	public static function was_fingerprint_logged( $fingerprint ) {
+		return self::fingerprint_exists( $fingerprint );
+	}
+}
 
