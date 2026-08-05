@@ -32,6 +32,11 @@ class Connector_MainWP_Backups extends Connector {
      */
 	const FINGERPRINT_CACHE_LIMIT = 1000;
 
+    /**
+     * Fingerprint lock lease duration in seconds.
+     */
+	const FINGERPRINT_LOCK_TTL = 300;
+
 	/** @var string Connector slug. */
 	public $name = 'mainwp_backups';
 
@@ -270,17 +275,44 @@ class Connector_MainWP_Backups extends Connector {
 	private function log_backup( $message, $args, $object_id, $context, $action, $fingerprint = '' ) {
 		$fingerprint = sanitize_text_field( $fingerprint );
 		$lock_option = '';
+		$lock_value  = '';
 
 		if ( '' !== $fingerprint ) {
 			$lock_option = self::FINGERPRINT_LOCK_PREFIX . md5( $fingerprint );
-			if ( ! add_option( $lock_option, time(), '', false ) ) {
-				return false;
+			$lock_value = ( time() + self::FINGERPRINT_LOCK_TTL ) . ':' . wp_generate_uuid4();
+			if ( ! add_option( $lock_option, $lock_value, '', false ) ) {
+				$existing_lock = get_option( $lock_option, '' );
+				$lock_parts    = explode( ':', (string) $existing_lock, 2 );
+
+				if ( 2 !== count( $lock_parts ) || (int) $lock_parts[0] > time() ) {
+					return false;
+				}
+
+				global $wpdb;
+				$reclaimed = $wpdb->query(
+					$wpdb->prepare(
+						"UPDATE {$wpdb->options} SET option_value = %s WHERE option_name = %s AND option_value = %s",
+						$lock_value,
+						$lock_option,
+						$existing_lock
+					)
+				);
+				if ( 1 !== $reclaimed ) {
+					return false;
+				}
+				wp_cache_delete( $lock_option, 'options' );
 			}
 
 			if ( self::fingerprint_exists( $fingerprint ) ) {
-				delete_option( $lock_option );
+				self::release_fingerprint_lock( $lock_option, $lock_value );
 				return false;
 			}
+
+			register_shutdown_function(
+				function() use ( $lock_option, $lock_value ) {
+					self::release_fingerprint_lock( $lock_option, $lock_value );
+				}
+			);
 		}
 
 		if ( '' !== $fingerprint ) {
@@ -297,10 +329,31 @@ class Connector_MainWP_Backups extends Connector {
 		}
 
 		if ( '' !== $lock_option ) {
-			delete_option( $lock_option );
+			self::release_fingerprint_lock( $lock_option, $lock_value );
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Release a fingerprint lock only when it still belongs to this request.
+	 *
+	 * @param string $lock_option Lock option name.
+	 * @param string $lock_value Lock owner value.
+	 */
+	private static function release_fingerprint_lock( $lock_option, $lock_value ) {
+		global $wpdb;
+
+		$deleted = $wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name = %s AND option_value = %s",
+				$lock_option,
+				$lock_value
+			)
+		);
+		if ( $deleted ) {
+			wp_cache_delete( $lock_option, 'options' );
+		}
 	}
 
 	/**
@@ -329,7 +382,7 @@ class Connector_MainWP_Backups extends Connector {
 				'backup_fingerprint',
 				$fingerprint,
 				(int) get_current_site()->id,
-				(int) get_current_blog_id()
+				(int) apply_filters( 'wp_mainwp_stream_blog_id_logged', get_current_blog_id() )
 			)
 		);
 	}
