@@ -362,9 +362,9 @@ class MainWP_Child_Report_Helper {
 			$destination = '';
 
 			// to logging updraftplus backup
-			$fingerprint = 'updraftplus:' . ( isset( $last_backup['backup_time'] ) ? $last_backup['backup_time'] : 0 ) . ':' . md5( wp_json_encode( $backup ) );
+			$fingerprint = 'updraftplus:' . ( isset( $last_backup['backup_time'] ) ? $last_backup['backup_time'] : 0 ) . ':' . md5( wp_json_encode( $backup ) );  // phpcs:ignore -- NOSONAR - md5 is used for fingerprinting, not security.
 			do_action( 'updraftplus_backup', $destination, $message, __( 'Finished', 'mainwp-child-reports' ), $backup_type, $backup_time, $fingerprint );
-			if ( class_exists( 'WP_MainWP_Stream\\Connector_MainWP_Backups' ) && \Connector_MainWP_Backups::was_fingerprint_logged( $fingerprint ) ) {
+			if ( class_exists( 'WP_MainWP_Stream\\Connector_MainWP_Backups' ) && \WP_MainWP_Stream\Connector_MainWP_Backups::was_fingerprint_logged( $fingerprint ) ) {
 				update_option( 'mainwp_lasttime_backup_updraftplus', $backup_time );
 			}
 		}

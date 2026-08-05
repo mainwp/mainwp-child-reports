@@ -22,6 +22,16 @@ class Connector_MainWP_Backups extends Connector {
      */
 	const FINGERPRINT_OPTION = 'mainwp_reports_backup_fingerprints';
 
+    /**
+     * Option prefix for atomically reserving a backup fingerprint.
+     */
+	const FINGERPRINT_LOCK_PREFIX = 'mainwp_reports_backup_fingerprint_lock_';
+
+    /**
+     * Maximum number of recent fingerprints kept in the option cache.
+     */
+	const FINGERPRINT_CACHE_LIMIT = 1000;
+
 	/** @var string Connector slug. */
 	public $name = 'mainwp_backups';
 
@@ -259,8 +269,18 @@ class Connector_MainWP_Backups extends Connector {
 	 */
 	private function log_backup( $message, $args, $object_id, $context, $action, $fingerprint = '' ) {
 		$fingerprint = sanitize_text_field( $fingerprint );
-		if ( '' !== $fingerprint && self::fingerprint_exists( $fingerprint ) ) {
-			return false;
+		$lock_option = '';
+
+		if ( '' !== $fingerprint ) {
+			$lock_option = self::FINGERPRINT_LOCK_PREFIX . md5( $fingerprint );
+			if ( ! add_option( $lock_option, time(), '', false ) ) {
+				return false;
+			}
+
+			if ( self::fingerprint_exists( $fingerprint ) ) {
+				delete_option( $lock_option );
+				return false;
+			}
 		}
 
 		if ( '' !== $fingerprint ) {
@@ -268,10 +288,16 @@ class Connector_MainWP_Backups extends Connector {
 		}
 
 		$result = $this->log( $message, $args, $object_id, $context, $action );
-		if ( false !== $result && ! is_wp_error( $result ) && '' !== $fingerprint ) {
+		if ( $result && ! is_wp_error( $result ) && '' !== $fingerprint ) {
 			$fingerprints            = (array) get_option( self::FINGERPRINT_OPTION, array() );
 			$fingerprints[ $fingerprint ] = time();
+			arsort( $fingerprints, SORT_NUMERIC );
+			$fingerprints = array_slice( $fingerprints, 0, self::FINGERPRINT_CACHE_LIMIT, true );
 			update_option( self::FINGERPRINT_OPTION, $fingerprints, false );
+		}
+
+		if ( '' !== $lock_option ) {
+			delete_option( $lock_option );
 		}
 
 		return $result;
@@ -296,11 +322,14 @@ class Connector_MainWP_Backups extends Connector {
 
 		global $wpdb;
 		$meta_table = $wpdb->base_prefix . 'mainwp_stream_meta';
+		$stream_table = $wpdb->base_prefix . 'mainwp_stream';
 		return (bool) $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT record_id FROM {$meta_table} WHERE meta_key = %s AND meta_value = %s LIMIT 1",
+				"SELECT meta.record_id FROM {$meta_table} AS meta INNER JOIN {$stream_table} AS stream ON stream.ID = meta.record_id WHERE meta.meta_key = %s AND meta.meta_value = %s AND stream.site_id = %d AND stream.blog_id = %d LIMIT 1",
 				'backup_fingerprint',
-				$fingerprint
+				$fingerprint,
+				(int) get_current_site()->id,
+				(int) get_current_blog_id()
 			)
 		);
 	}
@@ -315,4 +344,3 @@ class Connector_MainWP_Backups extends Connector {
 		return self::fingerprint_exists( $fingerprint );
 	}
 }
-
