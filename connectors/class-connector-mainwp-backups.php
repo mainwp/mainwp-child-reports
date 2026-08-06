@@ -18,19 +18,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Connector_MainWP_Backups extends Connector {
 
     /**
-     * Option name for storing backup fingerprints.
-     */
-	const FINGERPRINT_OPTION = 'mainwp_reports_backup_fingerprints';
-
-    /**
      * Option prefix for atomically reserving a backup fingerprint.
      */
 	const FINGERPRINT_LOCK_PREFIX = 'mainwp_reports_backup_fingerprint_lock_';
-
-    /**
-     * Maximum number of recent fingerprints kept in the option cache.
-     */
-	const FINGERPRINT_CACHE_LIMIT = 1000;
 
     /**
      * Fingerprint lock lease duration in seconds.
@@ -320,14 +310,6 @@ class Connector_MainWP_Backups extends Connector {
 		}
 
 		$result = $this->log( $message, $args, $object_id, $context, $action );
-		if ( $result && ! is_wp_error( $result ) && '' !== $fingerprint ) {
-			$fingerprints            = (array) get_option( self::FINGERPRINT_OPTION, array() );
-			$fingerprints[ $fingerprint ] = time();
-			arsort( $fingerprints, SORT_NUMERIC );
-			$fingerprints = array_slice( $fingerprints, 0, self::FINGERPRINT_CACHE_LIMIT, true );
-			update_option( self::FINGERPRINT_OPTION, $fingerprints, false );
-		}
-
 		if ( '' !== $lock_option ) {
 			self::release_fingerprint_lock( $lock_option, $lock_value );
 		}
@@ -368,15 +350,10 @@ class Connector_MainWP_Backups extends Connector {
 			return false;
 		}
 
-		$known = (array) get_option( self::FINGERPRINT_OPTION, array() );
-		if ( isset( $known[ $fingerprint ] ) ) {
-			return true;
-		}
-
 		global $wpdb;
 		$meta_table = $wpdb->base_prefix . 'mainwp_stream_meta';
 		$stream_table = $wpdb->base_prefix . 'mainwp_stream';
-		return (bool) $wpdb->get_var(
+		$record_id = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT meta.record_id FROM {$meta_table} AS meta INNER JOIN {$stream_table} AS stream ON stream.ID = meta.record_id WHERE meta.meta_key = %s AND meta.meta_value = %s AND stream.site_id = %d AND stream.blog_id = %d LIMIT 1",
 				'backup_fingerprint',
@@ -385,6 +362,11 @@ class Connector_MainWP_Backups extends Connector {
 				(int) apply_filters( 'wp_mainwp_stream_blog_id_logged', get_current_blog_id() )
 			)
 		);
+
+		// The option is only a cache. A stale cache entry must not suppress a
+		// missing Stream record, otherwise the cursor can advance without an
+		// actual report row being present.
+		return ! empty( $record_id );
 	}
 
 	/**
