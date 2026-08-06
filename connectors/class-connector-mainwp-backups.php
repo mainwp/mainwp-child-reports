@@ -381,7 +381,7 @@ class Connector_MainWP_Backups extends Connector {
 				"SELECT meta.record_id FROM {$meta_table} AS meta INNER JOIN {$stream_table} AS stream ON stream.ID = meta.record_id WHERE meta.meta_key = %s AND meta.meta_value = %s AND stream.site_id = %d AND stream.blog_id = %d LIMIT 1",
 				'backup_fingerprint',
 				$fingerprint,
-				(int) get_current_site()->id,
+				(int) is_multisite() ? \get_current_site()->id : 1,
 				(int) apply_filters( 'wp_mainwp_stream_blog_id_logged', get_current_blog_id() )
 			)
 		);
