@@ -27,6 +27,11 @@ class Connector_MainWP_Backups extends Connector {
      */
 	const FINGERPRINT_LOCK_TTL = 300;
 
+	/**
+	 * @var array<string, bool> Fingerprint logging results for this request.
+	 */
+	private static $fingerprint_logged_results = array();
+
 	/** @var string Connector slug. */
 	public $name = 'mainwp_backups';
 
@@ -85,8 +90,10 @@ class Connector_MainWP_Backups extends Connector {
      *
      * @uses \WP_MainWP_Stream\Connector::register()
      */
-    public function register() {
+	public function register() {
 		parent::register();
+		// Reuse the Report Settings "Keep Records for" purge lifecycle.
+		add_action( 'wp_mainwp_stream_auto_purge', array( __CLASS__, 'cleanup_expired_fingerprint_locks' ) );
 	}
 
 
@@ -249,9 +256,9 @@ class Connector_MainWP_Backups extends Connector {
 	/**
 	 * Log a backup once, using a stable provider fingerprint.
 	 *
-	 * The fingerprint is stored as Stream metadata and in a small option index.
-	 * The metadata lookup keeps fingerprints created before this index existed
-	 * from being imported a second time.
+	 * The fingerprint is stored as Stream metadata. The metadata lookup also
+	 * keeps fingerprints created before deduplication was introduced from
+	 * being imported a second time.
      *
      * @param string $message sprintf-ready error message string.
      * @param array  $args sprintf (and extra) arguments to use.
@@ -294,6 +301,7 @@ class Connector_MainWP_Backups extends Connector {
 			}
 
 			if ( self::fingerprint_exists( $fingerprint ) ) {
+				self::$fingerprint_logged_results[ $fingerprint ] = true;
 				self::release_fingerprint_lock( $lock_option, $lock_value );
 				return false;
 			}
@@ -312,6 +320,7 @@ class Connector_MainWP_Backups extends Connector {
 		$result = $this->log( $message, $args, $object_id, $context, $action );
 		if ( '' !== $lock_option ) {
 			self::release_fingerprint_lock( $lock_option, $lock_value );
+			self::$fingerprint_logged_results[ $fingerprint ] = (bool) $result;
 		}
 
 		return $result;
@@ -339,6 +348,40 @@ class Connector_MainWP_Backups extends Connector {
 	}
 
 	/**
+	 * Remove a batch of locks left behind by terminated requests.
+	 *
+	 * This runs from the existing periodic maintenance cron, not from the
+	 * backup logging path. The batch limit keeps maintenance bounded.
+	 */
+	public static function cleanup_expired_fingerprint_locks() {
+		global $wpdb;
+		$like = $wpdb->esc_like( self::FINGERPRINT_LOCK_PREFIX ) . '%';
+		$expired_options = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s AND CAST(SUBSTRING_INDEX(option_value, ':', 1) AS UNSIGNED) <= %d LIMIT 100",
+				$like,
+				time()
+			)
+		);
+
+		if ( empty( $expired_options ) ) {
+			return;
+		}
+
+		$placeholders = implode( ', ', array_fill( 0, count( $expired_options ), '%s' ) );
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name IN ({$placeholders}) AND CAST(SUBSTRING_INDEX(option_value, ':', 1) AS UNSIGNED) <= %d",
+				array_merge( $expired_options, array( time() ) )
+			)
+		);
+
+		foreach ( $expired_options as $option_name ) {
+			wp_cache_delete( $option_name, 'options' );
+		}
+	}
+
+	/**
 	 * Check whether a backup fingerprint was already logged.
      * @param string $fingerprint Backup fingerprint to check.
      *
@@ -351,8 +394,9 @@ class Connector_MainWP_Backups extends Connector {
 		}
 
 		global $wpdb;
-		$meta_table = $wpdb->base_prefix . 'mainwp_stream_meta';
-		$stream_table = $wpdb->base_prefix . 'mainwp_stream';
+		$prefix = apply_filters( 'wp_mainwp_stream_db_tables_prefix', $wpdb->base_prefix );
+		$meta_table = $prefix . 'mainwp_stream_meta';
+		$stream_table = $prefix . 'mainwp_stream';
 		$record_id = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT meta.record_id FROM {$meta_table} AS meta INNER JOIN {$stream_table} AS stream ON stream.ID = meta.record_id WHERE meta.meta_key = %s AND meta.meta_value = %s AND stream.site_id = %d AND stream.blog_id = %d LIMIT 1",
@@ -363,9 +407,6 @@ class Connector_MainWP_Backups extends Connector {
 			)
 		);
 
-		// The option is only a cache. A stale cache entry must not suppress a
-		// missing Stream record, otherwise the cursor can advance without an
-		// actual report row being present.
 		return ! empty( $record_id );
 	}
 
@@ -377,5 +418,16 @@ class Connector_MainWP_Backups extends Connector {
 	 */
 	public static function was_fingerprint_logged( $fingerprint ) {
 		return self::fingerprint_exists( $fingerprint );
+	}
+
+	/**
+	 * Return whether this request logged the supplied fingerprint.
+	 *
+	 * @param string $fingerprint Backup fingerprint.
+	 * @return bool True when the current request inserted or recognized the record.
+	 */
+	public static function was_fingerprint_logged_this_request( $fingerprint ) {
+		$fingerprint = sanitize_text_field( $fingerprint );
+		return ! empty( self::$fingerprint_logged_results[ $fingerprint ] );
 	}
 }
