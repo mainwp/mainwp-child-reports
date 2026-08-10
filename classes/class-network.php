@@ -491,7 +491,14 @@ class Network {
 	 * @return array $args Return Multisite query arguments.
 	 */
 	public function network_query_args( $args ) {
-		$args['site_id'] = is_numeric( $args['site_id'] ) ? $args['site_id'] : get_current_site()->id;
+        $site_id = 1;
+        if(is_numeric( $args['site_id'] )){
+            $site_id = (int) $args['site_id'];
+        } elseif(is_multisite()){
+            $site_id = \get_current_site()->id;
+        }
+
+		$args['site_id'] =  $site_id;
 		$args['blog_id'] = is_numeric( $args['blog_id'] ) ? $args['blog_id'] : ( is_network_admin() ? null : get_current_blog_id() );
 
 		return $args;

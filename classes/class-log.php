@@ -169,7 +169,7 @@ class Log {
 
 		$recordarr = array(
 			'object_id' => (int) $object_id,
-			'site_id'   => (int) is_multisite() ? get_current_site()->id : 1,
+			'site_id'   => (int) is_multisite() ? \get_current_site()->id : 1,
 			'blog_id'   => (int) apply_filters( 'wp_mainwp_stream_blog_id_logged', get_current_blog_id() ),
 			'user_id'   => (int) $user_id,
 			'user_role' => (string) $role,

@@ -233,7 +233,8 @@ abstract class Connector {
 
 				$created_item = wp_mainwp_stream_get_instance()->db->get_records( $query_args );
 
-				if ( $created_item ) {
+				// If the created item is found and the backup_fingerprint is empty, we skip logging to avoid duplicates.
+				if ( $created_item && empty( $args['backup_fingerprint'] ) ) {
 					return;
 				}
 			}
