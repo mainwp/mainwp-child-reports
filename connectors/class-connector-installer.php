@@ -602,12 +602,13 @@ class Connector_Installer extends Connector {
 				continue;
 			}
 
-			if ( ! isset( $info->result ) || true !== $info->result ) {
+			// Core_Upgrader returns the installed version on success, not boolean true.
+			if ( ! isset( $info->result ) || ! is_string( $info->result ) || '' === $info->result ) {
 				continue;
 			}
 
 			$old_version  = $this->current_wordpress_version;
-			$new_version  = $info->item->version;
+			$new_version  = $info->result;
 			$auto_updated = true;
 
 			if ( empty( $old_version ) || version_compare( $new_version, $old_version, '<=' ) ) {
@@ -616,7 +617,7 @@ class Connector_Installer extends Connector {
 
 			$message = esc_html__( 'WordPress auto-updated from %1$s to %2$s', 'mainwp-child-reports' );
 
-			$this->log(
+			$record_id = $this->log(
 				$message,
 				compact( 'old_version', 'new_version', 'auto_updated' ),
 				null,
@@ -626,7 +627,9 @@ class Connector_Installer extends Connector {
 				true // forced log - $forced_log.
 			);
 
-			$this->current_wordpress_version = '';
+			if ( $record_id && ! is_wp_error( $record_id ) ) {
+				$this->current_wordpress_version = '';
+			}
 		}
 	}
 
@@ -756,7 +759,7 @@ class Connector_Installer extends Connector {
 			$message = esc_html__( 'WordPress updated from %1$s to %2$s', 'mainwp-child-reports' );
 		}
 
-		$this->log(
+		$record_id = $this->log(
 			$message,
 			compact( 'old_version', 'new_version', 'auto_updated' ),
 			null,
@@ -764,7 +767,10 @@ class Connector_Installer extends Connector {
 			'updated'
 		);
 
-		$this->current_wordpress_version = '';
+		// Keep the old version for the completion hook if cron tracking rejected this log.
+		if ( $record_id && ! is_wp_error( $record_id ) ) {
+			$this->current_wordpress_version = '';
+		}
 	}
 
 	/**
