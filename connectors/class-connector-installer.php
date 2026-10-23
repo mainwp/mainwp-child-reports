@@ -602,10 +602,6 @@ class Connector_Installer extends Connector {
 				continue;
 			}
 
-			if ( ! isset( $info->result ) || true !== $info->result ) {
-				continue;
-			}
-
 			$old_version  = $this->current_wordpress_version;
 			$new_version  = $info->item->version;
 			$auto_updated = true;
