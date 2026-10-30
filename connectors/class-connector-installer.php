@@ -33,7 +33,7 @@ class Connector_Installer extends Connector {
 		'deleted_plugin',
 		// 'pre_set_site_transient_update_plugins',
 		'_core_updated_successfully',
-		'mainwp_child_installPluginTheme',
+		'mainwp_child_install_plugin_theme',
 		'mainwp_child_plugin_action',
 		'mainwp_child_theme_action',
         'pre_auto_update',
